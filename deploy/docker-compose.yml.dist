@@ -29,7 +29,7 @@ services:
       context: ../
       dockerfile: deploy/Dockerfile
     ports:
-      - "6000:80/tcp"
+      - "7000:80/tcp"
     volumes:
       - ../:/var/www/html
     links:
