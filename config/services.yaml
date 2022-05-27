@@ -19,6 +19,37 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    admin.user:
+        class: App\Admin\UserAdmin
+        arguments: [~, App\Entity\User, ~]
+        calls:
+            - [ setRoles, [ "%security.role_hierarchy.roles%" ] ]
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: User, show_in_dashboard: false }
 
+    admin.manufacturer:
+        class: App\Admin\ManufacturerAdmin
+        arguments: [~, App\Entity\Manufacturer, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Manufacturer, group: Manufacturer }
+
+    admin.distributor:
+        class: App\Admin\DistributorAdmin
+        arguments: [~, App\Entity\Distributor, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Distributor, group: Distributor }
+
+    admin.recycler:
+        class: App\Admin\RecyclerAdmin
+        arguments: [~, App\Entity\Recycler, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Recycler, group: Recycler }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

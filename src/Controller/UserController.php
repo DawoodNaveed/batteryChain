@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Enum\RoleEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,11 +27,13 @@ class UserController extends AbstractController
         // use inline documentation to tell your editor your exact User class
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
+        $roles = $user->getRoles();
 
-        // Call whatever methods you've added to your User class
-        // For example, if you added a getFirstName() method, you can use that.
-        return $this->render('home.html.twig', [
-            'email' => $user->getEmail(),
-        ]);
+        return $this->redirectToRoute('sonata_admin_dashboard');
+//        // Call whatever methods you've added to your User class
+//        // For example, if you added a getFirstName() method, you can use that.
+//        return $this->render('home.html.twig', [
+//            'email' => $user->getEmail(),
+//        ]);
     }
 }

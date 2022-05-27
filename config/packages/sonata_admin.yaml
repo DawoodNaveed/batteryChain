@@ -1,0 +1,21 @@
+sonata_block:
+  blocks:
+    # enable the SonataAdminBundle block
+    sonata.admin.block.admin_list:
+      contexts: [admin]
+
+sonata_admin:
+  dashboard:
+    groups:
+      Manufacturer:
+        icon: '<i class="fa fa-industry"></i>'
+        on-top: true
+        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
+      Distributor:
+        icon: '<i class="fa fa-users"></i>'
+        on-top: true
+        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
+      Recycler:
+        icon: '<i class="fa fa-recycle"></i>'
+        on-top: true
+        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']

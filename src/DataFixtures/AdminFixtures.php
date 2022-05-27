@@ -29,6 +29,8 @@ class AdminFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $user = new User();
+        $user->setFirstName('Batter');
+        $user->setLastName('Chain');
         $user->setEmail('admin@battery-chain.com');
         $user->setIsVerified(true);
         $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, 'coeus123@'));
