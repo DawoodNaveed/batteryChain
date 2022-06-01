@@ -97,10 +97,17 @@ class Battery extends AbstractEntity
     private $shipments;
 
     /**
+     * One Battery has many shipments.
+     * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="battery")
+     */
+    private $returns;
+
+    /**
      * Battery constructor.
      */
     public function __construct() {
         $this->shipments = new ArrayCollection();
+        $this->returns = new ArrayCollection();
     }
 
     /**
@@ -326,6 +333,38 @@ class Battery extends AbstractEntity
     public function removeShipment(Shipment $shipment): self
     {
         $this->shipments->removeElement($shipment);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BatteryReturn[]
+     */
+    public function getReturns(): Collection
+    {
+        return $this->returns;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function addReturns(BatteryReturn $return): self
+    {
+        if (!$this->returns->contains($return)) {
+            $this->returns[] = $return;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function removeReturns(BatteryReturn $return): self
+    {
+        $this->returns->removeElement($return);
 
         return $this;
     }

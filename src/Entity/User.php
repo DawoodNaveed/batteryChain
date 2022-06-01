@@ -127,11 +127,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $shipmentsFrom;
 
     /**
+     * One User has many returns To.
+     * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="returnTo")
+     */
+    private $returnsTo;
+
+    /**
+     * One User has many returns From.
+     * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="returnFrom")
+     */
+    private $returnsFrom;
+
+    /**
      * User constructor.
      */
     public function __construct() {
         $this->shipmentsTo = new ArrayCollection();
         $this->shipmentsFrom = new ArrayCollection();
+        $this->returnsTo = new ArrayCollection();
+        $this->returnsFrom = new ArrayCollection();
     }
 
     /**
@@ -394,6 +408,70 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeShipmentsFrom(Shipment $shipment): self
     {
         $this->shipmentsFrom->removeElement($shipment);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BatteryReturn[]
+     */
+    public function getReturnsTo(): Collection
+    {
+        return $this->returnsTo;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function addReturnsTo(BatteryReturn $return): self
+    {
+        if (!$this->returnsTo->contains($return)) {
+            $this->returnsTo[] = $return;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function removeReturnsTo(BatteryReturn $return): self
+    {
+        $this->returnsTo->removeElement($return);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BatteryReturn[]
+     */
+    public function getReturnsFrom(): Collection
+    {
+        return $this->returnsFrom;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function addReturnsFrom(BatteryReturn $return): self
+    {
+        if (!$this->returnsFrom->contains($return)) {
+            $this->returnsFrom[] = $return;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function removeReturnsFrom(BatteryReturn $return): self
+    {
+        $this->returnsFrom->removeElement($return);
 
         return $this;
     }

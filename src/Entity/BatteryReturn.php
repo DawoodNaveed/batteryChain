@@ -11,42 +11,42 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
 /**
- * Class Shipment
+ * Class BatteryReturn
  * @package App\Entity
  * @ORM\Entity()
- * @ORM\Table()
+ * @ORM\Table(name="return")
  */
-class Shipment extends AbstractEntity
+class BatteryReturn extends AbstractEntity
 {
     /**
      * @var Battery|null
-     * Many shipments have one Battery. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\Battery", inversedBy="shipments")
+     * Many returns have one Battery. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Battery", inversedBy="returns")
      * @JoinColumn(name="battery_id", referencedColumnName="id")
      */
     private $battery;
 
     /**
      * @var User|null
-     * Many shipments have one User. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="shipmentsTo")
-     * @JoinColumn(name="shipment_to", referencedColumnName="id")
+     * Many Returns have one User. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="returnsTo")
+     * @JoinColumn(name="return_to", referencedColumnName="id")
      */
-    private $shipmentTo;
+    private $returnTo;
 
     /**
      * @var User|null
-     * Many shipments have one User. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="shipmentsFrom")
-     * @JoinColumn(name="shipment_from", referencedColumnName="id")
+     * Many Returns have one User. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="returnsFrom")
+     * @JoinColumn(name="return_from", referencedColumnName="id")
      */
-    private $shipmentFrom;
+    private $returnFrom;
 
     /**
      * @var DateTime|null
-     * @ORM\Column(name="shipment_date", type="datetime", nullable="true")
+     * @ORM\Column(name="return_date", type="datetime", nullable="true")
      */
-    private $shipmentDate;
+    private $returnDate;
 
     /**
      * @var string|null
@@ -67,19 +67,18 @@ class Shipment extends AbstractEntity
     private $country;
 
     /**
-     * One Shipment has many transaction Logs.
-     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="shipment")
+     * One Return has many transaction Logs.
+     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="returns")
      */
     private $transactionLogs;
 
     /**
-     * Shipment constructor.
+     * BatteryReturn constructor.
      */
     public function __construct()
     {
         $this->transactionLogs = new ArrayCollection();
     }
-
 
     /**
      * @return Battery|null
@@ -100,49 +99,49 @@ class Shipment extends AbstractEntity
     /**
      * @return User|null
      */
-    public function getShipmentTo(): ?User
+    public function getReturnTo(): ?User
     {
-        return $this->shipmentTo;
+        return $this->returnTo;
     }
 
     /**
-     * @param User|null $shipmentTo
+     * @param User|null $returnTo
      */
-    public function setShipmentTo(?User $shipmentTo): void
+    public function setReturnTo(?User $returnTo): void
     {
-        $this->shipmentTo = $shipmentTo;
+        $this->returnTo = $returnTo;
     }
 
     /**
      * @return User|null
      */
-    public function getShipmentFrom(): ?User
+    public function getReturnFrom(): ?User
     {
-        return $this->shipmentFrom;
+        return $this->returnFrom;
     }
 
     /**
-     * @param User|null $shipmentFrom
+     * @param User|null $returnFrom
      */
-    public function setShipmentFrom(?User $shipmentFrom): void
+    public function setReturnFrom(?User $returnFrom): void
     {
-        $this->shipmentFrom = $shipmentFrom;
+        $this->returnFrom = $returnFrom;
     }
 
     /**
      * @return DateTime|null
      */
-    public function getShipmentDate(): ?DateTime
+    public function getReturnDate(): ?DateTime
     {
-        return $this->shipmentDate;
+        return $this->returnDate;
     }
 
     /**
-     * @param DateTime|null $shipmentDate
+     * @param DateTime|null $returnDate
      */
-    public function setShipmentDate(?DateTime $shipmentDate): void
+    public function setReturnDate(?DateTime $returnDate): void
     {
-        $this->shipmentDate = $shipmentDate;
+        $this->returnDate = $returnDate;
     }
 
     /**
