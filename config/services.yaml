@@ -41,6 +41,7 @@ services:
         arguments: [~, App\Entity\Distributor, ~]
         calls:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Distributor, group: Distributor }
 
@@ -49,7 +50,16 @@ services:
         arguments: [~, App\Entity\Recycler, ~]
         calls:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Recycler, group: Recycler }
+
+    admin.battery:
+        class: App\Admin\BatteryAdmin
+        arguments: [~, App\Entity\Battery, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

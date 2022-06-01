@@ -14,8 +14,9 @@ sonata_admin:
       Distributor:
         icon: '<i class="fa fa-users"></i>'
         on-top: true
-        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
       Recycler:
         icon: '<i class="fa fa-recycle"></i>'
         on-top: true
-        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
+      Battery:
+        icon: '<i class="fa fa-battery"></i>'
+        on-top: true
