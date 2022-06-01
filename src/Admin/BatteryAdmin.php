@@ -4,14 +4,13 @@ namespace App\Admin;
 
 use App\Entity\Battery;
 use App\Enum\RoleEnum;
-use Doctrine\ORM\Query\Expr\Join;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -128,5 +127,26 @@ class BatteryAdmin extends AbstractAdmin
             $object->setManufacturer($user->getManufacturer());
             $object->setCurrentOwner($user->getId());
         }
+    }
+
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->add('import');
+    }
+
+    /**
+     * @param array $actions
+     * @return array
+     */
+    protected function configureDashboardActions(array $actions): array
+    {
+        $actions['import'] = [
+            'label' => 'bulk_import',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('import'),
+            'icon' => 'fa fa-plus',
+        ];
+
+        return $actions;
     }
 }
