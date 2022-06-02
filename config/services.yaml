@@ -63,5 +63,13 @@ services:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
+
+    admin.return:
+        class: App\Admin\BatteryReturnAdmin
+        arguments: [~, App\Entity\BatteryReturn, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Returns, group: Return }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

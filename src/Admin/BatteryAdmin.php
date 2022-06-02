@@ -170,7 +170,7 @@ class BatteryAdmin extends AbstractAdmin
             $object->setManufacturer($user->getManufacturer());
         }
 
-        $object->setCurrentOwner($user->getId());
+        $object->setCurrentPossessor($user);
     }
 
     protected function configureRoutes(RouteCollectionInterface $collection): void

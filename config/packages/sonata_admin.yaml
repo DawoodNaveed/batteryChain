@@ -5,6 +5,10 @@ sonata_block:
       contexts: [admin]
 
 sonata_admin:
+  title: Battery Chain Admin Portal
+  title_logo: resources/logo.ico
+  options:
+    html5_validate: true
   dashboard:
     groups:
       Manufacturer:
@@ -22,3 +26,8 @@ sonata_admin:
       Battery:
         icon: '<i class="fa fa-battery"></i>'
         on-top: true
+        roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER', 'ROLE_DISTRIBUTOR' ]
+      Return:
+        icon: '<i class="fa fa-file"></i>'
+        on-top: true
+        roles: [ 'ROLE_RECYCLER' ]

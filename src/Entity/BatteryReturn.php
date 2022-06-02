@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\OneToMany;
  * Class BatteryReturn
  * @package App\Entity
  * @ORM\Entity()
- * @ORM\Table(name="return")
+ * @ORM\Table(name="battery_return")
  */
 class BatteryReturn extends AbstractEntity
 {

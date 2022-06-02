@@ -93,6 +93,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected $recycler;
 
     /**
+     * One User has many batteries.
+     * @OneToMany(targetEntity="App\Entity\Battery", mappedBy="currentPossessor")
+     */
+    protected $batteries;
+
+    /**
      * @var DateTime|null
      * @ORM\Column(
      *     name="created",
@@ -146,6 +152,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->shipmentsFrom = new ArrayCollection();
         $this->returnsTo = new ArrayCollection();
         $this->returnsFrom = new ArrayCollection();
+        $this->batteries = new ArrayCollection();
     }
 
     /**
@@ -498,5 +505,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRecycler(): ?Recycler
     {
         return $this->recycler;
+    }
+
+    /**
+     * @return Collection|Battery[]
+     */
+    public function getBatteries(): Collection
+    {
+        return $this->batteries;
+    }
+
+    /**
+     * @param Battery $battery
+     * @return $this
+     */
+    public function addBattery(Battery $battery): self
+    {
+        if (!$this->batteries->contains($battery)) {
+            $this->batteries[] = $battery;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Battery $battery
+     * @return $this
+     */
+    public function removeBattery(Battery $battery): self
+    {
+        $this->batteries->removeElement($battery);
+
+        return $this;
     }
 }

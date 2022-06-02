@@ -37,10 +37,11 @@ class Battery extends AbstractEntity
     private $batteryType;
 
     /**
-     * @var integer|null
-     * @ORM\Column(name="current_owner", type="integer", options={"unsigned"=true}, nullable="true")
+     * @var User|null
+     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="batteries")
+     * @JoinColumn(name="current_possessor_id", referencedColumnName="id")
      */
-    private $currentOwner;
+    private $currentPossessor;
 
     /**
      * @var double|null
@@ -162,19 +163,19 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return int|null
+     * @return User|null
      */
-    public function getCurrentOwner(): ?int
+    public function getCurrentPossessor(): ?User
     {
-        return $this->currentOwner;
+        return $this->currentPossessor;
     }
 
     /**
-     * @param int|null $currentOwner
+     * @param User|null $currentPossessor
      */
-    public function setCurrentOwner(?int $currentOwner): void
+    public function setCurrentPossessor(?User $currentPossessor): void
     {
-        $this->currentOwner = $currentOwner;
+        $this->currentPossessor = $currentPossessor;
     }
 
     /**
