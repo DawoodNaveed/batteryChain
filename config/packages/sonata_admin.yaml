@@ -7,6 +7,8 @@ sonata_block:
 sonata_admin:
   title: Battery Chain Admin Portal
   title_logo: resources/logo.ico
+  templates:
+    layout: 'layout.html.twig'
   options:
     html5_validate: true
   dashboard:
