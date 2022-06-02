@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 /**
  * Class Manufacturer
  * @package App\Entity
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\ManufacturerRepository")
  * @ORM\Table(name="manufacturer")
  */
 class Manufacturer extends AbstractEntity

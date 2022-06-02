@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Distributor;
 use App\Entity\Manufacturer;
 use App\Entity\User;
 
@@ -20,12 +19,6 @@ class UserService
     {
         if ($user->getManufacturer() instanceof Manufacturer) {
             return $user->getManufacturer()->getId();
-        }
-
-        if ($user->getDistributor() instanceof Distributor) {
-            $manufacturers = $user->getDistributor()->getManufacturers();
-
-            return $manufacturers[0]->getId();
         }
 
         return null;

@@ -9,6 +9,8 @@ use Doctrine\DBAL\Driver\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Class BatteryRepository
+ * @package App\Repository
  * @method Battery|null find($id, $lockMode = null, $lockVersion = null)
  * @method Battery|null findOneBy(array $criteria, array $orderBy = null)
  * @method Battery[]    findAll()
