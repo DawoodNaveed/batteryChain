@@ -5,7 +5,7 @@ sonata_block:
       contexts: [admin]
 
 sonata_admin:
-  title: Battery Chain Admin Portal
+  title: Battery Chain
   title_logo: resources/logo.ico
   templates:
     layout: 'layout.html.twig'
