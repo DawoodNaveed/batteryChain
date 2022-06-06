@@ -7,6 +7,7 @@ initialize_system() {
   if [ "$APP_ENV" == "dev" ]; then
       composer global require hirak/prestissimo
       composer install --working-dir=/var/www/html
+      php bin/console doctrine:fixtures:load --append
   else
       composer global require hirak/prestissimo
       composer install --no-dev --working-dir=/var/www/html
@@ -14,7 +15,6 @@ initialize_system() {
 
   # Run Migrations
   php bin/console doctrine:migrations:migrate -n --all-or-nothing
-  php bin/console doctrine:fixtures:load --append
 }
 
 # Initialize system as nginx user
