@@ -1,0 +1,37 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_top_nav_menu %}
+    {% if app.user %}
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                {% if is_granted(sonata_config.getOption('role_admin')) %}
+                    {% block sonata_top_nav_menu_add_block %}
+                        {% set addBlock = include(get_global_template('add_block')) %}
+                        {% if addBlock is not empty %}
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fas fa-plus-square fa-fw" aria-hidden="true"></i> <i class="fas fa-caret-down" aria-hidden="true"></i>
+                                </a>
+                                {{ addBlock|raw }}
+                            </li>
+                        {% endif %}
+                    {% endblock %}
+                {% endif %}
+                {% block sonata_top_nav_menu_user_block %}
+                    {% set userBlock = include('user_block.html.twig') %}
+                    {% if userBlock is not empty %}
+                        <li class="dropdown user-menu">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fas fa-user fa-fw" aria-hidden="true"></i> <i class="fas fa-caret-down" aria-hidden="true"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                {{ userBlock|raw }}
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% endblock %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+

@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Controller;
+
+use App\Enum\RoleEnum;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Class UserController
+ * @package App\Controller
+ */
+class UserController extends AbstractController
+{
+    /**
+     * @return Response
+     * @Route("/home", name="home")
+     */
+    public function index(): Response
+    {
+        // usually you'll want to make sure the user is authenticated first,
+        // see "Authorization" below
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        // returns your User object, or null if the user is not authenticated
+        // use inline documentation to tell your editor your exact User class
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $roles = $user->getRoles();
+
+        return $this->redirectToRoute('sonata_admin_dashboard');
+//        // Call whatever methods you've added to your User class
+//        // For example, if you added a getFirstName() method, you can use that.
+//        return $this->render('home.html.twig', [
+//            'email' => $user->getEmail(),
+//        ]);
+    }
+}

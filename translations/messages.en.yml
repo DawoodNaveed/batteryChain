@@ -1,0 +1,5 @@
+service.error.invalid_csv: 'Error! Please upload valid csv file.'
+service.error.file_size_exceeds: 'Error! File size exceeded.'
+service.error.something_went_wrong: 'Error! Something went wrong.'
+service.error.invalid_csv_headers: 'Error! Please upload valid csv with valid headers.'
+service.success.battery_added_successfully: 'Batteries Added Successfully!'
