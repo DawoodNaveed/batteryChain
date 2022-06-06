@@ -28,18 +28,22 @@ class AdminFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $user = new User();
-        $user->setFirstName('Batter');
-        $user->setLastName('Chain');
-        $user->setEmail('admin@battery-chain.com');
-        $user->setIsVerified(true);
-        $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, 'coeus123@'));
-        $user->setRoles([
-            'ROLE_SUPER_ADMIN'
-        ]);
+        $user = $manager->getRepository('App:User')->findBy(['email' => 'admin@battery-chain.com']);
 
-        $manager->persist($user);
-        $manager->flush();
+        if (empty($user)) {
+            $user = new User();
+            $user->setFirstName('Batter');
+            $user->setLastName('Chain');
+            $user->setEmail('admin@battery-chain.com');
+            $user->setIsVerified(true);
+            $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, 'coeus123@'));
+            $user->setRoles([
+                'ROLE_SUPER_ADMIN'
+            ]);
+
+            $manager->persist($user);
+            $manager->flush();
+        }
         // TODO: Implement load() method.
     }
 }
