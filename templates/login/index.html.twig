@@ -41,6 +41,9 @@
                             {# If you want to control the URL the user is redirected to on success #}
                             <input type="hidden" name="_target_path" class="form-control" value="{{ path('home') }}" />
                         </div>
+                        <div class="mb-3">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        </div>
                         <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Login</button></div>
                     </form>
                 </div>
