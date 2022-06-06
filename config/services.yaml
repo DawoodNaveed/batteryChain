@@ -10,6 +10,8 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $csvFileUploadSize: '%env(CSV_FILE_UPLOAD_SIZE)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -19,6 +21,55 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    admin.user:
+        class: App\Admin\UserAdmin
+        arguments: [~, App\Entity\User, ~]
+        calls:
+            - [ setRoles, [ "%security.role_hierarchy.roles%" ] ]
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: User, show_in_dashboard: false }
 
+    admin.manufacturer:
+        class: App\Admin\ManufacturerAdmin
+        arguments: [~, App\Entity\Manufacturer, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Manufacturer, group: Manufacturer }
+
+    admin.distributor:
+        class: App\Admin\DistributorAdmin
+        arguments: [~, App\Entity\Distributor, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Distributor, group: Distributor }
+
+    admin.recycler:
+        class: App\Admin\RecyclerAdmin
+        arguments: [~, App\Entity\Recycler, ~]
+        calls:
+            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Recycler, group: Recycler }
+
+    admin.battery:
+        class: App\Admin\BatteryAdmin
+        arguments: [~, App\Entity\Battery, App\Controller\BatteryController]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
+
+    admin.return:
+        class: App\Admin\BatteryReturnAdmin
+        arguments: [~, App\Entity\BatteryReturn, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Returns, group: Return }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
