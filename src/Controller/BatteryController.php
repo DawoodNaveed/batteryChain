@@ -69,7 +69,7 @@ class BatteryController extends CRUDController
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
             /** @var Manufacturer $manufacturer */
-            $manufacturer = $formData['manufacturer'];
+            $manufacturer = $formData['manufacturer'] ?? null;
             $file = $request->files->all();
 
             if (!empty($file) && isset($file['bulk_import_battery_form']['csv'])) {
