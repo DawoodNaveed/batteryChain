@@ -57,12 +57,12 @@ class BatteryService
     /**
      * @param UploadedFile $file
      * @param $manufacturerId
-     * @param $currentOwner
+     * @param $currentPossessorId
      * @return array
      * @throws DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    public function extractCsvAndCreateBatteries(UploadedFile $file, $manufacturerId, $currentOwner): array
+    public function extractCsvAndCreateBatteries(UploadedFile $file, $manufacturerId, $currentPossessorId): array
     {
         $error = [];
 
@@ -103,7 +103,7 @@ class BatteryService
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $nominalVoltage .
                     "', '" . $nominalCapacity . "', '" . $nominalEnergy . "', '" . $cycleLife
                     . "', '" . $height . "', '" . $width . "', '" . $mass . "', '" . $status
-                    . "', '" . $manufacturerId . "', '" . $currentOwner . "', now(), now()), ";
+                    . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
                 $rowCount++;
 
