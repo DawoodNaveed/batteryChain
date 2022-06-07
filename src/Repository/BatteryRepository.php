@@ -30,7 +30,7 @@ class BatteryRepository extends ServiceEntityRepository
     public function createNewBattery($values)
     {
         $query = "INSERT INTO battery" .
-            "(serial_number, battery_type, nominal_voltage, nominal_capacity, nominal_energy, cycle_life, height, width, mass, status, manufacturer_id, current_owner, created, updated)" .
+            "(serial_number, battery_type, nominal_voltage, nominal_capacity, nominal_energy, cycle_life, height, width, mass, status, manufacturer_id, current_possessor_id, created, updated)" .
             " VALUES " . $values;
         $connection = $this->getEntityManager()->getConnection();
         $stmt = $connection->prepare($query);
