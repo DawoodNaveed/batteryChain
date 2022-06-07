@@ -2,22 +2,34 @@
 
 namespace App\Controller;
 
-use App\Enum\RoleEnum;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UserController
  * @package App\Controller
+ * @property LoggerInterface $logger
  */
 class UserController extends AbstractController
 {
     /**
+     * UserController constructor.
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param Request $request
      * @return Response
      * @Route("/home", name="home")
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         // usually you'll want to make sure the user is authenticated first,
         // see "Authorization" below
@@ -30,10 +42,5 @@ class UserController extends AbstractController
         $roles = $user->getRoles();
 
         return $this->redirectToRoute('sonata_admin_dashboard');
-//        // Call whatever methods you've added to your User class
-//        // For example, if you added a getFirstName() method, you can use that.
-//        return $this->render('home.html.twig', [
-//            'email' => $user->getEmail(),
-//        ]);
     }
 }
