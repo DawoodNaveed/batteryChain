@@ -52,7 +52,7 @@ security:
          - { path: ^/admin/distributor, roles: ROLE_DISTRIBUTOR }
          - { path: ^/profile, roles: ROLE_USER }
          - { path: ^/login, roles: PUBLIC_ACCESS }
-         - { path: ^/registration, roles: PUBLIC_ACCESS }
+#         - { path: ^/register, roles: ROLE_SUPER_ADMIN }
 
 when@test:
     security:
