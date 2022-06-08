@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row mt-4">
+            <div class="col-md-12 mt-4 text-left">
+                <div class="alert alert-danger" role="alert">
+                    <h3>
+                        {{ "Something Went Wrong!" | trans }}
+                    </h3>
+                </div>
+            </div>
+            <div class="col-md-12 mt-2 text-left">
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">{{ "Exception Occured!" }}</h4>
+                    <ul class="list-unstyled">
+                        <li>{{ "1. This page does not exist."|trans }}</li>
+                        <li>{{ "2. Related content has been removed."|trans }}</li>
+                        <li>{{ "3. You do not have access to related content."|trans }}</li>
+                    </ul>
+                    <hr>
+                    <p class="mb-0">{{ "There is a system level error. Kindly approach administrator for steps to reproduce error."|trans }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
