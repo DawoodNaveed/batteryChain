@@ -137,7 +137,7 @@ class BatteryAdmin extends AbstractAdmin
             && in_array(RoleEnum::ROLE_DISTRIBUTOR, $user->getRoles(), true)) {
             $rootAlias = current($query->getRootAliases());
             $query->andWhere(
-                $query->expr()->eq($rootAlias . '.currentOwner', $user->getId())
+                $query->expr()->eq($rootAlias . '.currentPossessor', $user->getId())
             );
         }
 
