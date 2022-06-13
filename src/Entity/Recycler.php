@@ -205,6 +205,19 @@ class Recycler extends AbstractEntity
     }
 
     /**
+     * @return $this
+     */
+    public function removeAllManufacturers(): self
+    {
+        /** @var Manufacturer $manufacturer */
+        foreach ($this->manufacturers as $manufacturer) {
+            $manufacturer->removeRecycler($this);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return Country|null
      */
     public function getCountry(): ?Country

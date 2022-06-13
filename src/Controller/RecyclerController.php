@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Country;
 use App\Entity\Manufacturer;
+use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\AvailableRecyclerFormType;
@@ -12,12 +13,14 @@ use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -121,5 +124,41 @@ class RecyclerController extends CRUDController
         return new JsonResponse([
             'recyclers' => $this->recyclerService->toChoiceArray($recyclers)
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
+    public function deleteAction(Request $request): Response
+    {
+        /** @var FlashBagInterface $flashBag */
+        $flashBag = $this->container->get('session')->getFlashBag();
+        $id = $request->get($this->admin->getIdParameter());
+        /** @var Recycler $recycler */
+        $recycler = $this->admin->getObject($id);
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        // In-Case Super Admin
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
+            $recycler->removeAllManufacturers();
+            $flashBag->set(
+                'sonata_flash_success',
+                'Recycler De-attached with All Manufacturer!'
+            );
+        } else {
+            $recycler->removeManufacturer($user->getManufacturer());
+            $flashBag->set(
+                'sonata_flash_success',
+                'Recycler De-attached Successfully!'
+            );
+        }
+
+        $this->entityManager->flush();
+
+        return new RedirectResponse($this->admin->generateUrl('list'));
     }
 }
