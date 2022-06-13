@@ -49,7 +49,7 @@ services:
 
     admin.recycler:
         class: App\Admin\RecyclerAdmin
-        arguments: [~, App\Entity\Recycler, ~]
+        arguments: [~, App\Entity\Recycler, App\Controller\RecyclerController]
         calls:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
             - [ setTokenStorage, [ '@security.token_storage' ] ]
@@ -71,5 +71,13 @@ services:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Returns, group: Return }
+
+    admin.country:
+        class: App\Admin\CountryAdmin
+        arguments: [~, App\Entity\Country, ~]
+        calls:
+#            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Country, group: Country }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

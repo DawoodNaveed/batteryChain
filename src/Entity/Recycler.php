@@ -5,7 +5,9 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * Class Recycler
@@ -40,8 +42,10 @@ class Recycler extends AbstractEntity
     private $city;
 
     /**
-     * @var string|null
-     * @ORM\Column(name="country", type="string", length=50, nullable="true")
+     * @var Country|null
+     * Many Recyclers have one Country. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Country", inversedBy="recyclers")
+     * @JoinColumn(name="country_id", referencedColumnName="id")
      */
     private $country;
 
@@ -136,22 +140,6 @@ class Recycler extends AbstractEntity
     }
 
     /**
-     * @return string|null
-     */
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string|null $country
-     */
-    public function setCountry(?string $country): void
-    {
-        $this->country = $country;
-    }
-
-    /**
      * @return User|null
      */
     public function getUser(): ?User
@@ -214,5 +202,21 @@ class Recycler extends AbstractEntity
             $manufacturer->removeRecycler($this);
         }
         return $this;
+    }
+
+    /**
+     * @return Country|null
+     */
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param Country|null $country
+     */
+    public function setCountry(?Country $country): void
+    {
+        $this->country = $country;
     }
 }

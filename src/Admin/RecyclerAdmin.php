@@ -4,11 +4,15 @@ namespace App\Admin;
 
 use App\Entity\Recycler;
 use App\Enum\RoleEnum;
+use Doctrine\ORM\Query\Expr\Join;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\AdminType;
+use Sonata\AdminBundle\Form\Type\ModelType;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,7 +31,11 @@ class RecyclerAdmin extends AbstractAdmin
         /** @var Recycler $recycler */
         $recycler = $this->getSubject();
         $form
-            ->add('name', TextType::class);
+            ->add('name', TextType::class)
+            ->add('country', ModelType::class, [
+                'property' => 'name',
+                'btn_add' => false
+            ]);
 
         if ($recycler->getId() === null) {
             $form
@@ -35,7 +43,6 @@ class RecyclerAdmin extends AbstractAdmin
         } else {
             $form
                 ->add('address', TextType::class)
-                ->add('country', TextType::class)
                 ->add('city', TextType::class)
                 ->add('contact', TextType::class);
         }
@@ -51,7 +58,7 @@ class RecyclerAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->addIdentifier('address')
             ->addIdentifier('city')
-            ->addIdentifier('country');
+            ->addIdentifier('country.name', TextType::class, ['label' => 'Country']);
     }
 
     /**
@@ -73,7 +80,6 @@ class RecyclerAdmin extends AbstractAdmin
             ])
             ->add('address')
             ->add('city')
-            ->add('country')
             ->add('contact');
     }
 
@@ -116,5 +122,47 @@ class RecyclerAdmin extends AbstractAdmin
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
             $object->addManufacturer($user->getManufacturer());
         }
+    }
+
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->add('attach');
+        $collection->add('getRecycler');
+        $collection->remove('delete');
+    }
+
+    /**
+     * @param array $actions
+     * @return array
+     */
+    protected function configureDashboardActions(array $actions): array
+    {
+        $actions['attach'] = [
+            'label' => 'Use Available Recycler',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('attach'),
+            'icon' => 'fa fa-plus',
+        ];
+
+        return $actions;
+    }
+
+    /**
+     * @param ProxyQueryInterface $query
+     * @return ProxyQueryInterface
+     */
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $query = parent::configureQuery($query);
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+            $manufacturer = $user->getManufacturer();
+            $rootAlias = current($query->getRootAliases());
+            $query->join($rootAlias . '.manufacturers', 'm', Join::WITH,
+                $query->expr()->eq('m.id', $manufacturer->getId()));
+        }
+
+        return $query;
     }
 }

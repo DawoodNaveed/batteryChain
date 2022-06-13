@@ -1,0 +1,34 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+    {{ form(form) }}
+    <script>
+        $(document).ready(function () {
+            var $country = $('#available_recycler_form_country');
+            $country.change(function() {
+                var data = {};
+                data[$country.attr('name')] = $country.val();
+                // Submit data via AJAX to the form's action path.
+                $.ajax({
+                    url : '/admin/app/recycler/getRecycler',
+                    type: 'POST',
+                    data : data,
+                    success: function(data) {
+                        // Replace current position field ...
+                        var options, select;
+
+                        // Get the raw DOM object for the select box
+                        select = $('#available_recycler_form_recycler');
+                        select.html('');
+                        options = data.recyclers; // Or whatever source information you're working with
+                        $.each(options, function(index, element) {
+                            var newOption = new Option(index, element, false, false);
+                            select.append(newOption);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
