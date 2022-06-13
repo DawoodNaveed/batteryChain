@@ -102,8 +102,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->hasSession()) {
-            $exception = new AuthenticationException('Auth Error');
-            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+            $exception = new AuthenticationException('Invalid username or password');
+            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception->getMessage());
         }
 
         $url = $this->getLoginUrl($request);
