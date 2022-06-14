@@ -104,6 +104,15 @@
     "gedmo/doctrine-extensions": {
         "version": "v3.7.0"
     },
+    "google/recaptcha": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.1",
+            "ref": "e5a4aa21f2e98d7440ae9aab6b56e307f99dd084"
+        }
+    },
     "jms/metadata": {
         "version": "2.6.1"
     },
