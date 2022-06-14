@@ -79,5 +79,13 @@ services:
 #            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Country, group: Country }
+
+    admin.shipment:
+        class: App\Admin\ShipmentAdmin
+        arguments: [~, App\Entity\Shipment, App\Controller\ShipmentController]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Shipment, group: Shipment }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -9,8 +9,9 @@
         "php": ">=7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/common": "3.*",
+        "doctrine/common": "^3.3",
         "doctrine/doctrine-bundle": "^2.6",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
         "sonata-project/admin-bundle": "^4.12",
@@ -36,7 +37,6 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "symfony/stopwatch": "5.4.*"
     },
     "config": {

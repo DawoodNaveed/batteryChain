@@ -1,0 +1,21 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+    {{ form(form) }}
+    <script>
+        $(document).ready(function () {
+            $('#shipment_form_recyclers').parent().hide();
+            $('#shipment_form_distributors').parent().hide();
+            const $link = $('#shipment_form_linkType');
+            $link.change(function () {
+                if ($link.val() === 'recyclers') {
+                    $('#shipment_form_recyclers').parent().show();
+                    $('#shipment_form_distributors').parent().hide();
+                } else {
+                    $('#shipment_form_recyclers').parent().hide();
+                    $('#shipment_form_distributors').parent().show();
+                }
+            });
+        });
+    </script>
+{% endblock %}

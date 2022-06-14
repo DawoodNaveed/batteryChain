@@ -369,4 +369,12 @@ class Battery extends AbstractEntity
 
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->serialNumber;
+    }
 }

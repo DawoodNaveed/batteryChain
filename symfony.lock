@@ -26,9 +26,6 @@
     "doctrine/common": {
         "version": "3.3.0"
     },
-    "doctrine/data-fixtures": {
-        "version": "1.5.3"
-    },
     "doctrine/dbal": {
         "version": "2.13.9"
     },

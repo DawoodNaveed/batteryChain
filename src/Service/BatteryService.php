@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
 use Doctrine\DBAL\DBALException;
@@ -141,4 +142,17 @@ class BatteryService
         }
 
         return $error;
-    }}
+    }
+
+    /**
+     * @param User $user
+     * @return array|null
+     */
+    public function getCurrentPossessedBatteries(User $user): ?array
+    {
+        return $this->batteryRepository->findBy([
+            'currentPossessor' => $user
+            ]
+        );
+    }
+}
