@@ -6,7 +6,7 @@
 .profile-image-pic {
     height: 125px;
     width: 125px;
-    object-fit: cover;
+    object-fit: fill;
 }
 
 .cardbody-color {

@@ -9,12 +9,12 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <h3 class="text-center text-dark mt-5">{{ "Battery Chain" }}</h3>
+                <h3 class="text-center text-dark mt-4">{{ "Battery Chain" }}</h3>
                 <div class="card my-3">
                     <form class="card-body cardbody-color p-lg-5" action="{{ path('app_login') }}" method="post">
                         {% set bg_input = '' %}
                         <div class="text-center">
-                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                            <img src="{{ asset('resources/logo.png') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
                                  width="150px" alt="profile">
                         </div>
                         {% if error is defined and error %}
@@ -43,7 +43,8 @@
                         <div class="mb-3">
                             <div class="g-recaptcha" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
                         </div>
-                        <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Login</button></div>
+                        <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-2 w-100">Login</button></div>
+                        <a href="{{ path('app_forgot_password_request') }}" class="label label-primary">Forgot Password?</a>
                     </form>
                 </div>
             </div>
