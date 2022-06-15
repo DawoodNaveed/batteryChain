@@ -8,9 +8,13 @@ use App\Entity\Recycler;
 use App\Entity\Shipment;
 use App\Entity\User;
 use App\Enum\RoleEnum;
+use Doctrine\ORM\Query\Expr\Join;
+use Knp\Menu\ItemInterface;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ChoiceFieldMaskType;
 use Sonata\AdminBundle\Form\Type\ModelType;
@@ -106,6 +110,25 @@ class ShipmentAdmin extends AbstractAdmin
     }
 
     /**
+     * @param ProxyQueryInterface $query
+     * @return ProxyQueryInterface
+     */
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $query = parent::configureQuery($query);
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+            $rootAlias = current($query->getRootAliases());
+            $query->andWhere(
+                $query->expr()->eq($rootAlias . '.shipmentFrom', $user->getId())
+            );
+        }
+
+        return $query;
+    }
+
+    /**
      * @param DatagridMapper $filter
      */
     protected function configureDatagridFilters(DatagridMapper $filter): void
@@ -173,12 +196,17 @@ class ShipmentAdmin extends AbstractAdmin
      */
     protected function configureDashboardActions(array $actions): array
     {
-        $actions['shipment'] = [
-            'label' => 'Add Shipment',
-            'translation_domain' => 'SonataAdminBundle',
-            'url' => $this->generateUrl('shipment'),
-            'icon' => 'fa fa-plus',
-        ];
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+            && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
+            $actions['shipment'] = [
+                'label' => 'Add Shipment',
+                'translation_domain' => 'SonataAdminBundle',
+                'url' => $this->generateUrl('shipment'),
+                'icon' => 'fa fa-plus',
+            ];
+        }
 
         return $actions;
     }
