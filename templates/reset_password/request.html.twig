@@ -24,6 +24,7 @@
                                 </small>
                             </div>
                             <button class="btn btn-primary mt-2">{{ "Send password reset email" | trans }}</button>
+                            <a href="{{ path('app_login') }}" class="btn btn-secondary mt-2 ml-2">{{ "Cancel" | trans }}</a>
                             {{ form_end(requestForm) }}
                         </div>
                     </div>
