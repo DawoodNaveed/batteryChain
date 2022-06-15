@@ -4,7 +4,9 @@ namespace App\Admin;
 
 use App\Entity\Manufacturer;
 use App\Entity\Recycler;
+use App\Entity\User;
 use App\Enum\RoleEnum;
+use App\Helper\CustomHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -43,7 +45,10 @@ class BatteryReturnAdmin extends AbstractAdmin
 
             /** @var Manufacturer $manufacturer */
             foreach ($manufacturers as $manufacturer) {
-                $batteries = array_merge($batteries, $manufacturer->getBatteries()->toArray());
+                /** @var User $mUser */
+                $mUser = $manufacturer->getUser();
+                // Get Batteries which manufacturer possesses only
+                $batteries = array_merge($batteries, $mUser->getBatteries()->toArray());
             }
 
             $form
@@ -138,6 +143,8 @@ class BatteryReturnAdmin extends AbstractAdmin
         }
 
         $object->setReturnFrom($object->getBattery()->getCurrentPossessor());
+        $object->getBattery()->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+        $object->getBattery()->setCurrentPossessor($user);
     }
 
     protected function preValidate(object $object): void
