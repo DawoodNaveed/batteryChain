@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "Reset your password" | trans }}{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="mt-5">
+                    <div class="p-3 border card-body cardbody-color p-lg-5">
+                        <div class="text-center">
+                            <img src="{{ asset('resources/logo.png') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                                 width="150px" alt="profile">
+                        </div>
+                        <div>
+                            {{ form_start(requestForm) }}
+                            {{ form_row(requestForm.email) }}
+                            <div class="alert alert-info">
+                                <small>
+                                    {{ "Enter your email address and we will send you a link to reset your password." | trans }}
+                                </small>
+                            </div>
+                            <button class="btn btn-primary mt-2">{{ "Send password reset email" | trans }}</button>
+                            {{ form_end(requestForm) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

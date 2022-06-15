@@ -12,7 +12,6 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -60,17 +59,7 @@ class BatteryAdmin extends AbstractAdmin
             ->add('cycleLife', NumberType::class)
             ->add('height', NumberType::class)
             ->add('width', NumberType::class)
-            ->add('mass', NumberType::class)
-            ->add('status', ChoiceType::class,
-                [
-                    'choices' => [
-                        'Registered' => 'Registered',
-                        'Shipped' => 'Shipped',
-                        'Delivered' => 'Delivered',
-                        'Returned' => 'Returned'
-                    ],
-                ]
-            );
+            ->add('mass', NumberType::class);
     }
 
     /**
@@ -170,6 +159,7 @@ class BatteryAdmin extends AbstractAdmin
             $object->setManufacturer($user->getManufacturer());
         }
 
+        $object->setStatus('registered');
         $object->setCurrentPossessor($user);
     }
 

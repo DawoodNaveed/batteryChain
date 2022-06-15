@@ -232,4 +232,12 @@ class Recycler extends AbstractEntity
     {
         $this->country = $country;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->name;
+    }
 }
