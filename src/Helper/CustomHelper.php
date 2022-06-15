@@ -31,4 +31,16 @@ class CustomHelper
         'mass',
         'status'
     ];
+
+    const BATTERY_STATUS_REGISTERED = 'registered';
+    const BATTERY_STATUS_BLOCKCHAIN_SECURED = 'blockchain-secured';
+    const BATTERY_STATUS_SHIPPED = 'shipped';
+    const BATTERY_STATUS_RETURNED = 'returned';
+
+    const BATTERY_STATUSES = [
+        self::BATTERY_STATUS_REGISTERED => 0,
+        self::BATTERY_STATUS_BLOCKCHAIN_SECURED => 1,
+        self::BATTERY_STATUS_SHIPPED => 2,
+        self::BATTERY_STATUS_RETURNED => 3,
+    ];
 }
