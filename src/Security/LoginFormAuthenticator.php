@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
+use ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,6 +28,7 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
  * @property UserRepository userRepository
  * @property RequestStack requestStack
  * @property LoggerInterface logger
+ * @property $recaptchaSecretKey
  */
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -40,13 +42,15 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
      * @param LoggerInterface $logger
+     * @param $recaptchaSecretKey
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, RequestStack $requestStack, LoggerInterface $logger)
+    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, RequestStack $requestStack, LoggerInterface $logger, $recaptchaSecretKey)
     {
         $this->urlGenerator = $urlGenerator;
         $this->userRepository = $userRepository;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
+        $this->recaptchaSecretKey = $recaptchaSecretKey;
     }
 
     /**
@@ -60,20 +64,29 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     /**
      * @param Request $request
-     * @return Passport
+     * @return Passport|Response
      */
-    public function authenticate(Request $request): Passport
+    public function authenticate(Request $request)
     {
         $username = $request->request->get('_username', '');
         $request->getSession()->set(Security::LAST_USERNAME, $username);
 
-        return new Passport(
-            new UserBadge($username),
-            new PasswordCredentials($request->request->get('_password', '')),
-            [
-                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
-                new RememberMeBadge(),
-            ]
+        $recaptcha = new ReCaptcha($this->recaptchaSecretKey);
+        $resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+
+        if ($resp->isSuccess()) {
+            return new Passport(
+                new UserBadge($username),
+                new PasswordCredentials($request->request->get('_password', '')),
+                [
+                    new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
+                    new RememberMeBadge(),
+                ]
+            );
+        }
+
+        return new Passport(new UserBadge(''),
+            new PasswordCredentials('')
         );
     }
 
@@ -102,8 +115,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->hasSession()) {
-            $exception = new AuthenticationException('Auth Error');
-            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+            if (empty($request->request->get('g-recaptcha-response'))) {
+                $exception = new AuthenticationException("The reCAPTCHA wasn't entered correctly.");
+            } else {
+                $exception = new AuthenticationException('Invalid username or password');
+            }
+            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception->getMessage());
         }
 
         $url = $this->getLoginUrl($request);
