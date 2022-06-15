@@ -85,15 +85,29 @@ class BatteryController extends CRUDController
 
                     $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturerId, $user->getId());
 
-                    if (!empty($createBattery) && $createBattery['error']) {
+                    if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
                     } else {
                         $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
-                        return new RedirectResponse($this->admin->generateUrl('list'));
+
+                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
+                            $this->addFlash(
+                                'warning',
+                                $this->translator->trans(
+                                    'service.success.battery_import_status',
+                                    [
+                                        '%failure_batteries%' => $createBattery['failure'],
+                                        '%total_batteries%' => $createBattery['total']
+                                    ]
+                                )
+                            );
+                        }
                     }
                 } else {
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
+
+                return new RedirectResponse($this->admin->generateUrl('list'));
             }
         }
 
