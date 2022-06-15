@@ -28,8 +28,7 @@ class CustomHelper
         'cycle_life',
         'height',
         'width',
-        'mass',
-        'status'
+        'mass'
     ];
 
     const BATTERY_STATUS_REGISTERED = 'registered';

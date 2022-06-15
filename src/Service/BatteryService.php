@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Battery;
 use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
@@ -76,6 +77,7 @@ class BatteryService
             }
 
             $rowCount = 1;
+            $failureCount = 0;
             $values = '';
 
             while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
@@ -90,6 +92,11 @@ class BatteryService
                     $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
                 }
 
+                if (!empty($this->isExist((string) $row['serial_number']))) {
+                    $failureCount++;
+                    continue;
+                }
+
                 $serialNumber = (string) $row['serial_number'];
                 $batteryType = (string) $row['battery_type'];
                 $nominalVoltage = (float) $row['nominal_voltage'];
@@ -99,7 +106,7 @@ class BatteryService
                 $height = (float) $row['height'];
                 $width = (float) $row['width'];
                 $mass = (float) $row['mass'];
-                $status = !empty($row['status']) ? (string) $row['status'] : 'Registered';
+                $status = CustomHelper::BATTERY_STATUS_REGISTERED;
 
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $nominalVoltage .
                     "', '" . $nominalCapacity . "', '" . $nominalEnergy . "', '" . $cycleLife
@@ -123,7 +130,10 @@ class BatteryService
 
         fclose($handle);
 
-        return $error;
+        return array_merge($error, [
+            'total' => ($rowCount - 1) + $failureCount,
+            'failure' => $failureCount
+        ]);
     }
 
     /**
@@ -154,5 +164,16 @@ class BatteryService
             'currentPossessor' => $user
             ]
         );
+    }
+
+    /**
+     * @param string $serialNumber
+     * @return Battery[]|null
+     */
+    private function isExist(string $serialNumber): ?Battery
+    {
+        return $this->batteryRepository->findOneBy([
+            'serialNumber' => $serialNumber
+        ]);
     }
 }
