@@ -1,9 +1,33 @@
-<h1>Hi!</h1>
+{% extends 'base.html.twig' %}
 
-<p>To reset your password, please visit the following link</p>
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="mt-5">
+                    <div class="p-3 border card-body cardbody-color p-lg-5">
+                        <div class="text-center">
+                            <img src="{{ asset('resources/logo.png') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                                 width="150px" alt="profile">
+                        </div>
+                        <div class="card-body cardbody-color-white border">
+                            <div>
+                                <p>{{ "To reset your password, please visit the following link :" | trans }}</p>
+                            </div>
+                            <div class="alert alert-success">
+                                <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ "Reset Your Password" | trans }}</a>
+                            </div>
+                            <div>
+                                <p>{{ "This link will expire in" | trans }} {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+                            </div>
+                            <div>
+                                <p>{{ "Cheers!" | trans }}</p>
+                            </div>
 
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
-
-<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
-
-<p>Cheers!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

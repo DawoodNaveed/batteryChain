@@ -1,12 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}{{ "Reset your password" | trans }}{% endblock %}
 
 {% block body %}
-    <h1>Reset your password</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="mt-5">
+                <div class="p-3 border card-body cardbody-color p-lg-5">
+                    <div class="text-center">
+                        <img src="{{ asset('resources/logo.png') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                             width="150px" alt="profile">
+                    </div>
+                    <div>
+                        <h3>{{ "Reset your password" | trans }}</h3>
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
+                        {{ form_start(resetForm) }}
+                        {{ form_row(resetForm.plainPassword) }}
+                        <button class="btn btn-primary">{{ "Reset password" | trans }}</button>
+                        {{ form_end(resetForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

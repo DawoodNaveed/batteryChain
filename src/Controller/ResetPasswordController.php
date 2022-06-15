@@ -168,9 +168,7 @@ class ResetPasswordController extends AbstractController
             // ));
             return $this->redirectToRoute('app_check_email');
         }
-        return $this->render('reset_password/email.html.twig', [
-            'resetToken' => $resetToken,
-        ]);
+
         $email = (new TemplatedEmail())
             ->from(new Address('no-reply@battery-chain.info', 'Battery Chain'))
             ->to($user->getEmail())
@@ -180,7 +178,7 @@ class ResetPasswordController extends AbstractController
                 'resetToken' => $resetToken,
             ])
         ;
-//le4XyMwd3xGStTbwxNidB2kNkczkyFOvcttjxx3l
+
 //        $mailer->send($email);
 
         // Store the token object in session for retrieval in check-email route.
