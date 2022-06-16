@@ -52,7 +52,10 @@ class BatteryAdmin extends AbstractAdmin
 
         $form
             ->add('serialNumber', TextType::class)
-            ->add('batteryType', TextType::class)
+            ->add('batteryType', ModelType::class, [
+                'property' => 'type',
+                'btn_add' => false
+            ])
             ->add('nominalVoltage', NumberType::class)
             ->add('nominalCapacity', NumberType::class)
             ->add('nominalEnergy', NumberType::class)
@@ -71,7 +74,9 @@ class BatteryAdmin extends AbstractAdmin
         $list
             ->addIdentifier('manufacturer.name')
             ->addIdentifier('serialNumber')
-            ->addIdentifier('batteryType')
+            ->addIdentifier('batteryType.type', TextType::class, [
+                'label' => 'Battery Type'
+            ])
             ->addIdentifier('nominalVoltage')
             ->addIdentifier('nominalCapacity')
             ->addIdentifier('nominalEnergy')
@@ -115,12 +120,15 @@ class BatteryAdmin extends AbstractAdmin
         $show
             ->add('manufacturer.name')
             ->add('serialNumber')
-            ->add('batteryType')
+            ->add('batteryType.type', TextType::class, [
+                'label' => 'Battery Type'
+            ])
             ->add('nominalVoltage')
             ->add('nominalCapacity')
             ->add('nominalEnergy')
             ->add('height')
-            ->add('width');
+            ->add('width')
+            ->add('status');
     }
 
     /**

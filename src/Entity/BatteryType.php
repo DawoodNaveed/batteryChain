@@ -103,4 +103,12 @@ class BatteryType extends AbstractEntity
     {
         $this->status = $status;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->type;
+    }
 }

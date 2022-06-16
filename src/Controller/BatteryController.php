@@ -103,7 +103,8 @@ class BatteryController extends CRUDController
                     } else {
                         $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
 
-                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
+                        if (isset($createBattery['total']) && isset($createBattery['failure'])
+                        && $createBattery['failure'] !== 0) {
                             $this->addFlash(
                                 'warning',
                                 $this->translator->trans(
