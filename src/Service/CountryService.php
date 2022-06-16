@@ -4,9 +4,7 @@
 namespace App\Service;
 
 use App\Entity\Country;
-use App\Entity\Distributor;
 use App\Entity\Manufacturer;
-use App\Entity\User;
 use App\Repository\CountryRepository;
 
 /**

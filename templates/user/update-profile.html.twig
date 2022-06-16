@@ -1,0 +1,42 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .mt-1 {
+            margin-top: 1rem;
+        }
+        .m-r-1 {
+            margin-right: 1rem;
+        }
+        .w-100 {
+            width: 100px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block sonata_admin_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="margin-bottom">
+                <h2>{{ "Update Profile" | trans }}</h2>
+            </div>
+            <div class="col-md-12">
+                {{ form_start(updateProfileForm) }}
+                {{ form_row(updateProfileForm.firstname) }}
+                {{ form_row(updateProfileForm.lastname) }}
+                {{ form_row(updateProfileForm.address) }}
+                {{ form_row(updateProfileForm.contact) }}
+                {{ form_row(updateProfileForm.city) }}
+                {{ form_row(updateProfileForm.country) }}
+
+                <div class="mt-1">
+                    <button type="submit" class="btn btn-primary m-r-1 px-5 mb-2 w-100">{{ "Update" }}</button>
+                    <a class="btn btn-default" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+                </div>
+                {{ form_end(updateProfileForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
