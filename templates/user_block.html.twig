@@ -2,6 +2,15 @@
     <div class="container-fluid">
         <div class="row">
             <ul class="dropdown-menu col-md-12">
+                {% if is_granted('ROLE_MANUFACTURER') and not is_granted('ROLE_SUPER_ADMIN') %}
+                    <li role="presentation" class="divider"></li>
+                    <li role="presentation" class="dropdown-header">
+                        <a href="{{ url('update_profile') }}">
+                            <i class="fa fa-user-circle-o"></i>
+                            {{ 'Update Profile'|trans({}, 'SonataAdminBundle') }}
+                        </a>
+                    </li>
+                {% endif %}
                 <li role="presentation" class="divider"></li>
                 <li role="presentation" class="dropdown-header">
                     <a href="{{ url('app_logout') }}">

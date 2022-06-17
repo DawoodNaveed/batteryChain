@@ -31,8 +31,9 @@ class Battery extends AbstractEntity
     private $serialNumber;
 
     /**
-     * @var string|null
-     * @ORM\Column(name="battery_type", type="string", nullable="true", length=50)
+     * @var BatteryType|null
+     * @ManyToOne(targetEntity="App\Entity\BatteryType", inversedBy="batteries")
+     * @JoinColumn(name="battery_type_id", referencedColumnName="id")
      */
     private $batteryType;
 
@@ -147,17 +148,17 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return BatteryType|null
      */
-    public function getBatteryType(): ?string
+    public function getBatteryType(): ?BatteryType
     {
         return $this->batteryType;
     }
 
     /**
-     * @param string|null $batteryType
+     * @param BatteryType|null $batteryType
      */
-    public function setBatteryType(?string $batteryType): void
+    public function setBatteryType(?BatteryType $batteryType): void
     {
         $this->batteryType = $batteryType;
     }
