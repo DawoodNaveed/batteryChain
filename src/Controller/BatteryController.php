@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\BulkImportBatteryFormType;
 use App\Service\BatteryService;
+use App\Service\BatteryTypeService;
 use App\Service\ManufacturerService;
 use App\Service\UserService;
 use Doctrine\DBAL\DBALException;
@@ -27,21 +28,33 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property Security security
  * @property UserService userService
  * @property ManufacturerService manufacturerService
+ * @property BatteryTypeService batteryTypeService
  */
 class BatteryController extends CRUDController
 {
+    /**
+     * BatteryController constructor.
+     * @param BatteryService $batteryService
+     * @param TranslatorInterface $translator
+     * @param Security $security
+     * @param UserService $userService
+     * @param ManufacturerService $manufacturerService
+     * @param BatteryTypeService $batteryTypeService
+     */
     public function __construct(
         BatteryService $batteryService,
         TranslatorInterface $translator,
         Security $security,
         UserService $userService,
-        ManufacturerService $manufacturerService
+        ManufacturerService $manufacturerService,
+        BatteryTypeService $batteryTypeService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
         $this->security = $security;
         $this->userService = $userService;
         $this->manufacturerService = $manufacturerService;
+        $this->batteryTypeService = $batteryTypeService;
     }
 
     /**
@@ -90,7 +103,8 @@ class BatteryController extends CRUDController
                     } else {
                         $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
 
-                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
+                        if (isset($createBattery['total']) && isset($createBattery['failure'])
+                        && $createBattery['failure'] !== 0) {
                             $this->addFlash(
                                 'warning',
                                 $this->translator->trans(
@@ -115,6 +129,7 @@ class BatteryController extends CRUDController
             'bulk_import_batteries.html.twig',
             array(
                 'form' => $form->createView(),
+                'battery_types' => $this->batteryTypeService->getAvailableBatteryTypes()
             )
         );
     }

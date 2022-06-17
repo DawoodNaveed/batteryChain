@@ -76,10 +76,14 @@ services:
     admin.country:
         class: App\Admin\CountryAdmin
         arguments: [~, App\Entity\Country, ~]
-        calls:
-#            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Country, group: Country }
+
+    admin.battery.type:
+        class: App\Admin\BatteryTypeAdmin
+        arguments: [~, App\Entity\BatteryType, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: BatteryType, group: BatteryType }
 
     admin.shipment:
         class: App\Admin\ShipmentAdmin
