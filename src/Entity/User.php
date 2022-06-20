@@ -81,18 +81,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected $manufacturer;
 
     /**
-     * @var Distributor|null
-     * @ORM\OneToOne(targetEntity="App\Entity\Distributor", mappedBy="user")
-     */
-    protected $distributor;
-
-    /**
-     * @var Recycler|null
-     * @ORM\OneToOne(targetEntity="App\Entity\Recycler", mappedBy="user")
-     */
-    protected $recycler;
-
-    /**
      * One User has many batteries.
      * @OneToMany(targetEntity="App\Entity\Battery", mappedBy="currentPossessor")
      */
@@ -489,22 +477,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getManufacturer(): ?Manufacturer
     {
         return $this->manufacturer;
-    }
-
-    /**
-     * @return Distributor|null
-     */
-    public function getDistributor(): ?Distributor
-    {
-        return $this->distributor;
-    }
-
-    /**
-     * @return Recycler|null
-     */
-    public function getRecycler(): ?Recycler
-    {
-        return $this->recycler;
     }
 
     /**

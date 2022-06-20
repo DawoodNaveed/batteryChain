@@ -39,15 +39,6 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, label: Manufacturer, group: Manufacturer }
 
-    admin.distributor:
-        class: App\Admin\DistributorAdmin
-        arguments: [~, App\Entity\Distributor, ~]
-        calls:
-            - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
-            - [ setTokenStorage, [ '@security.token_storage' ] ]
-        tags:
-            - { name: sonata.admin, manager_type: orm, label: Distributor, group: Distributor }
-
     admin.recycler:
         class: App\Admin\RecyclerAdmin
         arguments: [~, App\Entity\Recycler, App\Controller\RecyclerController]
@@ -91,6 +82,6 @@ services:
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: Shipment, group: Shipment }
+            - { name: sonata.admin, manager_type: orm, label: Delivery, group: Delivery }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

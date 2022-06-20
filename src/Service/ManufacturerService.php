@@ -25,12 +25,7 @@ class ManufacturerService
      */
     public function getManufactures(User $user): ?array
     {
-        if ($user->getDistributor() instanceof Distributor) {
-            $manufacturers = $user->getDistributor()->getManufacturers();
-        } else {
-            // SUPER ADMIN
-            $manufacturers = $this->manufacturerRepository->findAll();
-        }
+        $manufacturers = $this->manufacturerRepository->findAll();
 
         return $this->toChoiceArray($manufacturers);
     }
