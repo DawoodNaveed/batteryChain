@@ -39,17 +39,13 @@ security:
             # switch_user: true
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_MANUFACTURER, ROLE_DISTRIBUTOR, ROLE_RECYCLER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_MANUFACTURER]
         ROLE_MANUFACTURER: [ROLE_USER, ROLE_MANUFACTURER]
-        ROLE_DISTRIBUTOR: [ROLE_USER, ROLE_DISTRIBUTOR]
-        ROLE_RECYCLER: [ROLE_USER, ROLE_RECYCLER]
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-         - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANUFACTURER, ROLE_DISTRIBUTOR, ROLE_RECYCLER] }
-         - { path: ^/admin/manufacturer, roles: ROLE_MANUFACTURER }
-         - { path: ^/admin/distributor, roles: ROLE_DISTRIBUTOR }
+         - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANUFACTURER] }
          - { path: ^/profile, roles: ROLE_USER }
          - { path: ^/login, roles: PUBLIC_ACCESS }
 #         - { path: ^/register, roles: ROLE_SUPER_ADMIN }

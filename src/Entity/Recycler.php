@@ -8,12 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class Recycler
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table()
+ * @UniqueEntity(fields={"email"}, message="There is already a recycler with this email")
  */
 class Recycler extends AbstractEntity
 {
@@ -22,6 +24,11 @@ class Recycler extends AbstractEntity
      * @ORM\Column(name="name", type="string", length=255, nullable="true")
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="string", length=180, unique=true)
+     */
+    private $email;
 
     /**
      * @var string|null
@@ -54,13 +61,6 @@ class Recycler extends AbstractEntity
      * @ORM\Column(name="status", type="boolean", options={"default"=true})
      */
     protected $status = true;
-
-    /**
-     * @var User|null
-     * @ORM\OneToOne(targetEntity="User", inversedBy="recycler", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     */
-    private $user;
 
     /**
      * Many Recyclers have Many Manufacturers.
@@ -137,22 +137,6 @@ class Recycler extends AbstractEntity
     public function setCity(?string $city): void
     {
         $this->city = $city;
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param User|null $user
-     */
-    public function setUser(?User $user): void
-    {
-        $this->user = $user;
     }
 
     /**
@@ -239,5 +223,24 @@ class Recycler extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     * @return $this
+     */
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 }

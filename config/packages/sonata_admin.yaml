@@ -17,10 +17,6 @@ sonata_admin:
         icon: '<i class="fa fa-industry"></i>'
         on-top: true
         roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
-      Distributor:
-        icon: '<i class="fa fa-users"></i>'
-        on-top: true
-        roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER']
       Recycler:
         icon: '<i class="fa fa-recycle"></i>'
         on-top: true
@@ -28,12 +24,12 @@ sonata_admin:
       Battery:
         icon: '<i class="fa fa-battery"></i>'
         on-top: true
-        roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER', 'ROLE_DISTRIBUTOR' ]
+        roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER' ]
       Return:
         icon: '<i class="fa fa-file"></i>'
         on-top: true
         roles: [ 'ROLE_RECYCLER' ]
-      Shipment:
+      Delivery:
         icon: '<i class="fa fa-file"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]

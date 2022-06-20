@@ -61,13 +61,6 @@ class Manufacturer extends AbstractEntity
     private $user;
 
     /**
-     * Many Manufacturers have Many Distributors.
-     * @ManyToMany(targetEntity="App\Entity\Distributor", inversedBy="manufacturers")
-     * @JoinTable(name="manufacturers_distributors")
-     */
-    private $distributors;
-
-    /**
      * Many Manufacturers have Many Recyclers.
      * @ManyToMany(targetEntity="App\Entity\Recycler", inversedBy="manufacturers")
      * @JoinTable(name="manufacturers_recyclers")
@@ -84,7 +77,6 @@ class Manufacturer extends AbstractEntity
      * Manufacturer constructor.
      */
     public function __construct() {
-        $this->distributors = new ArrayCollection();
         $this->recyclers = new ArrayCollection();
         $this->batteries = new ArrayCollection();
     }
@@ -199,38 +191,6 @@ class Manufacturer extends AbstractEntity
     public function setStatus(bool $status): void
     {
         $this->status = $status;
-    }
-
-    /**
-     * @return Collection|Distributor[]
-     */
-    public function getDistributors(): Collection
-    {
-        return $this->distributors;
-    }
-
-    /**
-     * @param Distributor $distributor
-     * @return $this
-     */
-    public function addDistributor(Distributor $distributor): self
-    {
-        if (!$this->distributors->contains($distributor)) {
-            $this->distributors[] = $distributor;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Distributor $distributor
-     * @return $this
-     */
-    public function removeDistributor(Distributor $distributor): self
-    {
-        $this->distributors->removeElement($distributor);
-
-        return $this;
     }
 
     /**
