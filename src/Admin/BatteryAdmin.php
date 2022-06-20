@@ -30,18 +30,6 @@ class BatteryAdmin extends AbstractAdmin
 
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_DISTRIBUTOR, $user->getRoles(), true)) {
-            $manufacturers = $user->getDistributor()->getManufacturers();
-
-            $form
-                ->add('manufacturer', ModelType::class, [
-                    'property' => 'name',
-                    'btn_add' => false,
-                    'choices' => $manufacturers->toArray()
-            ]);
-        }
-
         if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
             $form
                 ->add('manufacturer', ModelType::class, [
@@ -84,6 +72,7 @@ class BatteryAdmin extends AbstractAdmin
             ->addIdentifier('height')
             ->addIdentifier('mass');
         $user = $this->tokenStorage->getToken()->getUser();
+
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
             $list
@@ -91,15 +80,6 @@ class BatteryAdmin extends AbstractAdmin
                     'label' => 'Current Possessor'
                 ]);
         }
-
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_DISTRIBUTOR, $user->getRoles(), true)) {
-            $list
-                ->addIdentifier('currentPossessor.distributor.name', TextType::class, [
-                    'label' => 'Current Possessor'
-                ]);
-        }
-
     }
 
     /**
@@ -143,14 +123,6 @@ class BatteryAdmin extends AbstractAdmin
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
             $manufacturer = $user->getManufacturer();
-            $rootAlias = current($query->getRootAliases());
-            $query->andWhere(
-                $query->expr()->eq($rootAlias . '.currentPossessor', $user->getId())
-            );
-        }
-
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_DISTRIBUTOR, $user->getRoles(), true)) {
             $rootAlias = current($query->getRootAliases());
             $query->andWhere(
                 $query->expr()->eq($rootAlias . '.currentPossessor', $user->getId())

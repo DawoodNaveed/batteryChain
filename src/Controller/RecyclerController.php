@@ -42,6 +42,7 @@ class RecyclerController extends CRUDController
      * @param Security $security
      * @param EntityManagerInterface $entityManager
      * @param ManufacturerService $manufacturerService
+     * @param UserService $userService
      */
     public function __construct(
         CountryService $countryService,
@@ -70,8 +71,7 @@ class RecyclerController extends CRUDController
         $manufacturers = null;
 
         // In-Case Super Admin
-        if (in_array(RoleEnum::ROLE_DISTRIBUTOR, $this->getUser()->getRoles(), true)
-            || in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
             $manufacturers = $this->manufacturerService->getManufactures($user);
         }
 
