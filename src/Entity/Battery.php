@@ -8,12 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class Battery
  * @package App\Entity
  * @ORM\Entity(repositoryClass="App\Repository\BatteryRepository")
  * @ORM\Table(name="battery")
+ * @UniqueEntity(fields={"serialNumber"}, message="There is already a Battery with this Serial Number")
  */
 class Battery extends AbstractEntity
 {
