@@ -41,9 +41,6 @@ class ShipmentAdmin extends AbstractAdmin
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
             $manufacturer = $user->getManufacturer();
-            $recyclers = $manufacturer->getRecyclers();
-            $distributors = $manufacturer->getDistributors();
-
 
             $form
                 ->add('battery', ModelType::class, [
@@ -53,35 +50,6 @@ class ShipmentAdmin extends AbstractAdmin
                     'required' => true,
                     'choices' => $manufacturer->getBatteries()->toArray(),
                     'mapped' => false,
-                ]);
-            $form
-                ->add('linkType', ChoiceFieldMaskType::class, [
-                    'choices' => [
-                        'Recyclers' => 'recyclers',
-                        'Distributors' => 'distributors',
-                    ],
-                    'mapped' => false,
-                    'map' => [
-                        'recyclers' => ['recyclers'],
-                        'distributors' => ['distributors'],
-                    ],
-                    'placeholder' => 'Choose an option',
-                    'required' => true,
-                    'label' => "Whom to Ship"
-                ])
-                ->add('recyclers', ModelType::class, [
-                    'class' => Recycler::class,
-                    'property' => 'name',
-                    'btn_add' => false,
-                    'mapped' => false,
-                    'choices' => $recyclers->toArray()
-                ])
-                ->add('distributors', ModelType::class, [
-                    'class' => Distributor::class,
-                    'property' => 'name',
-                    'btn_add' => false,
-                    'mapped' => false,
-                    'choices' => $distributors->toArray()
                 ]);
             $form
                 ->add('status', ChoiceType::class, [
@@ -201,7 +169,7 @@ class ShipmentAdmin extends AbstractAdmin
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
             $actions['shipment'] = [
-                'label' => 'Add Shipment',
+                'label' => 'Add Delivery',
                 'translation_domain' => 'SonataAdminBundle',
                 'url' => $this->generateUrl('shipment'),
                 'icon' => 'fa fa-plus',

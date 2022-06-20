@@ -1,11 +1,8 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Battery;
-use App\Entity\Distributor;
-use App\Entity\Recycler;
 use App\Entity\Shipment;
 use App\Entity\User;
 use App\Form\ShipmentFormType;
@@ -56,77 +53,58 @@ class ShipmentController extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $manufacturer = $user->getManufacturer();
         $batteries = $this->batteryService->getCurrentPossessedBatteries($user);
         $form = $this->createForm(ShipmentFormType::class, null, [
-            'recyclers' => $manufacturer->getRecyclers()->toArray(),
-            'distributors' => $manufacturer->getDistributors()->toArray(),
             'batteries' => $batteries,
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted())
         {
+            if ($form->get('cancel')->isClicked()) {
+                return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
+            }
+
             $formData = $form->getData();
-            $shipToType = $formData['linkType'];
-            $shipTo = null;
-            $batteries = $formData['battery'];
+            $serialNumber = $formData['battery'] ?? null;
 
-            if ($shipToType == 'distributors') {
-                /** @var Distributor $shipTo */
-                $shipTo = $formData['distributors'];
-                if (empty($shipTo)) {
-                    $this->addFlash('sonata_flash_error', 'Kindly Select Distributor!');
-                    return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
-                }
+            if (empty($serialNumber)) {
+                $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
+                return new RedirectResponse($this->admin->generateUrl('list'));
             }
 
-            if ($shipToType == 'recyclers') {
-                /** @var Recycler $shipTo */
-                $shipTo = $formData['recyclers'];
+            /** @var Battery|null $battery */
+            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber);
 
-                if (empty($shipTo)) {
-                    $this->addFlash('sonata_flash_error', 'Kindly Select Recycler!');
-                    return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
-                }
+            if (empty($battery)) {
+                $this->addFlash('sonata_flash_error', 'Battery does not exist!');
+                return new RedirectResponse($this->admin->generateUrl('list'));
             }
 
-            $totalBatteries = count($batteries);
-            $shippedBatteriesCount = 0;
-            /**
-             * @var int $key
-             * @var Battery $battery
-             */
-            foreach ($batteries as $key => $battery) {
-                if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                    CustomHelper::BATTERY_STATUSES[$formData['status']]) {
-                    continue;
-                }
+            if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
+                $this->addFlash('sonata_flash_error', 'Battery is already delivered!');
 
-                $shipment = new Shipment();
-                $shipment->setUpdated(new \DateTime('now'));
-                $shipment->setCreated(new \DateTime('now'));
-                $shipment->setAddress($formData['address']);
-                $shipment->setCity($formData['city']);
-                $shipment->setCountry($formData['country']);
-                $shipment->setShipmentDate(new \DateTime('now'));
-                $shipment->setShipmentFrom($user);
-                $shipment->setShipmentTo($shipTo->getUser());
-                $shipment->setBattery($battery);
-                $battery->setStatus($formData['status']);
-                $battery->setCurrentPossessor($shipTo->getUser());
-
-                $this->entityManager->persist($shipment);
-                $shippedBatteriesCount++;
+                return new RedirectResponse($this->admin->generateUrl('list'));
             }
 
+            $shipment = new Shipment();
+            $shipment->setUpdated(new \DateTime('now'));
+            $shipment->setCreated(new \DateTime('now'));
+            $shipment->setAddress($formData['information']['address']);
+            $shipment->setCity($formData['information']['city']);
+            $shipment->setCountry($formData['information']['country']);
+            $shipment->setShipmentDate(new \DateTime('now'));
+            $shipment->setShipmentFrom($user);
+            $shipment->setShipmentTo($user);
+            $shipment->setBattery($battery);
+            $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+            $battery->setCurrentPossessor($user);
+
+            $this->entityManager->persist($shipment);
             $this->entityManager->flush();
 
-            if ($totalBatteries === $shippedBatteriesCount) {
-                $this->addFlash('sonata_flash_success', 'Successfully Added All Shipments!');
-            }
-
-            $this->addFlash('sonata_flash_info', 'Only ' . $shippedBatteriesCount . ' Batteries are updated, out of Total: ' . $totalBatteries . ' Batteries');
+            $this->addFlash('sonata_flash_success', 'Successfully Added All Shipments!');
 
             return new RedirectResponse($this->admin->generateUrl('list'));
         }

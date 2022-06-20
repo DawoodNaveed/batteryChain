@@ -1,21 +1,31 @@
 {% extends '@SonataAdmin/standard_layout.html.twig' %}
 
 {% block sonata_admin_content %}
-    {{ form(form) }}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_start(form) }}
+                {{ form_row(form.battery) }}
+                <hr class="extra-info-separator">
+                {{ form_row(form.information) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function () {
-            $('#shipment_form_recyclers').parent().hide();
-            $('#shipment_form_distributors').parent().hide();
-            const $link = $('#shipment_form_linkType');
-            $link.change(function () {
-                if ($link.val() === 'recyclers') {
-                    $('#shipment_form_recyclers').parent().show();
-                    $('#shipment_form_distributors').parent().hide();
-                } else {
-                    $('#shipment_form_recyclers').parent().hide();
-                    $('#shipment_form_distributors').parent().show();
-                }
-            });
+            // $('#shipment_form_recyclers').parent().hide();
+            // $('#shipment_form_distributors').parent().hide();
+            // const $link = $('#shipment_form_linkType');
+            // $link.change(function () {
+            //     if ($link.val() === 'recyclers') {
+            //         $('#shipment_form_recyclers').parent().show();
+            //         $('#shipment_form_distributors').parent().hide();
+            //     } else {
+            //         $('#shipment_form_recyclers').parent().hide();
+            //         $('#shipment_form_distributors').parent().show();
+            //     }
+            // });
         });
     </script>
 {% endblock %}

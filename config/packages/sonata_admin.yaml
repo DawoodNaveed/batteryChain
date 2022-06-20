@@ -29,7 +29,7 @@ sonata_admin:
         icon: '<i class="fa fa-file"></i>'
         on-top: true
         roles: [ 'ROLE_RECYCLER' ]
-      Shipment:
+      Delivery:
         icon: '<i class="fa fa-file"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]

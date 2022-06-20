@@ -176,4 +176,15 @@ class BatteryService
             'serialNumber' => $serialNumber
         ]);
     }
+
+    /**
+     * @param $serialNumber
+     * @return Battery|null
+     */
+    public function fetchBatteryBySerialNumber($serialNumber): ?Battery
+    {
+        return $this->batteryRepository->findOneBy([
+            'serialNumber' => $serialNumber
+        ]);
+    }
 }
