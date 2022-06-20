@@ -27,9 +27,9 @@ class BatteryReturn extends AbstractEntity
     private $battery;
 
     /**
-     * @var User|null
-     * Many Returns have one User. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="returnsTo")
+     * @var Recycler|null
+     * Many Returns have one Recycler. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Recycler", inversedBy="returnsTo")
      * @JoinColumn(name="return_to", referencedColumnName="id")
      */
     private $returnTo;
@@ -97,17 +97,17 @@ class BatteryReturn extends AbstractEntity
     }
 
     /**
-     * @return User|null
+     * @return Recycler|null
      */
-    public function getReturnTo(): ?User
+    public function getReturnTo(): ?Recycler
     {
         return $this->returnTo;
     }
 
     /**
-     * @param User|null $returnTo
+     * @param Recycler|null $returnTo
      */
-    public function setReturnTo(?User $returnTo): void
+    public function setReturnTo(?Recycler $returnTo): void
     {
         $this->returnTo = $returnTo;
     }

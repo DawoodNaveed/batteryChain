@@ -63,6 +63,13 @@ class ShipmentController extends CRUDController
         /** @var User $user */
         $user = $this->security->getUser();
         $batteries = $this->batteryService->getCurrentPossessedBatteries($user);
+        $manufacturer = null;
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $manufacturer = $user->getManufacturer();
+        }
+
         $form = $this->createForm(ShipmentFormType::class, null, [
             'batteries' => $batteries,
         ]);
@@ -83,7 +90,7 @@ class ShipmentController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $manufacturer);
 
             if (empty($battery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
@@ -95,6 +102,11 @@ class ShipmentController extends CRUDController
                 $this->addFlash('sonata_flash_error', 'Battery is already delivered!');
 
                 return new RedirectResponse($this->admin->generateUrl('list'));
+            }
+
+            /** If Admin / Super Admin - we will use battery's manufacturer's User */
+            if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+                $user = $battery->getManufacturer()->getUser();
             }
 
             $shipment = new Shipment();

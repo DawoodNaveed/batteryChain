@@ -5,9 +5,10 @@ namespace App\Controller;
 use App\Entity\Battery;
 use App\Entity\BatteryReturn;
 use App\Entity\Manufacturer;
+use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\RoleEnum;
-use App\Form\BulkDeliveryFormType;
+use App\Form\BulkReturnFormType;
 use App\Form\ReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
@@ -16,6 +17,7 @@ use App\Service\RecyclerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,10 +69,12 @@ class ReturnController extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
+        $manufacturer = null;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
+            $manufacturer = $user->getManufacturer();
         } else {
             $recyclers = $this->recyclerService->getAllRecyclers();
             $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
@@ -89,6 +93,7 @@ class ReturnController extends CRUDController
 
             $formData = $form->getData();
             $serialNumber = $formData['battery'] ?? null;
+            /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
 
             if (empty($serialNumber)) {
@@ -97,7 +102,7 @@ class ReturnController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $manufacturer);
 
             if (empty($battery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
@@ -111,6 +116,11 @@ class ReturnController extends CRUDController
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
 
+            /** If Admin / Super Admin - we will use battery's manufacturer's User */
+            if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+                $user = $battery->getManufacturer()->getUser();
+            }
+
             $return = new BatteryReturn();
             $return->setUpdated(new \DateTime('now'));
             $return->setCreated(new \DateTime('now'));
@@ -119,7 +129,7 @@ class ReturnController extends CRUDController
             $return->setCountry($formData['information']['country']);
             $return->setReturnDate(new \DateTime('now'));
             $return->setReturnFrom($user);
-            $return->setReturnTo($user);
+            $return->setReturnTo($recycler);
             $return->setBattery($battery);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setCurrentPossessor($user);
@@ -155,8 +165,17 @@ class ReturnController extends CRUDController
             $manufacturers = $this->manufacturerService->getManufactures($user);
         }
 
-        $form = $this->createForm(BulkDeliveryFormType::class, null, [
-            'manufacturer' => $manufacturers
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
+        } else {
+            $recyclers = $this->recyclerService->getAllRecyclers();
+            $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
+        }
+
+        $form = $this->createForm(BulkReturnFormType::class, null, [
+            'manufacturer' => $manufacturers,
+            'recyclers' => $recyclers
         ]);
 
         $form->handleRequest($request);
@@ -168,21 +187,23 @@ class ReturnController extends CRUDController
             $formData = $form->getData();
             /** @var Manufacturer $manufacturer */
             $manufacturer = $formData['manufacturer'] ?? null;
+            /** @var Recycler|null $recycler */
+            $recycler = $formData['recycler'] ?? null;
             $file = $request->files->all();
 
-            if (!empty($file) && isset($file['bulk_delivery_form']['csv'])) {
+            if (!empty($file) && isset($file['bulk_return_form']['csv'])) {
                 /** @var UploadedFile $file */
-                $file = $file['bulk_delivery_form']['csv'];
+                $file = $file['bulk_return_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
                     if (!empty($manufacturer)) {
                         $user = $manufacturer->getUser();
                     }
 
-                    $addDelivery = $this->batteryService->extractCsvAndAddDeliveries($file, $user);
+                    $addReturns = $this->batteryService->extractCsvAndAddReturns($file, $user, $recycler);
 
-                    if (!empty($addDelivery) && !empty($addDelivery['error'])) {
-                        foreach ($addDelivery['error'] as $error) {
+                    if (!empty($addReturns) && !empty($addReturns['error'])) {
+                        foreach ($addReturns['error'] as $error) {
                             $this->addFlash('warning', $this->translator->trans($error['message']));
                         }
                     }
@@ -200,5 +221,21 @@ class ReturnController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getRecyclerByManufacturerAction(Request $request): JsonResponse
+    {
+        $manufacturer = $request->request->get('bulk_return_form');
+        /** @var Manufacturer|null $manufacturer */
+        $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy(['id' => $manufacturer['manufacturer']]);
+        $recyclers = $manufacturer->getRecyclers();
+
+        return new JsonResponse([
+            'recyclers' => $this->recyclerService->toChoiceArray($recyclers)
+        ]);
     }
 }
