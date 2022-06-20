@@ -3,20 +3,14 @@
 
 namespace App\Admin;
 
-use App\Entity\Distributor;
-use App\Entity\Recycler;
 use App\Entity\Shipment;
 use App\Entity\User;
 use App\Enum\RoleEnum;
-use Doctrine\ORM\Query\Expr\Join;
-use Knp\Menu\ItemInterface;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
-use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Form\Type\ChoiceFieldMaskType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
@@ -154,6 +148,7 @@ class ShipmentAdmin extends AbstractAdmin
     {
         $collection->remove('create');
         $collection->add('shipment');
+        $collection->add('bulkDelivery');
         $collection->remove('delete');
         $collection->remove('edit');
     }
@@ -173,6 +168,12 @@ class ShipmentAdmin extends AbstractAdmin
                 'translation_domain' => 'SonataAdminBundle',
                 'url' => $this->generateUrl('shipment'),
                 'icon' => 'fa fa-plus',
+            ];
+            $actions['bulkDelivery'] = [
+                'label' => 'Add Bulk Delivery',
+                'translation_domain' => 'SonataAdminBundle',
+                'url' => $this->generateUrl('bulkDelivery'),
+                'icon' => 'fa fa-file',
             ];
         }
 

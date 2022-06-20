@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
 use Doctrine\DBAL\DBALException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -14,6 +15,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * Class BatteryService
  * @package App\Service
  * @property BatteryRepository batteryRepository
+ * @property ShipmentService shipmentService
+ * @property LoggerInterface logger
  * @property $csvFileUploadSize
  */
 class BatteryService
@@ -21,12 +24,16 @@ class BatteryService
     /**
      * BatteryService constructor.
      * @param BatteryRepository $batteryRepository
+     * @param ShipmentService $shipmentService
+     * @param LoggerInterface $logger
      * @param $csvFileUploadSize
      */
-    public function __construct(BatteryRepository $batteryRepository, $csvFileUploadSize)
+    public function __construct(BatteryRepository $batteryRepository, ShipmentService $shipmentService, LoggerInterface $logger, $csvFileUploadSize)
     {
         $this->batteryRepository = $batteryRepository;
+        $this->shipmentService = $shipmentService;
         $this->csvFileUploadSize = $csvFileUploadSize;
+        $this->logger = $logger;
     }
 
     /**
@@ -186,5 +193,73 @@ class BatteryService
         return $this->batteryRepository->findOneBy([
             'serialNumber' => $serialNumber
         ]);
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param User $user
+     * @return array|null
+     */
+    public function extractCsvAndAddDeliveries(UploadedFile $file, User $user): ?array
+    {
+        try {
+            $error = [];
+            $rowCount = 1;
+
+            if (($handle = fopen($file, "r")) !== false) {
+                $csvHeaders = fgetcsv($handle, 1000, ",");
+
+                if ($csvHeaders !== CustomHelper::DELIVERY_CSV_HEADERS) {
+                    $error['error']['invalid_csv_header'] = ['message' => 'service.error.invalid_csv_headers'];
+                    return $error;
+                }
+
+                $notExistCount = 0;
+                $alreadyDeliveredCount = 0;
+
+                while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    if (count($csvData) !== count(CustomHelper::DELIVERY_CSV_HEADERS)) {
+                        $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
+                        return $error;
+                    }
+
+                    $row = [];
+
+                    for ($headerIndex = 0; $headerIndex < count($csvHeaders); $headerIndex++) {
+                        $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
+                    }
+
+                    $rowCount++;
+                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number']);
+
+                    if (empty($battery)) {
+                        $notExistCount++;
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        continue;
+                    }
+
+                    if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
+                        $alreadyDeliveredCount++;
+                        $error['error']['already_delivered_error'] = ['message' => $alreadyDeliveredCount . ' Battery(s) already delivered!'];
+                        continue;
+                    }
+
+                    $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $battery->setCurrentPossessor($user);
+                    $shipment = $this->shipmentService->createShipment($user, $battery);
+                }
+            }
+
+            fclose($handle);
+
+            return array_merge($error, [
+                'total' => ($rowCount - 1)
+            ]);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Bulk Delivery]' . $exception->getMessage());
+        }
+
+        return [];
     }
 }
