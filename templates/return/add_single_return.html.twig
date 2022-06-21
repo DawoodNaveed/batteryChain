@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+
+{% block sonata_admin_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_start(form) }}
+                {{ form_row(form.battery) }}
+                {{ form_row(form.recycler) }}
+                <hr class="extra-info-separator">
+                {{ form_row(form.information) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

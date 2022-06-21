@@ -3,18 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Battery;
+use App\Entity\BatteryReturn;
 use App\Entity\Manufacturer;
-use App\Entity\Shipment;
+use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\RoleEnum;
-use App\Form\BulkDeliveryFormType;
-use App\Form\ShipmentFormType;
+use App\Form\BulkReturnFormType;
+use App\Form\ReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\ManufacturerService;
+use App\Service\RecyclerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,15 +25,16 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class ShipmentController
+ * Class ReturnController
  * @package App\Controller
  * @property Security security
  * @property EntityManagerInterface entityManager
  * @property ManufacturerService manufacturerService
  * @property BatteryService batteryService
+ * @property RecyclerService recyclerService
  * @property TranslatorInterface translator
  */
-class ShipmentController extends CRUDController
+class ReturnController extends CRUDController
 {
     /**
      * RecyclerController constructor.
@@ -38,6 +42,7 @@ class ShipmentController extends CRUDController
      * @param EntityManagerInterface $entityManager
      * @param ManufacturerService $manufacturerService
      * @param BatteryService $batteryService
+     * @param RecyclerService $recyclerService
      * @param TranslatorInterface $translator
      */
     public function __construct(
@@ -45,12 +50,14 @@ class ShipmentController extends CRUDController
         EntityManagerInterface $entityManager,
         ManufacturerService $manufacturerService,
         BatteryService $batteryService,
+        RecyclerService $recyclerService,
         TranslatorInterface $translator
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->manufacturerService = $manufacturerService;
         $this->batteryService = $batteryService;
+        $this->recyclerService = $recyclerService;
         $this->translator = $translator;
     }
 
@@ -58,20 +65,23 @@ class ShipmentController extends CRUDController
      * @param Request $request
      * @return Response
      */
-    public function shipmentAction(Request $request): Response
+    public function returnAction(Request $request): Response
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $batteries = $this->batteryService->getCurrentPossessedBatteries($user);
         $manufacturer = null;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
             $manufacturer = $user->getManufacturer();
+        } else {
+            $recyclers = $this->recyclerService->getAllRecyclers();
+            $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
         }
 
-        $form = $this->createForm(ShipmentFormType::class, null, [
-            'batteries' => $batteries,
+        $form = $this->createForm(ReturnFormType::class, null, [
+            'recyclers' => $recyclers
         ]);
         $form->handleRequest($request);
 
@@ -83,6 +93,8 @@ class ShipmentController extends CRUDController
 
             $formData = $form->getData();
             $serialNumber = $formData['battery'] ?? null;
+            /** @var Recycler|null $recycler */
+            $recycler = $formData['recycler'] ?? null;
 
             if (empty($serialNumber)) {
                 $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
@@ -98,8 +110,8 @@ class ShipmentController extends CRUDController
             }
 
             if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
-                $this->addFlash('sonata_flash_error', 'Battery is already delivered!');
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
+                $this->addFlash('sonata_flash_error', 'Battery is already returned!');
 
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
@@ -109,29 +121,29 @@ class ShipmentController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
-            $shipment = new Shipment();
-            $shipment->setUpdated(new \DateTime('now'));
-            $shipment->setCreated(new \DateTime('now'));
-            $shipment->setAddress($formData['information']['address']);
-            $shipment->setCity($formData['information']['city']);
-            $shipment->setCountry($formData['information']['country']);
-            $shipment->setShipmentDate(new \DateTime('now'));
-            $shipment->setShipmentFrom($user);
-            $shipment->setShipmentTo($user);
-            $shipment->setBattery($battery);
-            $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+            $return = new BatteryReturn();
+            $return->setUpdated(new \DateTime('now'));
+            $return->setCreated(new \DateTime('now'));
+            $return->setAddress($formData['information']['address']);
+            $return->setCity($formData['information']['city']);
+            $return->setCountry($formData['information']['country']);
+            $return->setReturnDate(new \DateTime('now'));
+            $return->setReturnFrom($user);
+            $return->setReturnTo($recycler);
+            $return->setBattery($battery);
+            $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setCurrentPossessor($user);
 
-            $this->entityManager->persist($shipment);
+            $this->entityManager->persist($return);
             $this->entityManager->flush();
 
-            $this->addFlash('sonata_flash_success', 'Successfully Added All Shipments!');
+            $this->addFlash('sonata_flash_success', 'Return Added Successfully!');
 
             return new RedirectResponse($this->admin->generateUrl('list'));
         }
 
         return $this->render(
-            'shipment_batteries.html.twig',
+            'return/add_single_return.html.twig',
             array(
                 'form' => $form->createView(),
             )
@@ -142,7 +154,7 @@ class ShipmentController extends CRUDController
      * @param Request $request
      * @return Response
      */
-    public function bulkDeliveryAction(Request $request): Response
+    public function bulkReturnAction(Request $request): Response
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -153,8 +165,17 @@ class ShipmentController extends CRUDController
             $manufacturers = $this->manufacturerService->getManufactures($user);
         }
 
-        $form = $this->createForm(BulkDeliveryFormType::class, null, [
-            'manufacturer' => $manufacturers
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
+        } else {
+            $recyclers = $this->recyclerService->getAllRecyclers();
+            $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
+        }
+
+        $form = $this->createForm(BulkReturnFormType::class, null, [
+            'manufacturer' => $manufacturers,
+            'recyclers' => $recyclers
         ]);
 
         $form->handleRequest($request);
@@ -166,21 +187,23 @@ class ShipmentController extends CRUDController
             $formData = $form->getData();
             /** @var Manufacturer $manufacturer */
             $manufacturer = $formData['manufacturer'] ?? null;
+            /** @var Recycler|null $recycler */
+            $recycler = $formData['recycler'] ?? null;
             $file = $request->files->all();
 
-            if (!empty($file) && isset($file['bulk_delivery_form']['csv'])) {
+            if (!empty($file) && isset($file['bulk_return_form']['csv'])) {
                 /** @var UploadedFile $file */
-                $file = $file['bulk_delivery_form']['csv'];
+                $file = $file['bulk_return_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
                     if (!empty($manufacturer)) {
                         $user = $manufacturer->getUser();
                     }
 
-                    $addDelivery = $this->batteryService->extractCsvAndAddDeliveries($file, $user);
+                    $addReturns = $this->batteryService->extractCsvAndAddReturns($file, $user, $recycler);
 
-                    if (!empty($addDelivery) && !empty($addDelivery['error'])) {
-                        foreach ($addDelivery['error'] as $error) {
+                    if (!empty($addReturns) && !empty($addReturns['error'])) {
+                        foreach ($addReturns['error'] as $error) {
                             $this->addFlash('warning', $this->translator->trans($error['message']));
                         }
                     }
@@ -198,5 +221,21 @@ class ShipmentController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getRecyclerByManufacturerAction(Request $request): JsonResponse
+    {
+        $manufacturer = $request->request->get('bulk_return_form');
+        /** @var Manufacturer|null $manufacturer */
+        $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy(['id' => $manufacturer['manufacturer']]);
+        $recyclers = $manufacturer->getRecyclers();
+
+        return new JsonResponse([
+            'recyclers' => $this->recyclerService->toChoiceArray($recyclers)
+        ]);
     }
 }
