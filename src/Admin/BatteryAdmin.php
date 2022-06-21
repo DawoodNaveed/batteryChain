@@ -167,6 +167,7 @@ class BatteryAdmin extends AbstractAdmin
     {
         $collection->add('import');
         $collection->add('detail');
+        $collection->add('download');
     }
 
     /**

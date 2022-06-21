@@ -14,6 +14,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
+        "dompdf/dompdf": "^1.2",
         "google/recaptcha": "~1.1",
         "sonata-project/admin-bundle": "^4.12",
         "sonata-project/doctrine-orm-admin-bundle": "^4.3",
