@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -16,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Repository\BatteryRepository")
  * @ORM\Table(name="battery")
  * @UniqueEntity(fields={"serialNumber"}, message="There is already a Battery with this Serial Number")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Battery extends AbstractEntity
 {
@@ -105,6 +107,12 @@ class Battery extends AbstractEntity
      * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="battery")
      */
     private $returns;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * Battery constructor.
@@ -379,5 +387,21 @@ class Battery extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->serialNumber;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

@@ -1,3 +1,8 @@
+stof_doctrine_extensions:
+    orm:
+        default:
+            softdeleteable: true
+
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
@@ -15,6 +20,10 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
 
 when@test:
     doctrine:

@@ -6,12 +6,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class BatteryType
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table(name="battery_type")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class BatteryType extends AbstractEntity
 {
@@ -32,6 +34,12 @@ class BatteryType extends AbstractEntity
      * @ORM\Column(name="status", type="boolean", options={"default"=true})
      */
     private $status = true;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     public function __construct()
     {
@@ -110,5 +118,21 @@ class BatteryType extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->type;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }
