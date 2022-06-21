@@ -58,7 +58,7 @@ services:
 
     admin.return:
         class: App\Admin\BatteryReturnAdmin
-        arguments: [~, App\Entity\BatteryReturn, ~]
+        arguments: [~, App\Entity\BatteryReturn, App\Controller\ReturnController]
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:

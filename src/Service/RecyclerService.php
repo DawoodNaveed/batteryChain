@@ -51,12 +51,16 @@ class RecyclerService
      * @param Recycler[] $recyclers
      * @return array|null
      */
-    public function toChoiceArray($recyclers): ?array
+    public function toChoiceArray($recyclers, $fetchFullObject = false): ?array
     {
         $result = null;
 
         foreach ($recyclers as $recycler) {
-            $result[$recycler->getName()] = $recycler->getId();
+            if ($fetchFullObject) {
+                $result[$recycler->getName()] = $recycler;
+            } else {
+                $result[$recycler->getName()] = $recycler->getId();
+            }
         }
 
         return $result;
@@ -71,5 +75,13 @@ class RecyclerService
         return $this->recyclerRepository->findBy([
             'id' => $ids
         ]);
+    }
+
+    /**
+     * @return Recycler[]|null
+     */
+    public function getAllRecyclers(): ?array
+    {
+        return $this->recyclerRepository->findAll();
     }
 }

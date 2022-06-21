@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Battery;
+use App\Entity\Manufacturer;
+use App\Entity\Recycler;
 use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @package App\Service
  * @property BatteryRepository batteryRepository
  * @property ShipmentService shipmentService
+ * @property BatteryReturnService returnService
  * @property LoggerInterface logger
  * @property $csvFileUploadSize
  */
@@ -25,15 +28,22 @@ class BatteryService
      * BatteryService constructor.
      * @param BatteryRepository $batteryRepository
      * @param ShipmentService $shipmentService
+     * @param BatteryReturnService $returnService
      * @param LoggerInterface $logger
      * @param $csvFileUploadSize
      */
-    public function __construct(BatteryRepository $batteryRepository, ShipmentService $shipmentService, LoggerInterface $logger, $csvFileUploadSize)
-    {
+    public function __construct(
+        BatteryRepository $batteryRepository,
+        ShipmentService $shipmentService,
+        BatteryReturnService $returnService,
+        LoggerInterface $logger,
+        $csvFileUploadSize
+    ) {
         $this->batteryRepository = $batteryRepository;
         $this->shipmentService = $shipmentService;
-        $this->csvFileUploadSize = $csvFileUploadSize;
+        $this->returnService = $returnService;
         $this->logger = $logger;
+        $this->csvFileUploadSize = $csvFileUploadSize;
     }
 
     /**
@@ -186,13 +196,20 @@ class BatteryService
 
     /**
      * @param $serialNumber
+     * @param Manufacturer|null $manufacturer
      * @return Battery|null
      */
-    public function fetchBatteryBySerialNumber($serialNumber): ?Battery
+    public function fetchBatteryBySerialNumber($serialNumber, ?Manufacturer $manufacturer = null): ?Battery
     {
-        return $this->batteryRepository->findOneBy([
+        $params = [
             'serialNumber' => $serialNumber
-        ]);
+        ];
+
+        if ($manufacturer) {
+            $params['manufacturer'] = $manufacturer;
+        }
+
+        return $this->batteryRepository->findOneBy($params);
     }
 
     /**
@@ -230,7 +247,8 @@ class BatteryService
                     }
 
                     $rowCount++;
-                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number']);
+                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number'],
+                        $user->getManufacturer() ?? null);
 
                     if (empty($battery)) {
                         $notExistCount++;
@@ -258,6 +276,76 @@ class BatteryService
             ]);
         } catch (\Exception $exception) {
             $this->logger->error('[Bulk Delivery]' . $exception->getMessage());
+        }
+
+        return [];
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param User $user
+     * @param Recycler $recycler
+     * @return array|null
+     */
+    public function extractCsvAndAddReturns(UploadedFile $file, User $user, Recycler $recycler): ?array
+    {
+        try {
+            $error = [];
+            $rowCount = 1;
+
+            if (($handle = fopen($file, "r")) !== false) {
+                $csvHeaders = fgetcsv($handle, 1000, ",");
+
+                if ($csvHeaders !== CustomHelper::RETURN_CSV_HEADERS) {
+                    $error['error']['invalid_csv_header'] = ['message' => 'service.error.invalid_csv_headers'];
+                    return $error;
+                }
+
+                $notExistCount = 0;
+                $alreadyReturnedCount = 0;
+
+                while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    if (count($csvData) !== count(CustomHelper::RETURN_CSV_HEADERS)) {
+                        $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
+                        return $error;
+                    }
+
+                    $row = [];
+
+                    for ($headerIndex = 0; $headerIndex < count($csvHeaders); $headerIndex++) {
+                        $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
+                    }
+
+                    $rowCount++;
+                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number'],
+                        $user->getManufacturer() ?? null);
+
+                    if (empty($battery)) {
+                        $notExistCount++;
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        continue;
+                    }
+
+                    if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
+                        $alreadyReturnedCount++;
+                        $error['error']['already_delivered_error'] = ['message' => $alreadyReturnedCount . ' Battery(s) already delivered!'];
+                        continue;
+                    }
+
+                    $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+                    $battery->setCurrentPossessor($user);
+                    $return = $this->returnService->createReturn($user, $battery, $recycler);
+                }
+            }
+
+            fclose($handle);
+
+            return array_merge($error, [
+                'total' => ($rowCount - 1)
+            ]);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Bulk Return]' . $exception->getMessage());
         }
 
         return [];

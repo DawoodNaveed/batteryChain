@@ -36,6 +36,11 @@ class CustomHelper
         'serial_number'
     ];
 
+    /** @var array */
+    const RETURN_CSV_HEADERS = [
+        'serial_number'
+    ];
+
     const BATTERY_STATUS_REGISTERED = 'registered';
     const BATTERY_STATUS_DELIVERED = 'delivered';
     const BATTERY_STATUS_BLOCKCHAIN_SECURED = 'blockchain-secured';

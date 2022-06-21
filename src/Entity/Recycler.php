@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -69,10 +70,17 @@ class Recycler extends AbstractEntity
     private $manufacturers;
 
     /**
+     * One Recycler has many returns.
+     * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="returnTo")
+     */
+    private $returnsTo;
+
+    /**
      * Recycler constructor.
      */
     public function __construct() {
         $this->manufacturers = new ArrayCollection();
+        $this->returnsTo = new ArrayCollection();
     }
 
     /**
@@ -240,6 +248,38 @@ class Recycler extends AbstractEntity
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BatteryReturn[]
+     */
+    public function getReturnsTo(): Collection
+    {
+        return $this->returnsTo;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function addReturnsTo(BatteryReturn $return): self
+    {
+        if (!$this->returnsTo->contains($return)) {
+            $this->returnsTo[] = $return;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param BatteryReturn $return
+     * @return $this
+     */
+    public function removeReturnsTo(BatteryReturn $return): self
+    {
+        $this->returnsTo->removeElement($return);
 
         return $this;
     }
