@@ -1,0 +1,163 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .main-detail {
+            background: white;
+            border: 0.5px solid darkgrey;
+            border-radius: 10px;
+        }
+        .p-0 {
+            padding: 0;
+        }
+        .heading {
+            font-size: large;
+            font-weight: normal;
+        }
+        .row-border-bottom {
+            border-bottom: 1px solid lightgray;
+        }
+        .p-tb-5 {
+            padding: 5px 0;
+        }
+        .back {
+            float: right;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .w-10 {
+            width: 10%;
+        }
+    </style>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    <div class="container-fluid">
+        <div class="row main-detail">
+            <div class="col-md-12">
+                <div class="header">
+                    <h1>{{ "Battery Detail" }}</h1>
+                    <hr>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Serial Number" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.serialNumber }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Manufacturer" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.manufacturer.name }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Status" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.status }}
+                    </div>
+                </div>
+               <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Type" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.batteryType.type }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Voltage" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalVoltage }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Capacity" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalCapacity }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Energy" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalEnergy }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Cycle Life" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.cycleLife }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Height" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.height }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Width" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.width }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Mass" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.mass }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 p-0">
+                <a class="back mt-10 btn btn-default w-10" href="{{ path }}"> {{ "Back" | trans }}</a>
+                <a class="back mt-10 btn btn-primary w-10 margin-r-5" href="{{ '#' }}"> {{ "Download" | trans }}</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

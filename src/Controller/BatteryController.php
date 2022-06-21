@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Battery;
 use App\Entity\Manufacturer;
 use App\Entity\User;
 use App\Enum\RoleEnum;
+use App\Form\BatteryDetailFormType;
 use App\Form\BulkImportBatteryFormType;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
@@ -129,6 +131,51 @@ class BatteryController extends CRUDController
             array(
                 'form' => $form->createView(),
                 'battery_types' => $this->batteryTypeService->getAvailableBatteryTypes()
+            )
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function detailAction(Request $request)
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        $form = $this->createForm(BatteryDetailFormType::class, null, []);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $serialNumber = $formData['battery'] ?? null;
+
+            if (empty($serialNumber)) {
+                $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
+                return new RedirectResponse($this->admin->generateUrl('list'));
+            }
+
+            /** @var Battery|null $battery */
+            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+
+            if (empty($battery)) {
+                $this->addFlash('sonata_flash_error', 'Battery does not exist!');
+                return new RedirectResponse($this->admin->generateUrl('list'));
+            }
+
+            return $this->render(
+                'battery/detail_view.html.twig', [
+                    'battery' => $battery,
+                    'path' => $this->admin->generateUrl('detail')
+                ]
+            );
+        }
+
+        return $this->render(
+            'battery/detail_form_view.html.twig',
+            array(
+                'form' => $form->createView(),
             )
         );
     }
