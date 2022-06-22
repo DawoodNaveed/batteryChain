@@ -169,8 +169,8 @@
                             </div>
                         </div>
                         <div class="row-div">
-                            <a class="mt-10 btn btn-primary mr-5" href="{{ downloadPath }}" target="_blank"> {{ "Download" | trans }}</a>
-                            <a class="mt-10 btn btn-light" href="{{ '/' }}"> {{ "Back" | trans }}</a>
+                            <a class="mt-10 btn btn-primary mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
+                            <a class="mt-10 btn btn-light" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>
                     </div>
                 </div>

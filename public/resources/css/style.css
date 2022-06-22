@@ -59,3 +59,7 @@ a {
     text-decoration: none;
     text-underline: none;
 }
+
+.fit-width {
+    width: fit-content;
+}
