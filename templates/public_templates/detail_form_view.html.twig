@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div id="flash-messages">
+    {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">
+                    {{ message|raw }}
+                    <i class="fa fa-close float-right close-flash-message"></i>
+                </div>
+            {% endfor %}
+    {% endfor %}
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="mt-5">
+                    <div class="p-3 border card-body cardbody-color p-lg-5">
+                        <div class="text-center">
+                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                                 width="150px" alt="profile">
+                        </div>
+                        {{ form_start(searchForm) }}
+                        <div class="row">
+                            <div class="col-md-10 p-0">
+                                {{ form_row(searchForm.battery) }}
+                            </div>
+                            <div class="col-md-2 p-0">
+                                {{ form_row(searchForm.search) }}
+                            </div>
+                        </div>
+                        <div class="row p-0">
+                            <a href="{{ path('app_login') }}" class="mt-2 p-0">{{ "You have an account?" | trans }}</a>
+                        </div>
+                        {{ form_end(searchForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

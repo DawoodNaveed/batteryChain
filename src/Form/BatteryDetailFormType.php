@@ -23,6 +23,7 @@ class BatteryDetailFormType extends AbstractType
                     'class' => 'form-control',
                     'placeholder' => 'Insert Serial Number'
                 ],
+                'label' => false,
                 'required' => true,
             ])
             ->add('search', SubmitType::class, [
