@@ -13,6 +13,7 @@ services:
         bind:
             $csvFileUploadSize: '%env(CSV_FILE_UPLOAD_SIZE)%'
             $recaptchaSecretKey: '%env(GOOGLE_RECAPTCHA_SECRET_KEY)%'
+            $kernelProjectDir: '%kernel.project_dir%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -85,3 +86,9 @@ services:
             - { name: sonata.admin, manager_type: orm, label: Delivery, group: Delivery }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ '@annotation_reader' ] ]

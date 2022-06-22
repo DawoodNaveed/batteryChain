@@ -4,6 +4,7 @@ namespace App\Admin;
 
 use App\Entity\Battery;
 use App\Enum\RoleEnum;
+use App\Helper\CustomHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -158,13 +159,15 @@ class BatteryAdmin extends AbstractAdmin
             $object->setManufacturer($user->getManufacturer());
         }
 
-        $object->setStatus('registered');
+        $object->setStatus(CustomHelper::BATTERY_STATUS_REGISTERED);
         $object->setCurrentPossessor($user);
     }
 
     protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->add('import');
+        $collection->add('detail');
+        $collection->add('download');
     }
 
     /**
@@ -174,10 +177,16 @@ class BatteryAdmin extends AbstractAdmin
     protected function configureDashboardActions(array $actions): array
     {
         $actions['import'] = [
-            'label' => 'bulk_import',
+            'label' => 'Bulk Import',
             'translation_domain' => 'SonataAdminBundle',
             'url' => $this->generateUrl('import'),
             'icon' => 'fa fa-plus',
+        ];
+        $actions['detail'] = [
+            'label' => 'Detail View',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('detail'),
+            'icon' => 'fa fa-info-circle',
         ];
 
         return $actions;
