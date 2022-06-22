@@ -32,6 +32,16 @@ class CustomHelper
     ];
 
     /** @var array */
+    const RECYCLER_CSV_HEADERS = [
+        'email',
+        'name',
+        'contact',
+        'address',
+        'city',
+        'updated_email'
+    ];
+
+    /** @var array */
     const DELIVERY_CSV_HEADERS = [
         'serial_number'
     ];
