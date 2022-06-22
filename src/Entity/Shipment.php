@@ -9,12 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Shipment
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table()
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Shipment extends AbstractEntity
 {
@@ -71,6 +73,12 @@ class Shipment extends AbstractEntity
      * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="shipment")
      */
     private $transactionLogs;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * Shipment constructor.
@@ -223,5 +231,21 @@ class Shipment extends AbstractEntity
         $this->transactionLogs->removeElement($transactionLog);
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

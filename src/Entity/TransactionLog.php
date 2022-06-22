@@ -5,12 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class TransactionLog
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table()
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class TransactionLog extends AbstractEntity
 {
@@ -41,6 +43,12 @@ class TransactionLog extends AbstractEntity
      * @ORM\Column(type="text", unique=false, nullable=true, options={"default"=null})
      */
     private $description;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * @return Shipment|null
@@ -104,5 +112,21 @@ class TransactionLog extends AbstractEntity
     public function setDescription(?string $description): void
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
     }
 }
