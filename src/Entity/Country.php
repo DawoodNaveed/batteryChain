@@ -6,12 +6,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Country
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table()
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Country extends AbstractEntity
 {
@@ -38,6 +40,12 @@ class Country extends AbstractEntity
      * @OneToMany(targetEntity="App\Entity\Recycler", mappedBy="country")
      */
     private $recyclers;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * Country constructor.
@@ -133,5 +141,21 @@ class Country extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

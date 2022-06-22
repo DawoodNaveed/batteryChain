@@ -20,16 +20,16 @@ final class Version20220620133406 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE battery_return DROP FOREIGN KEY FK_9F9F034C4ACAA341');
+        $this->addSql('ALTER TABLE battery_return DROP FOREIGN KEY FK_A79E3F0F4ACAA341');
         $this->addSql('ALTER TABLE battery_return CHANGE return_to return_to INT UNSIGNED DEFAULT NULL');
-        $this->addSql('ALTER TABLE battery_return ADD CONSTRAINT FK_9F9F034C4ACAA341 FOREIGN KEY (return_to) REFERENCES recycler (id)');
+        $this->addSql('ALTER TABLE battery_return ADD CONSTRAINT FK_A79E3F0F4ACAA341 FOREIGN KEY (return_to) REFERENCES recycler (id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE battery_return DROP FOREIGN KEY FK_9F9F034C4ACAA341');
+        $this->addSql('ALTER TABLE battery_return DROP FOREIGN KEY FK_A79E3F0F4ACAA341');
         $this->addSql('ALTER TABLE battery_return CHANGE return_to return_to INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE battery_return ADD CONSTRAINT FK_9F9F034C4ACAA341 FOREIGN KEY (return_to) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
+        $this->addSql('ALTER TABLE battery_return ADD CONSTRAINT FK_A79E3F0F4ACAA341 FOREIGN KEY (return_to) REFERENCES user (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
     }
 }

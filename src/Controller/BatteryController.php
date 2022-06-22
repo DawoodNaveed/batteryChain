@@ -14,6 +14,8 @@ use App\Service\ManufacturerService;
 use App\Service\UserService;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,6 +23,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Class BatteryController
@@ -31,25 +37,31 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property UserService userService
  * @property ManufacturerService manufacturerService
  * @property BatteryTypeService batteryTypeService
+ * @property Environment twig
+ * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
 {
     /**
      * BatteryController constructor.
+     * @param string $kernelProjectDir
      * @param BatteryService $batteryService
      * @param TranslatorInterface $translator
      * @param Security $security
      * @param UserService $userService
      * @param ManufacturerService $manufacturerService
      * @param BatteryTypeService $batteryTypeService
+     * @param Environment $twig
      */
     public function __construct(
+        string $kernelProjectDir,
         BatteryService $batteryService,
         TranslatorInterface $translator,
         Security $security,
         UserService $userService,
         ManufacturerService $manufacturerService,
-        BatteryTypeService $batteryTypeService
+        BatteryTypeService $batteryTypeService,
+        Environment $twig
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -57,6 +69,8 @@ class BatteryController extends CRUDController
         $this->userService = $userService;
         $this->manufacturerService = $manufacturerService;
         $this->batteryTypeService = $batteryTypeService;
+        $this->twig = $twig;
+        $this->kernelProjectDir = $kernelProjectDir;
     }
 
     /**
@@ -167,7 +181,10 @@ class BatteryController extends CRUDController
             return $this->render(
                 'battery/detail_view.html.twig', [
                     'battery' => $battery,
-                    'path' => $this->admin->generateUrl('detail')
+                    'path' => $this->admin->generateUrl('detail'),
+                    'downloadPath' => $this->admin->generateUrl('download', [
+                        'serialNumber' => $battery->getSerialNumber()
+                    ])
                 ]
             );
         }
@@ -178,5 +195,48 @@ class BatteryController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function downloadAction(Request $request): RedirectResponse
+    {
+        $user = $this->security->getUser();
+        $serialNumber = $request->get('serialNumber');
+
+        if (empty($serialNumber)) {
+            $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
+            return new RedirectResponse($this->admin->generateUrl('list'));
+        }
+
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+
+        if (empty($battery)) {
+            $this->addFlash('sonata_flash_error', 'Battery does not exist!');
+            return new RedirectResponse($this->admin->generateUrl('list'));
+        }
+
+        $pdfOptions = new Options();
+        $pdfOptions->setIsRemoteEnabled(true);
+        /* get barcode images base64 encoding */
+        $domPdf = new Dompdf($pdfOptions);
+        $html = $this->twig->render('battery/detail_view_download.html.twig', [
+            'battery' => $battery,
+            'documentTitle' => "Battery Detail",
+            'createdDate' => date('d.m.Y')
+        ]);
+        $domPdf->loadHtml($html);
+        $domPdf->setPaper('A4', 'portrait');
+        $domPdf->render();
+        $domPdf->stream('battery.pdf', [
+            "Attachment" => true
+        ]);
+        exit();
     }
 }
