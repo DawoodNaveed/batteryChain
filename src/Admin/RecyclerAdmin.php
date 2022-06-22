@@ -31,11 +31,7 @@ class RecyclerAdmin extends AbstractAdmin
         $recycler = $this->getSubject();
         $form->add('name', TextType::class);
 
-        if ($recycler->getId() === null) {
-            $form->add('email', EmailType::class);
-        }
-
-        $form
+        $form->add('email', EmailType::class)
             ->add('contact', TextType::class)
             ->add('address', TextType::class)
             ->add('city', TextType::class)
@@ -121,6 +117,7 @@ class RecyclerAdmin extends AbstractAdmin
     {
         $collection->add('attach');
         $collection->add('getRecycler');
+        $collection->add('bulkUpdate');
     }
 
     protected function configureBatchActions(array $actions): array
@@ -146,5 +143,21 @@ class RecyclerAdmin extends AbstractAdmin
         }
 
         return $query;
+    }
+
+    /**
+     * @param array $actions
+     * @return array
+     */
+    protected function configureDashboardActions(array $actions): array
+    {
+        $actions['bulkUpdate'] = [
+            'label' => 'Bulk Insert/Update',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('bulkUpdate'),
+            'icon' => 'fa fa-plus',
+        ];
+
+        return $actions;
     }
 }

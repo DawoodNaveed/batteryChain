@@ -20,28 +20,34 @@ class CountryService
     }
 
     /**
+     * @param bool $fetchFullObjects
      * @return null|Manufacturer[]
      */
-    public function getCountries(): ?array
+    public function getCountries($fetchFullObjects = false): ?array
     {
         /** @var Country[]|null $countries */
         $countries = $this->countryRepository->findBy([
             'status' => 1
         ]);
 
-        return $this->toChoiceArray($countries);
+        return $this->toChoiceArray($countries, $fetchFullObjects);
     }
 
     /**
      * @param Country[] $countries
+     * @param bool $fetchFullObjects
      * @return array|null
      */
-    private function toChoiceArray($countries): ?array
+    private function toChoiceArray($countries, $fetchFullObjects = false): ?array
     {
         $result = null;
 
         foreach ($countries as $country) {
-            $result[$country->getName()] = $country->getId();
+            if ($fetchFullObjects) {
+                $result[$country->getName()] = $country;
+            } else {
+                $result[$country->getName()] = $country->getId();
+            }
         }
 
         return $result;
