@@ -4,24 +4,24 @@ namespace App\Controller;
 
 use App\Entity\Country;
 use App\Entity\Manufacturer;
-use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\AvailableRecyclerFormType;
+use App\Form\BulkUpdateRecyclerFormType;
+use App\Service\BatteryService;
 use App\Service\CountryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class RecyclerController
@@ -32,6 +32,8 @@ use Symfony\Component\Security\Core\Security;
  * @property EntityManagerInterface entityManager
  * @property ManufacturerService manufacturerService
  * @property UserService $userService
+ * @property BatteryService batteryService
+ * @property TranslatorInterface translator
  */
 class RecyclerController extends CRUDController
 {
@@ -43,6 +45,8 @@ class RecyclerController extends CRUDController
      * @param EntityManagerInterface $entityManager
      * @param ManufacturerService $manufacturerService
      * @param UserService $userService
+     * @param BatteryService $batteryService
+     * @param TranslatorInterface $translator
      */
     public function __construct(
         CountryService $countryService,
@@ -50,7 +54,9 @@ class RecyclerController extends CRUDController
         Security $security,
         EntityManagerInterface $entityManager,
         ManufacturerService $manufacturerService,
-        UserService $userService
+        UserService $userService,
+        BatteryService $batteryService,
+        TranslatorInterface $translator
     ) {
         $this->countryService = $countryService;
         $this->recyclerService = $recyclerService;
@@ -58,6 +64,8 @@ class RecyclerController extends CRUDController
         $this->entityManager = $entityManager;
         $this->manufacturerService = $manufacturerService;
         $this->userService = $userService;
+        $this->batteryService = $batteryService;
+        $this->translator = $translator;
     }
 
     /**
@@ -129,36 +137,106 @@ class RecyclerController extends CRUDController
     /**
      * @param Request $request
      * @return Response
-     * @throws NotFoundExceptionInterface
-     * @throws ContainerExceptionInterface
      */
-    public function deleteAction(Request $request): Response
+    public function bulkUpdateAction(Request $request): Response
     {
-        /** @var FlashBagInterface $flashBag */
-        $flashBag = $this->container->get('session')->getFlashBag();
-        $id = $request->get($this->admin->getIdParameter());
-        /** @var Recycler $recycler */
-        $recycler = $this->admin->getObject($id);
         /** @var User $user */
         $user = $this->security->getUser();
+        $countries = $this->countryService->getCountries(true);
 
-        // In-Case Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
-            $recycler->removeAllManufacturers();
-            $flashBag->set(
-                'sonata_flash_success',
-                'Recycler De-attached with All Manufacturer!'
-            );
-        } else {
-            $recycler->removeManufacturer($user->getManufacturer());
-            $flashBag->set(
-                'sonata_flash_success',
-                'Recycler De-attached Successfully!'
-            );
+        $form = $this->createForm(BulkUpdateRecyclerFormType::class, null, [
+            'regions' => $countries
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $country = $formData['region'];
+            $file = $request->files->all();
+
+            if (!empty($file) && isset($file['bulk_update_recycler_form']['csv'])) {
+                /** @var UploadedFile $file */
+                $file = $file['bulk_update_recycler_form']['csv'];
+                $validCsv = $this->batteryService->isValidCsv($file);
+
+                if ($validCsv['error'] == 0) {
+                    $createOrUpdateRecycler = $this->recyclerService
+                        ->extractCsvAndUpdateRecyclers(
+                            $file,
+                            $user->getManufacturer() ?? null,
+                            $country
+                        );
+
+                    if (!empty($createOrUpdateRecycler) && !empty($createOrUpdateRecycler['error'])) {
+                        $this->addFlash('error', $this->translator->trans($createOrUpdateRecycler['message']));
+                    } else {
+                        $this->addFlash('success', $this->translator->trans('service.success.recycler_added_successfully'));
+
+                        if (isset($createOrUpdateRecycler['total']) && isset($createOrUpdateRecycler['failure'])
+                            && $createOrUpdateRecycler['failure'] !== 0) {
+                            $this->addFlash(
+                                'warning',
+                                $this->translator->trans(
+                                    'service.success.recycler_bulk_status',
+                                    [
+                                        '%failure_recyclers%' => $createOrUpdateRecycler['failure'],
+                                        '%total_recyclers%' => $createOrUpdateRecycler['total']
+                                    ]
+                                )
+                            );
+                        }
+                    }
+                } else {
+                    $this->addFlash('error', $this->translator->trans($validCsv['message']));
+                }
+
+                return new RedirectResponse($this->admin->generateUrl('list'));
+            }
         }
 
-        $this->entityManager->flush();
-
-        return new RedirectResponse($this->admin->generateUrl('list'));
+        return $this->render(
+            'recycler/bulk_update_recyclers.html.twig',
+            array(
+                'form' => $form->createView(),
+            )
+        );
     }
+
+//Will remove it in future
+//    /**
+//     * @param Request $request
+//     * @return Response
+//     * @throws NotFoundExceptionInterface
+//     * @throws ContainerExceptionInterface
+//     */
+//    public function deleteAction(Request $request): Response
+//    {
+//        /** @var FlashBagInterface $flashBag */
+//        $flashBag = $this->container->get('session')->getFlashBag();
+//        $id = $request->get($this->admin->getIdParameter());
+//        /** @var Recycler $recycler */
+//        $recycler = $this->admin->getObject($id);
+//        /** @var User $user */
+//        $user = $this->security->getUser();
+//
+//        // In-Case Super Admin
+//        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
+//            $recycler->removeAllManufacturers();
+//            $flashBag->set(
+//                'sonata_flash_success',
+//                'Recycler De-attached with All Manufacturer!'
+//            );
+//        } else {
+//            $recycler->removeManufacturer($user->getManufacturer());
+//            $flashBag->set(
+//                'sonata_flash_success',
+//                'Recycler De-attached Successfully!'
+//            );
+//        }
+//
+//        $this->entityManager->remove($recycler);
+//        $this->entityManager->flush();
+//
+//        return new RedirectResponse($this->admin->generateUrl('list'));
+//    }
 }

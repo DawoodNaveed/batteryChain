@@ -8,12 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Manufacturer
  * @package App\Entity
  * @ORM\Entity(repositoryClass="App\Repository\ManufacturerRepository")
  * @ORM\Table(name="manufacturer")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Manufacturer extends AbstractEntity
 {
@@ -72,6 +74,12 @@ class Manufacturer extends AbstractEntity
      * @OneToMany(targetEntity="App\Entity\Battery", mappedBy="manufacturer")
      */
     private $batteries;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * Manufacturer constructor.
@@ -255,5 +263,21 @@ class Manufacturer extends AbstractEntity
         $this->batteries->removeElement($battery);
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

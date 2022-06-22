@@ -1,0 +1,21 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .search-btn {
+            margin-top: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_start(form) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -9,14 +9,14 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Recycler
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table()
- * @UniqueEntity(fields={"email"}, message="There is already a recycler with this email")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Recycler extends AbstractEntity
 {
@@ -27,7 +27,7 @@ class Recycler extends AbstractEntity
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=false)
      */
     private $email;
 
@@ -74,6 +74,12 @@ class Recycler extends AbstractEntity
      * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="returnTo")
      */
     private $returnsTo;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * Recycler constructor.
@@ -282,5 +288,21 @@ class Recycler extends AbstractEntity
         $this->returnsTo->removeElement($return);
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime|null $deletedAt
+     */
+    public function setDeletedAt(?\DateTime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

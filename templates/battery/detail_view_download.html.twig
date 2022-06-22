@@ -1,0 +1,205 @@
+<html lang="en">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+        * {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: normal;
+            font-style: normal;
+        }
+        b,strong{
+            font-weight: bold;
+        }
+        #footer {
+            font-size: 21px;
+            position: fixed;
+            bottom:-40px;
+            height: 85px;
+            margin-top: 24px;
+        }
+        #footer .page:after { content: counter(page); }
+        .text-align-center { text-align: center }
+        .title {
+            font-weight: normal;
+            font-style: normal;
+            font-size: 30px;
+            text-align: center;
+            margin: 0;
+            padding-top: 10px;
+        }
+        ol {
+            padding: 16px;
+        }
+        ul {
+            padding: 16px;
+        }
+        ol li {
+            padding: 16px;
+            margin-left: 35px;
+        }
+        ul li {
+            margin: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: auto;
+            padding: 12px 20px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 2px;
+            background-color: #f8f8f8;
+            font-size: 16px;
+            resize: none;
+        }
+        .term-block {
+            width: 100%;
+            padding: 12px;
+        }
+        .term-block-container {
+            padding: 24px;
+        }
+        .float-left {
+            float:left
+        }
+        .float-right {
+            float:right;
+        }
+        .text-center {
+            text-align:center;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .basic-info {
+            line-height: 8px;
+        }
+        .heading-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            font-style: normal;
+            font-size: 24px;
+            padding-top: 24px;
+            float: right;
+        }
+        .heading-title-hash {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            font-style: normal;
+            font-size: 24px;
+            word-wrap: break-word;
+            padding-top: 24px;
+            line-height: normal;
+            float: right;
+        }
+        .heading-span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 18px;
+        }
+        .hash-anchor {
+            text-decoration: none;
+            font-size: 12px;
+            width: 80%;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 13px;
+        }
+        .hash-anchor_para span,
+        .hash-span{
+            font-size: 12px;
+            vertical-align: middle;
+            line-height: 13px;
+        }
+        .main-detail {
+            background: white;
+            border: 0.5px solid darkgrey;
+            border-radius: 10px;
+        }
+        .p-0 {
+            padding: 0;
+        }
+        .heading {
+            font-size: large;
+            font-weight: normal;
+        }
+        .row-border-bottom {
+            border-bottom: 1px solid lightgray;
+        }
+        .p-tb-5 {
+            padding: 5px 0;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .w-10 {
+            width: 10%;
+        }
+        .row-div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+<h1 class="title">{{ documentTitle }}</h1>
+<hr>
+<div id="footer">
+    <hr>
+    <div class="text-align-center" style="padding-top:4px; font-size: 18px;">
+        <span class="page"> {{ createdDate }} | Pg. </span>
+    </div>
+</div>
+<div id="content">
+    <div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Serial Number" | trans }}</span>
+            <span class="heading-title">{{ battery.serialNumber }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Manufacturer" | trans }}</span>
+            <span class="heading-title">{{ battery.manufacturer.name }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Status" | trans }}</span>
+            <span class="heading-title">{{ battery.status }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Type" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.batteryType.type }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Nominal Voltage" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.nominalVoltage }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Nominal Capacity" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.nominalCapacity }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Nominal Energy" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.nominalEnergy }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Cycle Life" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.cycleLife }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Height" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.height }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Width" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.width }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Mass" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.mass }}</span>
+        </div>
+    </div>
+    <br><br><br><br><br><br><br><br><br>
+</div>
+</body>
+</html>
