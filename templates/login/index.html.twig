@@ -8,13 +8,17 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <h3 class="text-center text-dark mt-4">{{ "Battery Chain" }}</h3>
+                <a href="{{ path('homepage') }}" class="back-to-home">
+                    <h3 class="text-center text-dark mt-4">{{ "Battery Chain" }}</h3>
+                </a>
                 <div class="card my-3">
                     <form class="card-body cardbody-color p-lg-5" action="{{ path('app_login') }}" method="post">
                         {% set bg_input = '' %}
                         <div class="text-center">
-                            <img src="{{ asset('resources/logo.png') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                                 width="150px" alt="profile">
+                            <a href="{{ path('homepage') }}" class="back-to-home">
+                                <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                                     width="150px" alt="profile">
+                            </a>
                         </div>
                         {% if error is defined and error %}
                             {% set bg_input = 'border-danger' %}

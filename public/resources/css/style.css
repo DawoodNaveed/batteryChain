@@ -9,6 +9,12 @@
     object-fit: fill;
 }
 
+.detail-page-logo {
+    height: 50px;
+    width: 50px;
+    object-fit: fill;
+}
+
 .cardbody-color {
     background-color: #ebf2fa;
 }
@@ -23,4 +29,37 @@ a {
 
 .ml-2 {
     margin-left: 0.5rem!important;
+}
+
+.float-right {
+    float: right;
+}
+
+.p-rl-12 {
+    padding: 0 12px;
+}
+
+.p-tb-5 {
+    padding: 5px 0;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mr-5 {
+    margin-right: 5px;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.back-to-home {
+    text-decoration: none;
+    text-underline: none;
+}
+
+.fit-width {
+    width: fit-content;
 }
