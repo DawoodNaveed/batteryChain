@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ "New Battery Return" | trans }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create three equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 100%;
+            padding: 10px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            display: inline-block;
+            clear: both;
+        }
+        .label {
+            font-size: 16px;
+        }
+        .battery-detail-div {
+            padding-top: 3px;
+        }
+        .battery-detail-div label {
+            font-size: 14px;
+            line-height: 2.5;
+        }
+        .left {
+            float: left;
+        }
+        .clearfix::after {
+            display: table;
+            content: "";
+            clear: both;
+        }
+        .m-0 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <span>{{ "Dear Recycler," | trans }}</span>
+    <p>
+        {{ "A new battery return has been added by" | trans }} {{ body.user.name }}
+        <a href="mailto:{{ body.user.email }}"> {{ body.user.email }} </a>.
+    </p>
+    <p>
+        {{ "Please find below some highlight details of Battery:" | trans }}
+    </p>
+    <div class="row" style="margin-bottom:20px;">
+        <div class="column" style="margin-bottom: 15px;">
+            <div class="clearfix">
+                <div class="battery-detail-div">
+                    <p>
+                        <b>{{ "Serial Number" | trans }}</b> {{ body.battery.serialNumber }}
+                    </p>
+                    <p>
+                        <b>{{ "Manufacturer Name" | trans }}</b> {{ body.battery.manufacturer.name }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>
+            <br><br>
+            {{ "Your Batterychain Team" | trans }}
+        </p>
+        <br>
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+    {{ include('email_templates/footer.html.twig') }}
+</body>
+</html>

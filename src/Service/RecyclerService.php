@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Battery;
 use App\Entity\Country;
 use App\Entity\Manufacturer;
 use App\Entity\Recycler;
@@ -10,12 +11,15 @@ use App\Repository\RecyclerRepository;
 use Doctrine\DBAL\Driver\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class RecyclerService
  * @package App\Service
  * @property RecyclerRepository recyclerRepository
  * @property LoggerInterface logger
+ * @property EmailService emailService
+ * @property TranslatorInterface translator
  */
 class RecyclerService
 {
@@ -23,11 +27,19 @@ class RecyclerService
      * RecyclerService constructor.
      * @param RecyclerRepository $recyclerRepository
      * @param LoggerInterface $logger
+     * @param EmailService $emailService
+     * @param TranslatorInterface $translator
      */
-    public function __construct(RecyclerRepository $recyclerRepository, LoggerInterface $logger)
-    {
+    public function __construct(
+        RecyclerRepository $recyclerRepository,
+        LoggerInterface $logger,
+        EmailService $emailService,
+        TranslatorInterface $translator
+    ) {
         $this->recyclerRepository = $recyclerRepository;
         $this->logger = $logger;
+        $this->emailService = $emailService;
+        $this->translator = $translator;
     }
 
     /**
@@ -235,5 +247,30 @@ class RecyclerService
         } catch (\Exception $exception) {
             $this->logger->error('[Fetch Fallback Recycler] ' . $exception->getMessage());
         }
+    }
+
+    /**
+     * @param Recycler $recycler
+     * @param Battery $battery
+     * @param array $formData
+     */
+    public function sendNewBatteryReturnEmail(Recycler $recycler, Battery $battery, array $formData)
+    {
+        $data = [
+            'user' => [
+                'name' => $formData['information']['name'],
+                'email' => $formData['information']['email'],
+            ],
+            'battery' => $battery
+        ];
+
+        $subject = $this->translator->trans('New Battery Return', [], 'messages');
+        $params = [
+            'subject' => $subject,
+            'email' => $recycler->getEmail(),
+            'template_name' => 'email_templates/new-battery-return.html.twig',
+            'body' => $data,
+        ];
+        $this->emailService->sendEmail($params);
     }
 }

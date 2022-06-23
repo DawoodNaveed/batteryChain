@@ -14,6 +14,10 @@ services:
             $csvFileUploadSize: '%env(CSV_FILE_UPLOAD_SIZE)%'
             $recaptchaSecretKey: '%env(GOOGLE_RECAPTCHA_SECRET_KEY)%'
             $kernelProjectDir: '%kernel.project_dir%'
+            $mailjetKey: '%env(MAILJET_KEY)%'
+            $mailjetSecret: '%env(MAILJET_SECRET)%'
+            $mailjetFromName: '%env(MAILJET_FROM_NAME)%'
+            $mailjetFromEmail: '%env(MAILJET_FROM_EMAIL)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
