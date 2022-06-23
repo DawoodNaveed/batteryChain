@@ -7,6 +7,7 @@ use App\Entity\Manufacturer;
 use App\Entity\Recycler;
 use App\Helper\CustomHelper;
 use App\Repository\RecyclerRepository;
+use Doctrine\DBAL\Driver\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -37,7 +38,7 @@ class RecyclerService
     {
         if ($country) {
             return $this->recyclerRepository->findBy([
-                'country' => $country
+                'country' => $country,
             ]);
         }
 
@@ -54,7 +55,8 @@ class RecyclerService
     }
 
     /**
-     * @param Recycler[] $recyclers
+     * @param mixed $recyclers
+     * @param bool $fetchFullObject
      * @return array|null
      */
     public function toChoiceArray($recyclers, $fetchFullObject = false): ?array
@@ -62,10 +64,19 @@ class RecyclerService
         $result = null;
 
         foreach ($recyclers as $recycler) {
-            if ($fetchFullObject) {
-                $result[$recycler->getName()] = $recycler;
+            if ($recycler instanceof Recycler) {
+                if ($fetchFullObject) {
+                    $result[$recycler->getName()] = $recycler;
+                } else {
+                    $result[$recycler->getName()] = $recycler->getId();
+                }
             } else {
-                $result[$recycler->getName()] = $recycler->getId();
+                // for fallback - we got PHP Objects rather than Recycler Objects
+                if ($fetchFullObject) {
+                    $result[$recycler->name] = $recycler;
+                } else {
+                    $result[$recycler->name] = $recycler->id;
+                }
             }
         }
 
@@ -79,7 +90,7 @@ class RecyclerService
     public function getRecyclerByIds(array $ids): array
     {
         return $this->recyclerRepository->findBy([
-            'id' => $ids
+            'id' => $ids,
         ]);
     }
 
@@ -155,7 +166,7 @@ class RecyclerService
                     'address' => $address,
                     'city' => $city,
                     'updated_email' => $newEmail,
-                    'country' => $country
+                    'country' => $country,
                 ], $manufacturer);
             }
         }
@@ -164,20 +175,21 @@ class RecyclerService
 
         return array_merge($error, [
             'total' => $rowCount,
-            'failure' => $failureCount
+            'failure' => $failureCount,
         ]);
     }
 
     /**
      * @param array $params
-     * @return Recycler|null
+     * @param bool $fetchOneObject
+     * @return Recycler|null|Recycler[]
      */
-    private function fetchRecyclerViaParams(array $params): ?Recycler
+    public function fetchRecyclerViaParams(array $params, $fetchOneObject = true)
     {
         try {
-            return $this->recyclerRepository->fetchRecyclerViaParams($params);
+            return $this->recyclerRepository->fetchRecyclerViaParams($params, $fetchOneObject);
         } catch (\Exception $exception) {
-            $this->logger->error('[Bulk Recycler]' . $exception->getMessage());
+            $this->logger->error('[Fetch Recycler]' . $exception->getMessage());
         }
 
         return null;
@@ -195,6 +207,33 @@ class RecyclerService
             return $this->recyclerRepository->createOrUpdateRecycler($recycler, $data, $manufacturer);
         } catch (\Exception $exception) {
             $this->logger->error('[Bulk Recycler]' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * @param Manufacturer $manufacturer
+     * @param Country $country
+     * @return Recycler|Recycler[]|null
+     */
+    public function fetchManufacturerRecyclersByCountry(Manufacturer $manufacturer, Country $country)
+    {
+       return $this->fetchRecyclerViaParams([
+           'country' => $country,
+           'manufacturer' => $manufacturer,
+       ], false);
+    }
+
+    /**
+     * @param Country $country
+     * @return Recycler|Recycler[]|null
+     * @throws Exception
+     */
+    public function fetchFallbackRecyclersByCountry(Country $country)
+    {
+        try {
+            return $this->recyclerRepository->fetchFallbackRecyclers($country);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Fetch Fallback Recycler] ' . $exception->getMessage());
         }
     }
 }
