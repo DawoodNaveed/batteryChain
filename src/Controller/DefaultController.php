@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Battery;
 use App\Form\BatteryDetailFormType;
 use App\Service\BatteryService;
+use App\Service\ReCaptchaService;
 use App\Service\UserService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -25,6 +26,7 @@ use Twig\Error\SyntaxError;
  * @property UserService userService
  * @property UrlGeneratorInterface urlGenerator
  * @property BatteryService batteryService
+ * @property ReCaptchaService reCaptchaService
  * @property Environment twig
  */
 class DefaultController extends AbstractController
@@ -34,17 +36,20 @@ class DefaultController extends AbstractController
      * @param UserService $userService
      * @param UrlGeneratorInterface $urlGenerator
      * @param BatteryService $batteryService
+     * @param ReCaptchaService $reCaptchaService
      * @param Environment $twig
      */
     public function __construct(
         UserService $userService,
         UrlGeneratorInterface $urlGenerator,
         BatteryService $batteryService,
+        ReCaptchaService $reCaptchaService,
         Environment $twig
     ) {
         $this->userService = $userService;
         $this->urlGenerator = $urlGenerator;
         $this->batteryService = $batteryService;
+        $this->reCaptchaService = $reCaptchaService;
         $this->twig = $twig;
     }
     /**
@@ -63,6 +68,11 @@ class DefaultController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!($this->reCaptchaService->validateReCaptcha($request))) {
+                $this->addFlash('danger', "The reCAPTCHA wasn't entered correctly.");
+                return new RedirectResponse('/');
+            }
+
             $formData = $form->getData();
             $serialNumber = $formData['battery'] ?? null;
 

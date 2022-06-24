@@ -128,6 +128,15 @@
     "laminas/laminas-code": {
         "version": "4.5.1"
     },
+    "mailjet/mailjet-bundle": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "48a7f92015372654b5056855da5e94d54bd8d948"
+        }
+    },
     "monolog/monolog": {
         "version": "2.6.0"
     },

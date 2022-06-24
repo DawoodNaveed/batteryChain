@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="flash-messages">
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">
+                    {{ message|raw }}
+                    <i class="fa fa-close float-right close-flash-message"></i>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="mt-5">
+                    <div class="p-3 border card-body cardbody-color p-lg-5">
+                        <div class="text-center">
+                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
+                                 width="150px" alt="profile">
+                        </div>
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-md-12 p-0">
+                                {{ form_row(form.country) }}
+                            </div>
+                            <div class="col-md-12 p-0">
+                                {{ form_row(form.recyclers) }}
+                            </div>
+                            <hr style="margin: 12px 0;">
+                            <div class="col-md-12 p-0">
+                                {{ form_row(form.information) }}
+                            </div>
+                            <div class="row-div">
+                                {{ form_row(form.submit) }}
+                                {{ form_row(form.cancel) }}
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var $country = $('#return_public_form_country');
+            $country.change(function() {
+                var data = {};
+                data['serial_number'] = "{{ serialNumber }}";
+                // Submit data via AJAX to the form's action path.
+                $.ajax({
+                    url : '/recyclers/country/' + $country.val(),
+                    type: 'POST',
+                    data : data,
+                    success: function(data) {
+                        // Replace current position field ...
+                        var options, select;
+
+                        // Get the raw DOM object for the select box
+                        select = $('#return_public_form_recyclers');
+                        select.html('');
+                        options = data.recyclers; // Or whatever source information you're working with
+                        if (options === null) {
+                            var newOption = new Option('No Recycler Found', "" , false, true);
+                            newOption.setAttribute('disabled', 'disabled');
+                            select.append(newOption);
+                        } else {
+                            var newOption = new Option('Select Recycler', "", false, true);
+                            newOption.setAttribute('disabled', 'disabled');
+                            select.append(newOption);
+                            $.each(options, function(index, element) {
+                                var newOption = new Option(index, element, false, false);
+                                select.append(newOption);
+                            });
+                        }
+                    }
+                });
+            });
+            var $recycler = $('#return_public_form_recyclers');
+
+            $recycler.change(function () {
+                $('#return_public_form_recyclerId').val($recycler.val());
+            })
+        });
+    </script>
+{% endblock %}
