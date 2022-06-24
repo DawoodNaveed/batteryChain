@@ -33,6 +33,9 @@
                                 {{ form_row(searchForm.search) }}
                             </div>
                         </div>
+                        <div class="mb-3 mt-2 p-0 div-captcha">
+                            <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
+                        </div>
                         <div class="row p-0 fit-width">
                             <a href="{{ path('app_login') }}" class="mt-2 p-0">{{ "You have an account?" | trans }}</a>
                         </div>

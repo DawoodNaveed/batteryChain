@@ -63,3 +63,16 @@ a {
 .fit-width {
     width: fit-content;
 }
+
+.row-div {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    height: 60px;
+}
+
+.div-captcha {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
