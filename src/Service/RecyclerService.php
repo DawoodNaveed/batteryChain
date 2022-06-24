@@ -107,6 +107,15 @@ class RecyclerService
     }
 
     /**
+     * @param int $id
+     * @return Recycler|null
+     */
+    public function getRecyclerById(int $id): ?Recycler
+    {
+        return $this->recyclerRepository->find($id);
+    }
+
+    /**
      * @return Recycler[]|null
      */
     public function getAllRecyclers(): ?array
