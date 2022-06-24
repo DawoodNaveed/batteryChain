@@ -17,6 +17,7 @@
         "dompdf/dompdf": "^1.2",
         "gedmo/doctrine-extensions": "^3.7",
         "google/recaptcha": "~1.1",
+        "mailjet/mailjet-bundle": "^2.0",
         "sonata-project/admin-bundle": "^4.12",
         "sonata-project/doctrine-orm-admin-bundle": "^4.3",
         "stof/doctrine-extensions-bundle": "^1.7",
