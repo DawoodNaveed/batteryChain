@@ -11,7 +11,7 @@
             {% endfor %}
         {% endfor %}
     </div>
-    <div class="container">
+    <div class="container mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="mt-5">
@@ -28,13 +28,14 @@
                             <div class="col-md-12 p-0">
                                 {{ form_row(form.recyclers) }}
                             </div>
-                            <hr>
+                            <hr style="margin: 12px 0;">
                             <div class="col-md-12 p-0">
                                 {{ form_row(form.information) }}
                             </div>
-                        </div>
-                        <div class="row p-0 fit-width">
-                            <a href="{{ path('homepage') }}" class="mt-2 p-0">{{ "Back to Home" | trans }}</a>
+                            <div class="row-div">
+                                {{ form_row(form.submit) }}
+                                {{ form_row(form.cancel) }}
+                            </div>
                         </div>
                         {{ form_end(form) }}
                     </div>

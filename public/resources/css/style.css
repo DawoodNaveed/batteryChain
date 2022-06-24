@@ -63,3 +63,10 @@ a {
 .fit-width {
     width: fit-content;
 }
+
+.row-div {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    height: 60px;
+}

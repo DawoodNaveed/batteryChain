@@ -23,11 +23,16 @@
             font-size: 16px;
         }
         .battery-detail-div {
-            padding-top: 3px;
+            width: max-content;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+            padding: 1rem 3rem;
         }
-        .battery-detail-div label {
-            font-size: 14px;
-            line-height: 2.5;
+        .battery-detail-div p {
+            font-size: 15px;
+        }
+
+        .battery-detail-div p b {
+            font-size: 16px;
         }
         .left {
             float: left;
@@ -60,6 +65,30 @@
                     </p>
                     <p>
                         <b>{{ "Manufacturer Name" | trans }}</b> {{ body.battery.manufacturer.name }}
+                    </p>
+                    <p>
+                        <b>{{ "Type" | trans }}</b> {{ body.battery.batteryType.type }}
+                    </p>
+                    <p>
+                        <b>{{ "Nominal Voltage" | trans }}</b> {{ body.battery.nominalVoltage }}
+                    </p>
+                    <p>
+                        <b>{{ "Nominal Capacity" | trans }}</b> {{ body.battery.nominalCapacity }}
+                    </p>
+                    <p>
+                        <b>{{ "Nominal Energy" | trans }}</b> {{ body.battery.nominalEnergy }}
+                    </p>
+                    <p>
+                        <b>{{ "Cycle Life" | trans }}</b> {{ body.battery.cycleLife }}
+                    </p>
+                    <p>
+                        <b>{{ "Height" | trans }}</b> {{ body.battery.height }}
+                    </p>
+                    <p>
+                        <b>{{ "Width" | trans }}</b> {{ body.battery.width }}
+                    </p>
+                    <p>
+                        <b>{{ "Mass" | trans }}</b> {{ body.battery.mass }}
                     </p>
                 </div>
             </div>
