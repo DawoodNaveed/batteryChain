@@ -70,3 +70,9 @@ a {
     justify-content: right;
     height: 60px;
 }
+
+.div-captcha {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
