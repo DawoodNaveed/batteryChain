@@ -97,6 +97,8 @@ class BatteryService
             $failureCount = 0;
             $values = '';
 
+            //Disable SoftDelete Filter to Check is Exist
+            $this->batteryRepository->disableFilter('softdeleteable');
             while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
                 if (count($csvData) !== count(CustomHelper::CSV_HEADERS)) {
                     $error = ['error' => CustomHelper::ERROR, 'message' => 'service.error.invalid_csv'];
@@ -116,17 +118,26 @@ class BatteryService
 
                 $serialNumber = (string) $row['serial_number'];
                 $batteryType = (string) $row['battery_type'];
+                $cellType = (string) $row['cell_type'] ?? null;
+                $moduleType = (string) $row['module_type'] ?? null;
+                $trayNumber = (string) $row['tray_number'] ?? null;
+                $productionDate = (string) $row['production_date'] ?? null;
                 $nominalVoltage = (float) $row['nominal_voltage'];
                 $nominalCapacity = (float) $row['nominal_capacity'];
                 $nominalEnergy = (float) $row['nominal_energy'];
-                $cycleLife = (float) $row['cycle_life'];
-                $height = (float) $row['height'];
-                $width = (float) $row['width'];
+                $acidVolume = (string) $row['acid_volume'] ?? null;
+                $co2 = ((string) $row['CO2']) ?? null;
+                $cycleLife = (float) $row['cycle_life'] ?? null;
+                $height = ((float) $row['height']) ?? null;
+                $width = ((float) $row['width']) ?? null;
                 $mass = (float) $row['mass'];
                 $status = CustomHelper::BATTERY_STATUS_REGISTERED;
 
-                $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $nominalVoltage .
-                    "', '" . $nominalCapacity . "', '" . $nominalEnergy . "', '" . $cycleLife
+                $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
+                $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
+                    "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
+                    "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
+                    "', '" . $acidVolume . "', '" . $co2 . "', '" . $cycleLife
                     . "', '" . $height . "', '" . $width . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
@@ -147,6 +158,8 @@ class BatteryService
 
         fclose($handle);
 
+        //Enable SoftDelete Filter
+        $this->batteryRepository->enableFilter('softdeleteable');
         return array_merge($error, [
             'total' => ($rowCount - 1) + $failureCount,
             'failure' => $failureCount
@@ -185,13 +198,11 @@ class BatteryService
 
     /**
      * @param string $serialNumber
-     * @return Battery[]|null
+     * @return Battery|null
      */
     private function isExist(string $serialNumber): ?Battery
     {
-        return $this->batteryRepository->findOneBy([
-            'serialNumber' => $serialNumber
-        ]);
+        return $this->batteryRepository->isExist($serialNumber);
     }
 
     /**

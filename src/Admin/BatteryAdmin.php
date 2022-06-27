@@ -141,6 +141,7 @@ class BatteryAdmin extends AbstractAdmin
             ->add('nominalEnergy')
             ->add('height')
             ->add('width')
+            ->add('mass')
             ->add('status');
     }
 
