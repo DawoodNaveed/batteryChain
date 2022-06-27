@@ -115,14 +115,18 @@ class BatteryController extends AbstractController
                 CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
                 $this->addFlash('danger', $this->translator->trans('Battery is already returned!'));
 
-                return new RedirectResponse($this->generateUrl('homepage'));
+                return new RedirectResponse($this->generateUrl('battery_detail', [
+                    'search' => $battery->getSerialNumber()
+                ]));
             }
 
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $this->entityManager->flush();
             $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
 
-            return new RedirectResponse($this->generateUrl('homepage'));
+            return new RedirectResponse($this->generateUrl('battery_detail', [
+                'search' => $battery->getSerialNumber()
+            ]));
         }
 
         return $this->render(
