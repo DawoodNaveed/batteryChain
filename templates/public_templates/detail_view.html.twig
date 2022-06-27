@@ -27,6 +27,16 @@
 {% endblock %}
 
 {% block body %}
+    <div id="flash-messages">
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">
+                    {{ message|raw }}
+                    <i class="fa fa-close float-right close-flash-message"></i>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
     <div class="container p-tb-5 mb-5">
         <div class="row">
             <div class="col-md-10 offset-md-1">
@@ -77,7 +87,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <span class="float-right">
-                                        {{ battery.status }}
+                                        {{ battery.status | capitalize }}
                                     </span>
                                 </div>
                             </div>
