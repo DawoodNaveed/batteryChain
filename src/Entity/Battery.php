@@ -115,6 +115,42 @@ class Battery extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @var string|null
+     * @ORM\Column(name="co2", type="string", nullable=true)
+     */
+    private $co2;
+
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(name="production_date", type="datetime", nullable=true)
+     */
+    private $productionDate;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="cell_type", type="string", nullable=true)
+     */
+    private $cellType;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="module_type", type="string", nullable=true)
+     */
+    private $moduleType;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="acid_volume", type="string", nullable=true)
+     */
+    private $acidVolume;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="tray_number", type="string", nullable=true)
+     */
+    private $trayNumber;
+
+    /**
      * Battery constructor.
      */
     public function __construct() {
@@ -403,5 +439,101 @@ class Battery extends AbstractEntity
     public function setDeletedAt(?\DateTime $deletedAt)
     {
         $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCo2(): ?string
+    {
+        return $this->co2;
+    }
+
+    /**
+     * @param string|null $co2
+     */
+    public function setCo2(?string $co2): void
+    {
+        $this->co2 = $co2;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getProductionDate(): ?\DateTime
+    {
+        return $this->productionDate;
+    }
+
+    /**
+     * @param \DateTime|null $productionDate
+     */
+    public function setProductionDate(?\DateTime $productionDate): void
+    {
+        $this->productionDate = $productionDate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCellType(): ?string
+    {
+        return $this->cellType;
+    }
+
+    /**
+     * @param string|null $cellType
+     */
+    public function setCellType(?string $cellType): void
+    {
+        $this->cellType = $cellType;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getModuleType(): ?string
+    {
+        return $this->moduleType;
+    }
+
+    /**
+     * @param string|null $moduleType
+     */
+    public function setModuleType(?string $moduleType): void
+    {
+        $this->moduleType = $moduleType;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAcidVolume(): ?string
+    {
+        return $this->acidVolume;
+    }
+
+    /**
+     * @param string|null $acidVolume
+     */
+    public function setAcidVolume(?string $acidVolume): void
+    {
+        $this->acidVolume = $acidVolume;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTrayNumber(): ?string
+    {
+        return $this->trayNumber;
+    }
+
+    /**
+     * @param string|null $trayNumber
+     */
+    public function setTrayNumber(?string $trayNumber): void
+    {
+        $this->trayNumber = $trayNumber;
     }
 }
