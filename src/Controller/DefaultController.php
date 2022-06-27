@@ -90,11 +90,9 @@ class DefaultController extends AbstractController
                 return new RedirectResponse('/');
             }
 
-            return $this->render(
-                'public_templates/detail_view.html.twig', [
-                    'battery' => $battery
-                ]
-            );
+            return new RedirectResponse($this->generateUrl('battery_detail', [
+                'search' => $battery->getSerialNumber()
+            ]));
         }
 
         return $this->render(

@@ -51,6 +51,29 @@ class BatteryController extends AbstractController
     }
 
     /**
+     * @Route(path="battery/detail", name="battery_detail")
+     * @param Request $request
+     * @return Response
+     */
+    public function getBatteryDetails(Request $request): Response
+    {
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber($request->get('search'));
+
+        if (empty($battery)) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse('/');
+        }
+
+        return $this->render(
+            'public_templates/detail_view.html.twig', [
+                'battery' => $battery
+            ]
+        );
+    }
+
+    /**
      * @Route(path="battery/report/return/{slug}", name="report_battery_return")
      * @param Request $request
      * @param $slug
