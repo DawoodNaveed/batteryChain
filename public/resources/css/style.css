@@ -73,6 +73,6 @@ a {
 
 .div-captcha {
     display: flex;
-    text-align: center;
-    justify-content: center;
+    text-align: left;
+    justify-content: left;
 }

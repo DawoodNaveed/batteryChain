@@ -25,19 +25,14 @@
                                  width="150px" alt="profile">
                         </div>
                         {{ form_start(searchForm) }}
-                        <div class="row">
-                            <div class="col-md-10 p-0">
-                                {{ form_row(searchForm.battery) }}
-                            </div>
-                            <div class="col-md-2 p-0">
-                                {{ form_row(searchForm.search) }}
-                            </div>
+                        <div class="col-md-12 p-0">
+                            {{ form_row(searchForm.battery) }}
                         </div>
                         <div class="mb-3 mt-2 p-0 div-captcha">
                             <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
                         </div>
-                        <div class="row p-0 fit-width">
-                            <a href="{{ path('app_login') }}" class="mt-2 p-0">{{ "You have an account?" | trans }}</a>
+                        <div class="col-md-2 p-0">
+                            {{ form_row(searchForm.search) }}
                         </div>
                         {{ form_end(searchForm) }}
                     </div>

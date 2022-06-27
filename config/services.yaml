@@ -33,8 +33,9 @@ services:
         calls:
             - [ setRoles, [ "%security.role_hierarchy.roles%" ] ]
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setManufacturerService, [ '@App\Service\ManufacturerService' ] ]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: User, show_in_dashboard: false }
+            - { name: sonata.admin, manager_type: orm, label: User, show_in_dashboard: true, group: User }
 
     admin.manufacturer:
         class: App\Admin\ManufacturerAdmin

@@ -268,7 +268,8 @@ class RecyclerService
         $data = [
             'user' => [
                 'name' => $formData['information']['name'],
-                'email' => $formData['information']['email'],
+                'email' => $formData['information']['email'] ?? null,
+                'contact' => $formData['information']['contact'] ?? null,
             ],
             'battery' => $battery
         ];

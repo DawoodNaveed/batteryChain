@@ -61,12 +61,21 @@ class ReturnController extends AbstractController
     }
 
     /**
-     * @Route(path="/addReturn/{slug}", name="add_return")
+     * @Route(path="battery/return/{slug}", name="add_return")
      * @param Request $request
+     * @param $slug
      * @return Response
      */
     public function returnAction(Request $request, $slug): Response
     {
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
+
+        if (empty($battery)) {
+            $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
+            return new RedirectResponse($this->generateUrl('homepage'));
+        }
+
         $countries = $this->countryService->getCountries();
         $form = $this->createForm(ReturnPublicFormType::class, null, [
             'countries' => $countries
@@ -80,7 +89,6 @@ class ReturnController extends AbstractController
             }
 
             $formData = $form->getData();
-            $serialNumber = $slug;
             $recyclerId = $formData['recyclerId'] ?? null;
 
             if (empty($recyclerId)) {
@@ -90,19 +98,19 @@ class ReturnController extends AbstractController
 
             /** @var Recycler $recycler */
             $recycler = $this->recyclerService->getRecyclerByIds([$recyclerId])[0];
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber);
 
-            if (empty($formData['information']['name']) || empty($formData['information']['email'])) {
-                $this->addFlash('danger', 'Kindly Provide User Information!');
-                return new RedirectResponse($this->generateUrl('homepage'));
+            if (empty($formData['information']['contact']) && empty($formData['information']['email'])) {
+                $this->addFlash('danger', 'Kindly Provide Email or Contact Information!');
+                return new RedirectResponse($this->generateUrl('add_return', [
+                    'slug' => $slug
+                ]));
             }
 
-            if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
-                $this->addFlash('danger', 'Battery is already returned!');
-
-                return new RedirectResponse($this->generateUrl('homepage'));
+            if (empty($formData['information']['name'])) {
+                $this->addFlash('danger', 'Kindly Provide User Information!');
+                return new RedirectResponse($this->generateUrl('add_return', [
+                    'slug' => $slug
+                ]));
             }
 
 //            $this->recyclerService->sendNewBatteryReturnEmail($recycler, $battery, $formData);

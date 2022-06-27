@@ -13,6 +13,10 @@ sonata_admin:
     html5_validate: true
   dashboard:
     groups:
+      User:
+        icon: '<i class="fa fa-users"></i>'
+        on-top: true
+        roles: ['ROLE_SUPER_ADMIN']
       Manufacturer:
         icon: '<i class="fa fa-industry"></i>'
         on-top: true

@@ -64,4 +64,5 @@ class CustomHelper
         self::BATTERY_STATUS_SHIPPED => 3,
         self::BATTERY_STATUS_RETURNED => 4,
     ];
+    const IS_VERIFIED = 1;
 }

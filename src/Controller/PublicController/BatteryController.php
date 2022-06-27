@@ -62,7 +62,7 @@ class BatteryController extends AbstractController
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
 
         if (empty($battery)) {
-            $this->addFlash('danger', $this->translator->trans('Battery does not exist!'));
+            $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
