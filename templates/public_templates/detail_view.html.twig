@@ -6,8 +6,14 @@
         .header-div {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             height: 60px;
+        }
+        .sub-header-div {
+            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: right;
         }
         .heading {
             font-size: large;
@@ -30,16 +36,26 @@
                             <div>
                                 <img src="{{ asset('resources/logo.ico') }}" class="img-fluid detail-page-logo img-thumbnail my-3"
                                      width="50px" alt="profile">
-                                <h3 style="display: inline-block">
-                                    {{ "Battery Detail" }}
-                                </h3>
-                            </div>
-                            <div class="row-div">
-                                <a class="mt-10 btn btn-success mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Add Return" | trans }}</a>
-                                <a class="mt-10 btn btn-success" href="{{ "#" }}"> {{ "Report Recycled Battery" | trans }}</a>
+                                <h2 style="display: inline-block">
+                                    {{ battery.manufacturer.name | upper }}
+                                </h2>
                             </div>
                         </div>
-                        <hr>
+                        <hr class="mb-0">
+                        <div class="sub-header-div">
+                            <span>
+                                {{ battery.manufacturer.address ~ ' * ' }}
+                            </span>
+                            <span class="ml-1">
+                                {{ 'Tel.:' | trans }}
+                                {{ battery.manufacturer.contact ~ ' * ' }}
+                            </span>
+                            <span class="ml-1">
+                                {{ 'Email:' | trans }}
+                                {{ battery.manufacturer.user.email }}
+                            </span>
+                        </div>
+                        <hr class="mt-0">
                         <div class="p-rl-12">
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
@@ -50,18 +66,6 @@
                                 <div class="col-md-8">
                                     <span class="float-right">
                                         {{ battery.serialNumber }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row p-0 row-border-bottom p-tb-5">
-                                <div class="col-md-4 p-0">
-                                    <span class="heading">
-                                        {{ "Manufacturer" | trans }}
-                                    </span>
-                                </div>
-                                <div class="col-md-8">
-                                    <span class="float-right">
-                                        {{ battery.manufacturer.name }}
                                     </span>
                                 </div>
                             </div>
@@ -86,6 +90,58 @@
                                 <div class="col-md-8">
                                     <span class="float-right">
                                         {{ battery.batteryType.type }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% if battery.cellType != '' and battery.cellType is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Cell Type" | trans }}
+                                     </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.cellType }}
+                                    </span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if battery.moduleType != '' and battery.moduleType is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                        <span class="heading">
+                                            {{ "Module Type" | trans }}
+                                         </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="float-right">
+                                            {{ battery.moduleType }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Production Date" | trans }}
+                                     </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.productionDate | date('Y-m-d') }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Tray Number" | trans }}
+                                     </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.trayNumber }}
                                     </span>
                                 </div>
                             </div>
@@ -125,6 +181,34 @@
                                     </span>
                                 </div>
                             </div>
+                            {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                        <span class="heading">
+                                            {{ "Acid Volume" | trans }}
+                                         </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="float-right">
+                                            {{ battery.acidVolume }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if battery.co2 != '' and battery.co2 is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                        <span class="heading">
+                                            {{ "CO2" | trans }}
+                                         </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="float-right">
+                                            {{ battery.co2 }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endif %}
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
@@ -137,30 +221,34 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="row p-0 row-border-bottom p-tb-5">
-                                <div class="col-md-4 p-0">
-                                    <span class="heading">
-                                        {{ "Height" | trans }}
-                                     </span>
+                            {% if battery.height != 0 and battery.height is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                        <span class="heading">
+                                            {{ "Height" | trans }}
+                                         </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="float-right">
+                                            {{ battery.height }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <span class="float-right">
-                                        {{ battery.height }}
-                                    </span>
+                            {% endif %}
+                            {% if battery.width != 0 and battery.width is not null  %}
+                                <div class="row p-0 row-border-bottom p-tb-5">
+                                    <div class="col-md-4 p-0">
+                                        <span class="heading">
+                                            {{ "Width" | trans }}
+                                         </span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <span class="float-right">
+                                            {{ battery.width }}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row p-0 row-border-bottom p-tb-5">
-                                <div class="col-md-4 p-0">
-                                    <span class="heading">
-                                        {{ "Width" | trans }}
-                                     </span>
-                                </div>
-                                <div class="col-md-8">
-                                    <span class="float-right">
-                                        {{ battery.width }}
-                                    </span>
-                                </div>
-                            </div>
+                            {% endif %}
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
@@ -175,6 +263,8 @@
                             </div>
                         </div>
                         <div class="row-div">
+                            <a class="mt-10 btn btn-success mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Add Return" | trans }}</a>
+                            <a class="mt-10 btn btn-success mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report Recycled Battery" | trans }}</a>
                             <a class="mt-10 btn btn-primary mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
                             <a class="mt-10 btn btn-light" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>

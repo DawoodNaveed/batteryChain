@@ -90,7 +90,6 @@ class EmailService
                 ]
             )
         ];
-        dd($body['Html-part']);
 
         if (!is_null($replyToEmail)) {
             $body['Headers'] = [

@@ -32,7 +32,7 @@ class ReturnPublicFormType extends AbstractType
                     'size' => 1
                 ],
                 'label_attr' => [
-                    'class' => 'fw-bold'
+                    'class' => 'fw-bold mb-1 mt-1'
                 ]
             ])
             ->add('recyclers', ChoiceType::class, [
@@ -45,7 +45,7 @@ class ReturnPublicFormType extends AbstractType
                     'class' => 'form-select'
                 ],
                 'label_attr' => [
-                    'class' => 'fw-bold'
+                    'class' => 'fw-bold mb-1 mt-1'
                 ],
             ])
             ->add('recyclerId', HiddenType::class, [])
@@ -61,16 +61,25 @@ class ReturnPublicFormType extends AbstractType
                         ],
                         'required' => true,
                         'label_attr' => [
-                            'class' => 'fw-bold'
+                            'class' => 'fw-bold mb-1 mt-1'
                         ]
                     ])
                     ->add('email', TextType::class, [
                         'attr' => [
                             'class' => 'form-control'
                         ],
-                        'required' => true,
+                        'required' => false,
                         'label_attr' => [
-                            'class' => 'fw-bold'
+                            'class' => 'fw-bold mb-1 mt-1'
+                        ]
+                    ])
+                    ->add('contact', TextType::class, [
+                        'attr' => [
+                            'class' => 'form-control'
+                        ],
+                        'required' => false,
+                        'label_attr' => [
+                            'class' => 'fw-bold mb-1 mt-1'
                         ]
                     ])
             );

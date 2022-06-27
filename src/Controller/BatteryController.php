@@ -11,11 +11,10 @@ use App\Form\BulkImportBatteryFormType;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
 use App\Service\ManufacturerService;
+use App\Service\PdfService;
 use App\Service\UserService;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,6 +37,7 @@ use Twig\Error\SyntaxError;
  * @property ManufacturerService manufacturerService
  * @property BatteryTypeService batteryTypeService
  * @property Environment twig
+ * @property PdfService pdfService
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -52,6 +52,7 @@ class BatteryController extends CRUDController
      * @param ManufacturerService $manufacturerService
      * @param BatteryTypeService $batteryTypeService
      * @param Environment $twig
+     * @param PdfService $pdfService
      */
     public function __construct(
         string $kernelProjectDir,
@@ -61,7 +62,8 @@ class BatteryController extends CRUDController
         UserService $userService,
         ManufacturerService $manufacturerService,
         BatteryTypeService $batteryTypeService,
-        Environment $twig
+        Environment $twig,
+        PdfService $pdfService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -70,6 +72,7 @@ class BatteryController extends CRUDController
         $this->manufacturerService = $manufacturerService;
         $this->batteryTypeService = $batteryTypeService;
         $this->twig = $twig;
+        $this->pdfService = $pdfService;
         $this->kernelProjectDir = $kernelProjectDir;
     }
 
@@ -222,21 +225,7 @@ class BatteryController extends CRUDController
             return new RedirectResponse($this->admin->generateUrl('list'));
         }
 
-        $pdfOptions = new Options();
-        $pdfOptions->setIsRemoteEnabled(true);
-        /* get barcode images base64 encoding */
-        $domPdf = new Dompdf($pdfOptions);
-        $html = $this->twig->render('battery/detail_view_download.html.twig', [
-            'battery' => $battery,
-            'documentTitle' => "Battery Detail",
-            'createdDate' => date('d.m.Y')
-        ]);
-        $domPdf->loadHtml($html);
-        $domPdf->setPaper('A4', 'portrait');
-        $domPdf->render();
-        $domPdf->stream('battery.pdf', [
-            "Attachment" => true
-        ]);
+        $this->pdfService->createBatteryPdf($battery);
         exit();
     }
 }

@@ -51,7 +51,12 @@
     <span>{{ "Dear Recycler," | trans }}</span>
     <p>
         {{ "A new battery return has been added by" | trans }} {{ body.user.name }}
-        <a href="mailto:{{ body.user.email }}"> {{ body.user.email }} </a>.
+        {% if body.user.email is not null %}
+            <a href="mailto:{{ body.user.email }}"> {{ body.user.email }} </a>,
+        {% endif %}
+        {% if body.user.contact is not null %}
+            <span> {{ "contact#" ~ body.user.contact }}</span>
+        {% endif %}
     </p>
     <p>
         {{ "Please find below some highlight details of Battery:" | trans }}

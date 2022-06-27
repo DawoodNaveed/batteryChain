@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\AdminType;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -102,5 +103,14 @@ class ManufacturerAdmin extends AbstractAdmin
 
         $object->getUser()->setPassword($encoded);
         $object->getUser()->setRoles([RoleEnum::ROLE_MANUFACTURER]);
+    }
+
+    /**
+     * @param RouteCollectionInterface $collection
+     */
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->remove('create');
+        $collection->remove('delete');
     }
 }

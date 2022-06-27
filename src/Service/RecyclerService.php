@@ -107,6 +107,15 @@ class RecyclerService
     }
 
     /**
+     * @param int $id
+     * @return Recycler|null
+     */
+    public function getRecyclerById(int $id): ?Recycler
+    {
+        return $this->recyclerRepository->find($id);
+    }
+
+    /**
      * @return Recycler[]|null
      */
     public function getAllRecyclers(): ?array
@@ -259,7 +268,8 @@ class RecyclerService
         $data = [
             'user' => [
                 'name' => $formData['information']['name'],
-                'email' => $formData['information']['email'],
+                'email' => $formData['information']['email'] ?? null,
+                'contact' => $formData['information']['contact'] ?? null,
             ],
             'battery' => $battery
         ];
