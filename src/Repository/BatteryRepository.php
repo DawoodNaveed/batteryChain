@@ -30,10 +30,40 @@ class BatteryRepository extends ServiceEntityRepository
     public function createNewBattery($values)
     {
         $query = "INSERT INTO battery" .
-            "(serial_number, battery_type_id, nominal_voltage, nominal_capacity, nominal_energy, cycle_life, height, width, mass, status, manufacturer_id, current_possessor_id, created, updated)" .
+            "(serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
+            " nominal_voltage, nominal_capacity, nominal_energy, acid_volume," .
+            " co2, cycle_life, height, width, mass, status," .
+            "manufacturer_id, current_possessor_id, created, updated)" .
             " VALUES " . $values;
         $connection = $this->getEntityManager()->getConnection();
         $stmt = $connection->prepare($query);
         $stmt->execute();
+    }
+
+    /**
+     * @param string $serialNumber
+     * @return Battery|null
+     */
+    public function isExist(string $serialNumber): ?Battery
+    {
+        return $this->findOneBy([
+            'serialNumber' => $serialNumber
+        ]);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function disableFilter(string $name)
+    {
+        $this->_em->getFilters()->disable($name);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function enableFilter(string $name)
+    {
+        $this->_em->getFilters()->enable($name);
     }
 }

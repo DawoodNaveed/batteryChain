@@ -31,6 +31,10 @@ a {
     margin-left: 0.5rem!important;
 }
 
+.ml-1 {
+    margin-left: 0.3rem!important;
+}
+
 .float-right {
     float: right;
 }
@@ -73,6 +77,6 @@ a {
 
 .div-captcha {
     display: flex;
-    text-align: center;
-    justify-content: center;
+    text-align: left;
+    justify-content: left;
 }

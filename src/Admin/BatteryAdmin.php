@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -45,12 +46,36 @@ class BatteryAdmin extends AbstractAdmin
                 'property' => 'type',
                 'btn_add' => false
             ])
+            ->add('cellType', TextType::class, [
+                'required' => false
+            ])
+            ->add('moduleType', TextType::class, [
+                'required' => false
+            ])
+            ->add('trayNumber', TextType::class)
+            ->add('productionDate', DateTimeType::class, [
+                'widget' => 'single_text',
+                'required' => false,
+            ])
             ->add('nominalVoltage', NumberType::class)
             ->add('nominalCapacity', NumberType::class)
             ->add('nominalEnergy', NumberType::class)
-            ->add('cycleLife', NumberType::class)
-            ->add('height', NumberType::class)
-            ->add('width', NumberType::class)
+            ->add('acidVolume', TextType::class, [
+                'required' => false
+            ])
+            ->add('co2', TextType::class, [
+                'label' => 'CO2',
+                'required' => false
+            ])
+            ->add('cycleLife', NumberType::class, [
+                'required' => false
+            ])
+            ->add('height', NumberType::class, [
+                'required' => false
+            ])
+            ->add('width', NumberType::class, [
+                'required' => false
+            ])
             ->add('mass', NumberType::class);
     }
 
@@ -66,21 +91,19 @@ class BatteryAdmin extends AbstractAdmin
             ->addIdentifier('batteryType.type', TextType::class, [
                 'label' => 'Battery Type'
             ])
+            ->addIdentifier('cellType')
+            ->addIdentifier('moduleType')
+            ->addIdentifier('productionDate', null, [
+                'format' => 'Y-m-d'
+            ])
+            ->addIdentifier('trayNumber')
+            ->addIdentifier('co2', TextType::class, [
+                'label' => 'CO2'
+            ])
             ->addIdentifier('nominalVoltage')
             ->addIdentifier('nominalCapacity')
             ->addIdentifier('nominalEnergy')
-            ->addIdentifier('width')
-            ->addIdentifier('height')
             ->addIdentifier('mass');
-        $user = $this->tokenStorage->getToken()->getUser();
-
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
-            $list
-                ->addIdentifier('currentPossessor.manufacturer.name', TextType::class, [
-                    'label' => 'Current Possessor'
-                ]);
-        }
     }
 
     /**
@@ -104,11 +127,21 @@ class BatteryAdmin extends AbstractAdmin
             ->add('batteryType.type', TextType::class, [
                 'label' => 'Battery Type'
             ])
+            ->add('cellType')
+            ->add('moduleType')
+            ->add('productionDate', null, [
+                'format' => 'Y-m-d'
+            ])
+            ->add('trayNumber')
+            ->add('co2', TextType::class, [
+                'label' => 'CO2'
+            ])
             ->add('nominalVoltage')
             ->add('nominalCapacity')
             ->add('nominalEnergy')
             ->add('height')
             ->add('width')
+            ->add('mass')
             ->add('status');
     }
 

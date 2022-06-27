@@ -1,21 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     <div id="flash-messages">
-    {% for type, messages in app.session.flashbag.all() %}
+        {% for type, messages in app.session.flashbag.all() %}
             {% for message in messages %}
                 <div class="alert alert-{{ type }}">
                     {{ message|raw }}
                     <i class="fa fa-close float-right close-flash-message"></i>
                 </div>
             {% endfor %}
-    {% endfor %}
+        {% endfor %}
     </div>
-    <div class="container">
+    <div class="container mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="mt-5">
@@ -24,17 +20,17 @@
                             <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
                                  width="150px" alt="profile">
                         </div>
-                        {{ form_start(searchForm) }}
-                        <div class="col-md-12 p-0">
-                            {{ form_row(searchForm.battery) }}
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-md-12 p-0">
+                                {{ form_row(form.recyclers) }}
+                            </div>
+                            <div class="row-div">
+                                {{ form_row(form.submit) }}
+                                {{ form_row(form.cancel) }}
+                            </div>
                         </div>
-                        <div class="mb-3 mt-2 p-0 div-captcha">
-                            <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
-                        </div>
-                        <div class="col-md-2 p-0">
-                            {{ form_row(searchForm.search) }}
-                        </div>
-                        {{ form_end(searchForm) }}
+                        {{ form_end(form) }}
                     </div>
                 </div>
             </div>

@@ -16,9 +16,10 @@
             bottom:-40px;
             height: 85px;
             margin-top: 24px;
+            width: 100%;
         }
         #footer .page:after { content: counter(page); }
-        .text-align-center { text-align: center }
+        .text-align-left { text-align: left }
         .title {
             font-weight: normal;
             font-style: normal;
@@ -51,34 +52,11 @@
             font-size: 16px;
             resize: none;
         }
-        .term-block {
-            width: 100%;
-            padding: 12px;
-        }
-        .term-block-container {
-            padding: 24px;
-        }
-        .float-left {
-            float:left
-        }
-        .float-right {
-            float:right;
-        }
-        .text-center {
-            text-align:center;
-        }
-        .bold {
-            font-weight: bold;
-        }
-        .basic-info {
-            line-height: 8px;
-        }
         .heading-title {
             font-family: 'Montserrat', sans-serif;
             font-weight: bold;
             font-style: normal;
             font-size: 24px;
-            padding-top: 24px;
             float: right;
         }
         .heading-title-hash {
@@ -87,7 +65,6 @@
             font-style: normal;
             font-size: 24px;
             word-wrap: break-word;
-            padding-top: 24px;
             line-height: normal;
             float: right;
         }
@@ -97,49 +74,14 @@
             font-style: normal;
             font-size: 18px;
         }
-        .hash-anchor {
-            text-decoration: none;
-            font-size: 12px;
-            width: 80%;
-            display: inline-block;
-            vertical-align: middle;
-            line-height: 13px;
-        }
-        .hash-anchor_para span,
-        .hash-span{
-            font-size: 12px;
-            vertical-align: middle;
-            line-height: 13px;
-        }
-        .main-detail {
-            background: white;
-            border: 0.5px solid darkgrey;
-            border-radius: 10px;
-        }
-        .p-0 {
-            padding: 0;
-        }
-        .heading {
-            font-size: large;
-            font-weight: normal;
-        }
         .row-border-bottom {
             border-bottom: 1px solid lightgray;
-        }
-        .p-tb-5 {
-            padding: 5px 0;
-        }
-        .mt-10 {
-            margin-top: 10px;
-        }
-        .w-10 {
-            width: 10%;
         }
         .row-div {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
+            height: 40px;
         }
     </style>
 </head>
@@ -148,7 +90,7 @@
 <hr>
 <div id="footer">
     <hr>
-    <div class="text-align-center" style="padding-top:4px; font-size: 18px;">
+    <div class="text-align-left" style="padding-top:4px; font-size: 18px;">
         <span class="page"> {{ createdDate }} | Pg. </span>
     </div>
 </div>
@@ -171,6 +113,22 @@
             <span class="heading-title-hash">{{ battery.batteryType.type }}</span>
         </div>
         <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Cell Type" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.cellType }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Module Type" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.moduleType }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Production Date" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.productionDate | date('Y-m-d') }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Tray Number" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.trayNumber }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Nominal Voltage" | trans }}</span>
             <span class="heading-title-hash">{{ battery.nominalVoltage }}</span>
         </div>
@@ -181,6 +139,14 @@
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Nominal Energy" | trans }}</span>
             <span class="heading-title-hash">{{ battery.nominalEnergy }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Acid Volume" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.acidVolume }}</span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "CO2" | trans }}</span>
+            <span class="heading-title-hash">{{ battery.co2 }}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Cycle Life" | trans }}</span>

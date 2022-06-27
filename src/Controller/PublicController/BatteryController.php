@@ -3,8 +3,7 @@
 namespace App\Controller\PublicController;
 
 use App\Entity\Battery;
-use App\Entity\Recycler;
-use App\Form\ReturnPublicFormType;
+use App\Form\ReportBatteryReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\CountryService;
@@ -20,7 +19,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class ReturnController
+ * Class BatteryController
  * @package App\Controller\PublicController
  * @property Security security
  * @property EntityManagerInterface entityManager
@@ -30,43 +29,57 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property TranslatorInterface translator
  * @property CountryService countryService
  */
-class ReturnController extends AbstractController
+class BatteryController extends AbstractController
 {
     /**
-     * RecyclerController constructor.
-     * @param Security $security
+     * BatteryController constructor.
      * @param EntityManagerInterface $entityManager
-     * @param ManufacturerService $manufacturerService
      * @param BatteryService $batteryService
      * @param RecyclerService $recyclerService
-     * @param CountryService $countryService
      * @param TranslatorInterface $translator
      */
     public function __construct(
-        Security $security,
         EntityManagerInterface $entityManager,
-        ManufacturerService $manufacturerService,
         BatteryService $batteryService,
         RecyclerService $recyclerService,
-        CountryService $countryService,
         TranslatorInterface $translator
     ) {
-        $this->security = $security;
         $this->entityManager = $entityManager;
-        $this->manufacturerService = $manufacturerService;
         $this->batteryService = $batteryService;
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
-        $this->countryService = $countryService;
     }
 
     /**
-     * @Route(path="battery/return/{slug}", name="add_return")
+     * @Route(path="battery/detail", name="battery_detail")
+     * @param Request $request
+     * @return Response
+     */
+    public function getBatteryDetails(Request $request): Response
+    {
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber($request->get('search'));
+
+        if (empty($battery)) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse('/');
+        }
+
+        return $this->render(
+            'public_templates/detail_view.html.twig', [
+                'battery' => $battery
+            ]
+        );
+    }
+
+    /**
+     * @Route(path="battery/report/return/{slug}", name="report_battery_return")
      * @param Request $request
      * @param $slug
      * @return Response
      */
-    public function returnAction(Request $request, $slug): Response
+    public function reportBatteryReturnAction(Request $request, $slug): Response
     {
         /** @var Battery|null $battery */
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
@@ -76,10 +89,10 @@ class ReturnController extends AbstractController
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
-        $countries = $this->countryService->getCountries();
-        $form = $this->createForm(ReturnPublicFormType::class, null, [
-            'countries' => $countries
+        $form = $this->createForm(ReportBatteryReturnFormType::class, null, [
+            'recyclers' => $this->recyclerService->toChoiceArray(($battery->getManufacturer()->getRecyclers()), true)
         ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted())
@@ -89,41 +102,33 @@ class ReturnController extends AbstractController
             }
 
             $formData = $form->getData();
-            $recyclerId = $formData['recyclerId'] ?? null;
+            $recycler = $formData['recyclers'] ?? null;
 
-            if (empty($recyclerId)) {
-                $this->addFlash('danger', 'Kindly Select Recycler!');
+            if (empty($recycler)) {
+                $this->addFlash('danger', $this->translator->trans('Kindly Select Recycler!'));
+                return new RedirectResponse($this->generateUrl('report_battery_return', [
+                    'slug' => $slug
+                ]));
+            }
+
+            if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
+                $this->addFlash('danger', $this->translator->trans('Battery is already returned!'));
+
                 return new RedirectResponse($this->generateUrl('homepage'));
             }
 
-            /** @var Recycler $recycler */
-            $recycler = $this->recyclerService->getRecyclerByIds([$recyclerId])[0];
-
-            if (empty($formData['information']['contact']) && empty($formData['information']['email'])) {
-                $this->addFlash('danger', 'Kindly Provide Email or Contact Information!');
-                return new RedirectResponse($this->generateUrl('add_return', [
-                    'slug' => $slug
-                ]));
-            }
-
-            if (empty($formData['information']['name'])) {
-                $this->addFlash('danger', 'Kindly Provide User Information!');
-                return new RedirectResponse($this->generateUrl('add_return', [
-                    'slug' => $slug
-                ]));
-            }
-
-//            $this->recyclerService->sendNewBatteryReturnEmail($recycler, $battery, $formData);
-            $this->addFlash('success', 'Return Added Successfully!');
+            $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $this->entityManager->flush();
+            $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
 
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
         return $this->render(
-            'public_templates/battery_return/add_battery_return.html.twig',
+            'public_templates/battery_return/report_battery_return.html.twig',
             array(
                 'form' => $form->createView(),
-                'serialNumber' => $slug
             )
         );
     }

@@ -6,17 +6,25 @@ use App\Entity\Distributor;
 use App\Entity\Manufacturer;
 use App\Entity\User;
 use App\Repository\ManufacturerRepository;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ManufacturerService
  * @package App\Service
  * @property ManufacturerRepository manufacturerRepository
+ * @property LoggerInterface logger
  */
 class ManufacturerService
 {
-    public function __construct(ManufacturerRepository $manufacturerRepository)
+    /**
+     * ManufacturerService constructor.
+     * @param ManufacturerRepository $manufacturerRepository
+     * @param LoggerInterface $logger
+     */
+    public function __construct(ManufacturerRepository $manufacturerRepository, LoggerInterface $logger)
     {
         $this->manufacturerRepository = $manufacturerRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -43,5 +51,41 @@ class ManufacturerService
         }
 
         return $result;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function createBasicManufacturer(User $user)
+    {
+        try {
+            $this->manufacturerRepository->createBasicManufacturer($user);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Error][Create Manufacturer] ' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * @param User $user
+     */
+    public function removeManufacturer(User $user)
+    {
+        try {
+            $this->manufacturerRepository->removeManufacturer($user);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Error][Remove Manufacturer] ' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * @param User $user
+     */
+    public function updateBasicManufacturer(User $user)
+    {
+        try {
+            $this->manufacturerRepository->updateBasicManufacturer($user);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Error][Update Manufacturer] ' . $exception->getMessage());
+        }
     }
 }

@@ -5,10 +5,9 @@ namespace App\Controller;
 use App\Entity\Battery;
 use App\Form\BatteryDetailFormType;
 use App\Service\BatteryService;
+use App\Service\PdfService;
 use App\Service\ReCaptchaService;
 use App\Service\UserService;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +27,7 @@ use Twig\Error\SyntaxError;
  * @property BatteryService batteryService
  * @property ReCaptchaService reCaptchaService
  * @property Environment twig
+ * @property PdfService pdfService
  */
 class DefaultController extends AbstractController
 {
@@ -38,19 +38,22 @@ class DefaultController extends AbstractController
      * @param BatteryService $batteryService
      * @param ReCaptchaService $reCaptchaService
      * @param Environment $twig
+     * @param PdfService $pdfService
      */
     public function __construct(
         UserService $userService,
         UrlGeneratorInterface $urlGenerator,
         BatteryService $batteryService,
         ReCaptchaService $reCaptchaService,
-        Environment $twig
+        Environment $twig,
+        PdfService $pdfService
     ) {
         $this->userService = $userService;
         $this->urlGenerator = $urlGenerator;
         $this->batteryService = $batteryService;
         $this->reCaptchaService = $reCaptchaService;
         $this->twig = $twig;
+        $this->pdfService = $pdfService;
     }
     /**
      * @param Request $request
@@ -90,11 +93,9 @@ class DefaultController extends AbstractController
                 return new RedirectResponse('/');
             }
 
-            return $this->render(
-                'public_templates/detail_view.html.twig', [
-                    'battery' => $battery
-                ]
-            );
+            return new RedirectResponse($this->generateUrl('battery_detail', [
+                'search' => $battery->getSerialNumber()
+            ]));
         }
 
         return $this->render(
@@ -132,21 +133,7 @@ class DefaultController extends AbstractController
             return new RedirectResponse('/');
         }
 
-        $pdfOptions = new Options();
-        $pdfOptions->setIsRemoteEnabled(true);
-        /* get barcode images base64 encoding */
-        $domPdf = new Dompdf($pdfOptions);
-        $html = $this->twig->render('battery/detail_view_download.html.twig', [
-            'battery' => $battery,
-            'documentTitle' => "Battery Detail",
-            'createdDate' => date('d.m.Y')
-        ]);
-        $domPdf->loadHtml($html);
-        $domPdf->setPaper('A4', 'portrait');
-        $domPdf->render();
-        $domPdf->stream('battery.pdf', [
-            "Attachment" => true
-        ]);
+        $this->pdfService->createBatteryPdf($battery);
         exit();
     }
 }
