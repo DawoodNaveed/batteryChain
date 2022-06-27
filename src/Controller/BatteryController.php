@@ -231,6 +231,7 @@ class BatteryController extends CRUDController
             'documentTitle' => "Battery Detail",
             'createdDate' => date('d.m.Y')
         ]);
+
         $domPdf->loadHtml($html);
         $domPdf->setPaper('A4', 'portrait');
         $domPdf->render();
