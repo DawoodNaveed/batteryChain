@@ -26,7 +26,7 @@ class BulkReturnFormType extends AbstractType
                 [
                     'required' => true,
                     'label' => 'Manufacturer',
-                    'choices' => $options['manufacturer']
+                    'choices' => array_merge(['Kindly Select Manufacturer' => ''], $options['manufacturer'])
                 ]
             );
         }

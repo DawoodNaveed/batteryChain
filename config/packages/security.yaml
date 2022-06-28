@@ -38,7 +38,7 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
+        ROLE_ADMIN:       [ROLE_ADMIN, ROLE_USER, ROLE_MANUFACTURER]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_MANUFACTURER]
         ROLE_MANUFACTURER: [ROLE_USER, ROLE_MANUFACTURER]
 
