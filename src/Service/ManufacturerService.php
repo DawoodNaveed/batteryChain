@@ -29,25 +29,31 @@ class ManufacturerService
 
     /**
      * @param User $user
+     * @param bool $isFetchIds
      * @return null|Manufacturer[]
      */
-    public function getManufactures(User $user): ?array
+    public function getManufactures(User $user, $isFetchIds = false): ?array
     {
         $manufacturers = $this->manufacturerRepository->findAll();
 
-        return $this->toChoiceArray($manufacturers);
+        return $this->toChoiceArray($manufacturers, $isFetchIds);
     }
 
     /**
      * @param Manufacturer[] $manufacturers
+     * @param bool $isFetchIds
      * @return array
      */
-    private function toChoiceArray($manufacturers): array
+    public function toChoiceArray($manufacturers, $isFetchIds = false): array
     {
         $result = null;
 
         foreach ($manufacturers as $manufacturer) {
-            $result[$manufacturer->getName()] = $manufacturer;
+            if ($isFetchIds) {
+                $result[$manufacturer->getName()] = $manufacturer->getId();
+            } else {
+                $result[$manufacturer->getName()] = $manufacturer;
+            }
         }
 
         return $result;

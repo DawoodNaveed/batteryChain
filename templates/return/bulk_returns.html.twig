@@ -14,12 +14,15 @@
 {% endblock %}
 
 {% block sonata_admin_content %}
+    {% block notice %}
+        {{ parent() }}
+    {% endblock notice %}
     <div class="alert alert-light">
         <span>
             <i class="fa fa-info-circle margin-r-5"></i>
             {{ "You can download sample csv file and view which headers to be used." | trans }}
         </span>
-        <a href="{{ asset('resources/csv/bulk_delivery_sample.csv') }}" target="_blank"
+        <a href="{{ asset('resources/csv/bulk_return_sample.csv') }}" target="_blank"
            class="sample-csv font-light label label-success">
                 {{ " Sample CSV" | trans }}
         </a>
@@ -42,9 +45,9 @@
                         var options, select;
 
                         // Get the raw DOM object for the select box
-                        select = $('#available_recycler_form_recycler');
+                        select = $('#bulk_return_form_recycler');
                         select.html('');
-                        options = data.recyclers; // Or whatever source information you're working with
+                        options = data.recyclers;
                         $.each(options, function(index, element) {
                             var newOption = new Option(index, element, false, false);
                             select.append(newOption);

@@ -162,15 +162,21 @@ class ReturnController extends CRUDController
 
         // In-Case of Super Admin
         if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
-            $manufacturers = $this->manufacturerService->getManufactures($user);
+            $manufacturers = $this->manufacturerService->getManufactures($user, true);
         }
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
-            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
+            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers());
         } else {
-            $recyclers = $this->recyclerService->getAllRecyclers();
-            $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
+            $recyclers = null;
+            if (!empty(array_values($manufacturers)[0])) {
+                $manufacturerFirst = $this->manufacturerService->manufacturerRepository->findOneBy([
+                    'id' => array_values($manufacturers)[0]
+                ]);
+                $recyclers = $manufacturerFirst->getRecyclers();
+                $recyclers = $this->recyclerService->toChoiceArray($recyclers);
+            }
         }
 
         $form = $this->createForm(BulkReturnFormType::class, null, [
@@ -187,8 +193,24 @@ class ReturnController extends CRUDController
             $formData = $form->getData();
             /** @var Manufacturer $manufacturer */
             $manufacturer = $formData['manufacturer'] ?? null;
+
+            if (!empty($manufacturer)) {
+                $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy([
+                    'id' => $manufacturer
+                ]);
+            }
             /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
+
+            if (empty($recycler)) {
+                $this->addFlash('sonata_flash_error', 'Kindly provide Recycler!');
+                return new RedirectResponse($this->admin->generateUrl('bulkReturn'));
+            } else {
+                $recycler = $this->recyclerService->recyclerRepository->findOneBy([
+                    'id' => $recycler
+                ]);
+            }
+
             $file = $request->files->all();
 
             if (!empty($file) && isset($file['bulk_return_form']['csv'])) {
@@ -216,7 +238,7 @@ class ReturnController extends CRUDController
         }
 
         return $this->render(
-            'bulk_deliveries.html.twig',
+            'return/bulk_returns.html.twig',
             array(
                 'form' => $form->createView(),
             )
@@ -232,6 +254,7 @@ class ReturnController extends CRUDController
         $manufacturer = $request->request->get('bulk_return_form');
         /** @var Manufacturer|null $manufacturer */
         $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy(['id' => $manufacturer['manufacturer']]);
+        /** @var Recycler[] $recyclers */
         $recyclers = $manufacturer->getRecyclers();
 
         return new JsonResponse([
