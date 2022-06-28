@@ -164,23 +164,18 @@ class ShipmentAdmin extends AbstractAdmin
      */
     protected function configureDashboardActions(array $actions): array
     {
-        $user = $this->tokenStorage->getToken()->getUser();
-
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
-            $actions['shipment'] = [
-                'label' => 'Add Delivery',
-                'translation_domain' => 'SonataAdminBundle',
-                'url' => $this->generateUrl('shipment'),
-                'icon' => 'fa fa-plus',
-            ];
-            $actions['bulkDelivery'] = [
-                'label' => 'Add Bulk Delivery',
-                'translation_domain' => 'SonataAdminBundle',
-                'url' => $this->generateUrl('bulkDelivery'),
-                'icon' => 'fa fa-file',
-            ];
-        }
+        $actions['shipment'] = [
+            'label' => 'Add Delivery',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('shipment'),
+            'icon' => 'fa fa-plus',
+        ];
+        $actions['bulkDelivery'] = [
+            'label' => 'Add Bulk Delivery',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('bulkDelivery'),
+            'icon' => 'fa fa-file',
+        ];
 
         return $actions;
     }

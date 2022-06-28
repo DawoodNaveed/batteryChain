@@ -62,7 +62,6 @@ class ShipmentController extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $batteries = $this->batteryService->getCurrentPossessedBatteries($user);
         $manufacturer = null;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
@@ -70,9 +69,7 @@ class ShipmentController extends CRUDController
             $manufacturer = $user->getManufacturer();
         }
 
-        $form = $this->createForm(ShipmentFormType::class, null, [
-            'batteries' => $batteries,
-        ]);
+        $form = $this->createForm(ShipmentFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted())
@@ -86,7 +83,7 @@ class ShipmentController extends CRUDController
 
             if (empty($serialNumber)) {
                 $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
-                return new RedirectResponse($this->admin->generateUrl('list'));
+                return new RedirectResponse($this->admin->generateUrl('shipment'));
             }
 
             /** @var Battery|null $battery */
@@ -94,7 +91,7 @@ class ShipmentController extends CRUDController
 
             if (empty($battery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
-                return new RedirectResponse($this->admin->generateUrl('list'));
+                return new RedirectResponse($this->admin->generateUrl('shipment'));
             }
 
             if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
@@ -149,7 +146,8 @@ class ShipmentController extends CRUDController
         $manufacturers = null;
 
         // In-Case of Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
+            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
             $manufacturers = $this->manufacturerService->getManufactures($user);
         }
 
