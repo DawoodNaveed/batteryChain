@@ -169,14 +169,8 @@ class ReturnController extends CRUDController
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers());
         } else {
-            $recyclers = null;
-            if (!empty(array_values($manufacturers)[0])) {
-                $manufacturerFirst = $this->manufacturerService->manufacturerRepository->findOneBy([
-                    'id' => array_values($manufacturers)[0]
-                ]);
-                $recyclers = $manufacturerFirst->getRecyclers();
-                $recyclers = $this->recyclerService->toChoiceArray($recyclers);
-            }
+            $recyclers = $this->recyclerService->getAllRecyclers();
+            $recyclers = $this->recyclerService->toChoiceArray($recyclers);
         }
 
         $form = $this->createForm(BulkReturnFormType::class, null, [

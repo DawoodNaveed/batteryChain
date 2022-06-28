@@ -32,6 +32,11 @@
     <script>
         $(document).ready(function () {
             var $manufacturer = $('#bulk_return_form_manufacturer');
+
+            if ($manufacturer.length > 0) {
+                $('#bulk_return_form_recycler').parent().hide();
+            }
+
             $manufacturer.change(function() {
                 var data = {};
                 data[$manufacturer.attr('name')] = $manufacturer.val();
@@ -52,6 +57,7 @@
                             var newOption = new Option(index, element, false, false);
                             select.append(newOption);
                         });
+                        $('#bulk_return_form_recycler').parent().show();
                     }
                 });
             });
