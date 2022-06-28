@@ -2,42 +2,73 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    <style>
+        .container {
+            max-width: 960px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <div id="flash-messages">
-    {% for type, messages in app.session.flashbag.all() %}
-            {% for message in messages %}
-                <div class="alert alert-{{ type }}">
-                    {{ message|raw }}
-                    <i class="fa fa-close float-right close-flash-message"></i>
-                </div>
-            {% endfor %}
-    {% endfor %}
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="mt-5">
-                    <div class="p-3 border card-body cardbody-color p-lg-5">
-                        <div class="text-center">
-                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                                 width="150px" alt="profile">
-                        </div>
-                        {{ form_start(searchForm) }}
-                        <div class="col-md-12 p-0">
-                            {{ form_row(searchForm.battery) }}
-                        </div>
-                        <div class="mb-3 mt-2 p-0 div-captcha">
-                            <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
-                        </div>
-                        <div class="col-md-2 p-0">
-                            {{ form_row(searchForm.search) }}
-                        </div>
-                        {{ form_end(searchForm) }}
+    <body class="bg-light d-flex flex-column min-vh-100">
+        <div class="container">
+            <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+                <h2>{{ "Battery Chain" | trans }}</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="flash-messages">
+                        {% for type, messages in app.session.flashbag.all() %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ type }}">
+                                    {{ message|raw }}
+                                    <i class="fa fa-close float-right close-flash-message"></i>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
                     </div>
+                    {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-3">
+                            <label for="serialNumber">{{ "Serial Number" }}</label>
+                            {{ form_widget(searchForm.battery) }}
+                            <div class="invalid-feedback">
+                                {{ "Please enter a valid serial number." }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="mb-3 mt-2 p-0 div-captcha">
+                                <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
+                            </div>
+                        </div>
+                        <hr class="mb-4">
+                        {{ form_row(searchForm.search) }}
+                    {{ form_end(searchForm) }}
                 </div>
             </div>
         </div>
-    </div>
+
+        {% include 'footer.html.twig' %}
+
+        <script>
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                    var forms = document.getElementsByClassName('needs-validation');
+
+                    // Loop over them and prevent submission
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        </script>
+    </body>
 {% endblock %}
