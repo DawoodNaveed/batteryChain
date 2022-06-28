@@ -162,23 +162,18 @@ class BatteryReturnAdmin extends AbstractAdmin
      */
     protected function configureDashboardActions(array $actions): array
     {
-        $user = $this->tokenStorage->getToken()->getUser();
-
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-            && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
-            $actions['return'] = [
-                'label' => 'Add Return',
-                'translation_domain' => 'SonataAdminBundle',
-                'url' => $this->generateUrl('return'),
-                'icon' => 'fa fa-plus',
-            ];
-            $actions['bulkReturn'] = [
-                'label' => 'Add Bulk Return',
-                'translation_domain' => 'SonataAdminBundle',
-                'url' => $this->generateUrl('bulkReturn'),
-                'icon' => 'fa fa-file',
-            ];
-        }
+        $actions['return'] = [
+            'label' => 'Add Return',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('return'),
+            'icon' => 'fa fa-plus',
+        ];
+        $actions['bulkReturn'] = [
+            'label' => 'Add Bulk Return',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('bulkReturn'),
+            'icon' => 'fa fa-file',
+        ];
 
         return $actions;
     }

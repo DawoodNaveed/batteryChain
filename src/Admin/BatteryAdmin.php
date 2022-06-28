@@ -187,8 +187,10 @@ class BatteryAdmin extends AbstractAdmin
             $object->setCreated(new \DateTime('now'));
         }
 
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-        && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
+        if ((!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+        && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) ||
+            (!in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
+                && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true))) {
             $object->setManufacturer($user->getManufacturer());
         }
 
