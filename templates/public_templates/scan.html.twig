@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container {
+            max-width: 960px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('resources/instascan.min.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
+        <div class="container">
+            <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+                <h2>{{ "Battery Chain" | trans }}</h2>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div id="error-messages" class="alert alert-danger" style="display: none">
+                    </div>
+                    <div class="text-center">
+                        <div class="scan-qr-div pt-7">
+                            <video width="50%" id="preview"></video>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3 text-center">
+                        <form class="card p-2" action="{{ path('battery_detail') }}">
+                            <div class="input-group">
+                                <input type="text" name="search" id="search" class="form-control" placeholder="Go to detail page">
+                                <div class="input-group-append">
+                                    <button type="submit" id="btn-search" class="btn btn-secondary">{{ "Search" | trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'footer.html.twig' %}
+
+        <script type="text/javascript">
+            $('#btn-search').prop('disabled', true);
+            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+            scanner.addListener('scan', function (content) {
+                $('#search').val(content);
+                $('#btn-search').prop('disabled', false);
+                console.log(content);
+            });
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]);
+                } else {
+                    console.error('No cameras found.');
+                }
+            }).catch(function (e) {
+                $('#error-messages').show();
+                $('#error-messages').html(e.toString());
+                console.error(e);
+            });
+        </script>
+    </body>
+{% endblock %}

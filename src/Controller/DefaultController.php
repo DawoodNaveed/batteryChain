@@ -136,4 +136,16 @@ class DefaultController extends AbstractController
         $this->pdfService->createBatteryPdf($battery);
         exit();
     }
+
+    /**
+     * @Route(name="scan_qr", path="battery/scan/qr")
+     * @return Response
+     */
+    public function scanQrAction(): Response
+    {
+        return $this->render(
+            'public_templates/scan.html.twig'
+        );
+
+    }
 }
