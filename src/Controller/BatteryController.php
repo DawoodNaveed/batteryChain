@@ -88,7 +88,8 @@ class BatteryController extends CRUDController
         $manufacturers = null;
 
         // In-Case of Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
+            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
             $manufacturers = $this->manufacturerService->getManufactures($user);
         }
 
