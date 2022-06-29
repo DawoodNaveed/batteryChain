@@ -59,10 +59,12 @@
 
         <script type="text/javascript">
             $('#btn-search').prop('disabled', true);
+            $('#search').prop('disabled', true);
             let scanner = new Instascan.Scanner({ video: document.getElementById('preview')});
             scanner.addListener('scan', function (content) {
                 $('#search').val(content);
                 $('#btn-search').prop('disabled', false);
+                $('#search').prop('disabled', false);
                 console.log(content);
             });
             Instascan.Camera.getCameras().then(function (cameras) {
