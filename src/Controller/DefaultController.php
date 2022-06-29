@@ -148,4 +148,16 @@ class DefaultController extends AbstractController
         );
 
     }
+
+    /**
+     * @Route(name="scan_qr-extra", path="battery/scan/qr/extra")
+     * @return Response
+     */
+    public function scanQrExtraAction(): Response
+    {
+        return $this->render(
+            'public_templates/scan1.html.twig'
+        );
+
+    }
 }

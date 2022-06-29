@@ -197,6 +197,7 @@ class BatteryController extends CRUDController
             'battery/detail_form_view.html.twig',
             array(
                 'form' => $form->createView(),
+                'scan' => $this->admin->generateUrl('scanQr')
             )
         );
     }
@@ -228,5 +229,43 @@ class BatteryController extends CRUDController
 
         $this->pdfService->createBatteryPdf($battery);
         exit();
+    }
+
+    /**
+     * @return Response
+     */
+    public function scanQrAction(): Response
+    {
+        return $this->render(
+            'battery/scan.html.twig', [
+                'path' => $this->admin->generateUrl('getScanResult'),
+            ]
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function getScanResultAction(Request $request): Response
+    {
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber($request->get('search'));
+
+        if (empty($battery)) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse($this->admin->generateUrl('detail'));
+        }
+
+        return $this->render(
+            'battery/detail_view.html.twig', [
+                'battery' => $battery,
+                'path' => $this->admin->generateUrl('detail'),
+                'downloadPath' => $this->admin->generateUrl('download', [
+                    'serialNumber' => $battery->getSerialNumber()
+                ])
+            ]
+        );
     }
 }
