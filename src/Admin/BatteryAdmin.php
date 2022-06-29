@@ -203,6 +203,8 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('import');
         $collection->add('detail');
         $collection->add('download');
+        $collection->add('scanQr');
+        $collection->add('getScanResult');
     }
 
     /**

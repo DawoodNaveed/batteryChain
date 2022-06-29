@@ -1,0 +1,88 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container {
+            max-width: 960px;
+        }
+        .videoElement
+        {
+            transform: rotateY(180deg);
+            -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+            -moz-transform:rotateY(180deg); /* Firefox */
+        }
+        @media (max-width: 900px) {
+            video#preview {
+                width: 100% !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('resources/instascan.min.js') }}"></script>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div id="error-messages" class="alert alert-danger" style="display: none">
+                </div>
+                <div class="text-center">
+                    <div class="scan-qr-div pt-7">
+                        <video width="50%" id="preview"></video>
+                    </div>
+                </div>
+                <hr>
+                <div class="mb-3 text-center">
+
+                    <form class="card p-2" action="{{ path }}">
+                        <div class="row">
+                            <div class="col-md-10" style="padding-right: 0">
+                                <input style="border-radius: 2px" type="text" name="search" id="search" class="form-control" placeholder="Go to detail page">
+                            </div>
+                            <div class="col-md-2" style="padding-left: 0">
+                                <button type="submit" id="btn-search" class="btn btn-primary btn-block">{{ "Search" | trans }}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('#btn-search').prop('disabled', true);
+        $('#search').prop('disabled', true);
+        let scanner = new Instascan.Scanner({ video: document.getElementById('preview')});
+        scanner.addListener('scan', function (content) {
+            $('#search').val(content);
+            $('#btn-search').prop('disabled', false);
+            $('#search').prop('disabled', false);
+            console.log(content);
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                var selectedCam = cameras[0];
+                $.each(cameras, (i, c) => {
+                    if (c.name.indexOf('back') != -1) {
+                        $('.scan-qr-div').addClass('videoElement');
+                        selectedCam = c;
+                        return false;
+                    }
+                });
+
+                scanner.start(selectedCam);
+            } else {
+                console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            $('#error-messages').show();
+            $('#error-messages').html(e.toString());
+            console.error(e);
+        });
+    </script>
+{% endblock %}
