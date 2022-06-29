@@ -10,11 +10,36 @@
 {% endblock %}
 
 {% block sonata_admin_content %}
+    {% block notice %}
+        {{ parent() }}
+    {% endblock notice %}
     <div class="container-fluid">
+        <h2>
+            {{ "Search Battery" | trans }}
+        </h2>
+        <hr>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 {{ form_start(form) }}
+                    <div class="mb-3">
+                        <label for="serialNumber">{{ "Serial Number" }}</label>
+                        {{ form_widget(form.battery) }}
+                    </div>
+                    <hr class="mb-4">
+                    {{ form_row(form.search) }}
                 {{ form_end(form) }}
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <div class="text-center" style="padding: 10px 60px">
+                        <img src="{{ asset('resources/qr-code-scan.svg') }}" width="50%"/>
+                    </div>
+                    <div class="d-grid gap-2" style="padding: 0 10px">
+                        <a href="{{ scan }}" class="btn btn-primary btn-block">
+                            <i class="fa fa-qrcode"></i> {{ "Scan QR" | trans }}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

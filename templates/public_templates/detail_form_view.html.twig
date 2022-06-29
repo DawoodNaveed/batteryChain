@@ -17,17 +17,17 @@
                 <h2>{{ "Battery Chain" | trans }}</h2>
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    <div id="flash-messages">
-                        {% for type, messages in app.session.flashbag.all() %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ type }}">
-                                    {{ message|raw }}
-                                    <i class="fa fa-close float-right close-flash-message"></i>
-                                </div>
-                            {% endfor %}
+                <div id="flash-messages">
+                    {% for type, messages in app.session.flashbag.all() %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ type }}">
+                                {{ message|raw }}
+                                <i class="fa fa-close float-right close-flash-message"></i>
+                            </div>
                         {% endfor %}
-                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-8 mb-4">
                     {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
                             <label for="serialNumber">{{ "Serial Number" }}</label>
@@ -44,6 +44,18 @@
                         <hr class="mb-4">
                         {{ form_row(searchForm.search) }}
                     {{ form_end(searchForm) }}
+                </div>
+                <div class="col-md-4 col-sm-6 scan-qr-div mb-4">
+                    <div class="mb-3">
+                        <div class="text-center" style="padding: 10px 60px">
+                            <img src="{{ asset('resources/qr-code-scan.svg') }}" width="100%"/>
+                        </div>
+                        <div class="d-grid gap-2" style="padding: 0 10px">
+                            <a href="{{ path('scan_qr') }}" class="btn btn-primary btn-block">
+                                <i class="fa fa-qrcode"></i> {{ "Scan QR" | trans }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

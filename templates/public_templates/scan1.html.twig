@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container {
+            max-width: 960px;
+        }
+        .videoElement
+        {
+            transform: rotateY(180deg);
+            -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+            -moz-transform:rotateY(180deg); /* Firefox */
+        }
+        @media (max-width: 900px) {
+            video#preview {
+                width: 100% !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+{% endblock %}
+
+{% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
+        <div class="container">
+            <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+                <h2>{{ "Battery Chain" | trans }}</h2>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div id="error-messages" class="alert alert-danger" style="display: none">
+                    </div>
+                    <div class="text-center">
+                        <div class="scan-qr-div pt-7">
+                            <video id="video" width="640" height="480" style="border: 1px solid gray"></video>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3 text-center">
+                        <div id="sourceSelectPanel" style="display:none">
+                            <label for="sourceSelect">Change video source:</label>
+                            <select id="sourceSelect" style="max-width:400px">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <form class="card p-2" action="{{ path('battery_detail') }}">
+                            <div class="input-group">
+                                <pre><code id="result"></code></pre>
+                                <input type="text" name="search" id="search" class="form-control" placeholder="Go to detail page">
+                                <div class="input-group-append">
+                                    <button type="submit" id="btn-search" class="btn btn-secondary">{{ "Search" | trans }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'footer.html.twig' %}
+
+        <script type="text/javascript">
+            $('#btn-search').prop('disabled', true);
+            window.addEventListener('load', function () {
+                let selectedDeviceId;
+                var hints = new Map();
+                const enabledFormats = [
+                    // ...ALL_FORMATS_WHICH_YOU_WANT_TO_ENABLE
+                    ZXing.BarcodeFormat.UPC_A,
+                    ZXing.BarcodeFormat.AZTEC,
+                    ZXing.BarcodeFormat.CODE_128,
+                    ZXing.BarcodeFormat.DATA_MATRIX,
+                    ZXing.BarcodeFormat.MAXICODE,
+                    ZXing.BarcodeFormat.QR_CODE,
+                ];
+                hints.set(ZXing.DecodeHintType.ASSUME_GS1, true)
+                hints.set(ZXing.DecodeHintType.TRY_HARDER, true)
+                hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, enabledFormats)
+                const codeReader = new ZXing.BrowserMultiFormatReader(hints)
+                console.log('ZXing code reader initialized')
+                codeReader.getVideoInputDevices()
+                    .then((videoInputDevices) => {
+                        if (videoInputDevices.length < 1) {
+                            console.log('No video devices found');
+                            return;
+                        }
+
+                        const sourceSelect = document.getElementById('sourceSelect')
+                        selectedDeviceId = videoInputDevices[0].deviceId
+                        if (videoInputDevices.length >= 1) {
+                            videoInputDevices.forEach((element) => {
+                                const sourceOption = document.createElement('option')
+                                sourceOption.text = element.label
+                                sourceOption.value = element.deviceId
+                                sourceSelect.appendChild(sourceOption)
+                            })
+
+                            sourceSelect.onchange = () => {
+                                selectedDeviceId = sourceSelect.value;
+                            };
+
+                            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+                            sourceSelectPanel.style.display = 'block'
+                        }
+
+                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                            if (result) {
+                                $('#btn-search').prop('disabled', false);
+                                console.log(result.getText())
+                                $('#search').val(result.text);
+                            }
+                            if (err && !(err instanceof ZXing.NotFoundException)) {
+                                console.error(err)
+                                $('#error-messages').show();
+                                $('#error-messages').html(err.toString());
+                            }
+                        })
+                        console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+                    })
+                    .catch((err) => {
+                        $('#error-messages').show();
+                        $('#error-messages').html(err.toString());
+                        console.error(err)
+                    })
+            })
+        </script>
+    </body>
+{% endblock %}
