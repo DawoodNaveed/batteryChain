@@ -1,0 +1,178 @@
+{% extends 'layout.html.twig' %}
+
+{% block sonata_breadcrumb %}
+    <div class="hidden-xs">
+        <ol class="nav navbar-top-links breadcrumb">
+            <li>
+                <a href="/admin">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li class="active">
+                <span>{{ "Report View" }}</span>
+            </li>
+        </ol>
+    </div>
+{% endblock sonata_breadcrumb %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <style>
+        .container {
+            max-width: 960px;
+        }
+        ul.filters__checklists {
+            margin-top: 0 !important;
+            padding-left: 0;
+            vertical-align: text-top !important;
+        }
+        .filters__checklists li{
+            display: inline-block !important;
+            padding: 0px;
+            margin-bottom: 0 !important;
+        }
+        .white-box-round {
+            padding: 20px 20px 20px 20px;
+            margin-bottom: 35px;
+            border: 1px solid #eae1e1;
+            border-radius: 1px;
+            background-color: #fff;
+        }
+        .mode-filter {
+            padding: 0 50px 0 10px;
+        }
+        .icon-addon .fa {
+            position: absolute;
+            z-index: 2;
+            right: 15px;
+            font-size: 14px;
+            width: 20px;
+            margin-left: -2.5px;
+            text-align: center;
+            padding: 10px 0;
+            top: 40px;
+        }
+        .filter-wraper label {
+            font-size: 15px;
+            font-weight: 700;
+            vertical-align: text-top;
+            margin-top: 0 !important;
+            display: inline-flex !important;
+        }
+        #period {
+            background-color: #fff;
+        }
+        .report-content {
+            height: 300px;
+            overflow-y: scroll;
+            padding: 20px 20px 20px 20px;
+            margin-bottom: 35px;
+            border: 1px solid #eae1e1;
+            border-radius: 1px;
+            background-color: #fff;
+        }
+        .div-align-right {
+            display: flex;
+            align-items: center;
+            justify-content: right
+        }
+        .close-validation-message {
+            float: right;
+        }
+        @media (max-width: 768px) {
+            .icon-addon .fa {
+                top: 30px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    <div class="container">
+        <div class="white-box-round">
+            <div class="filter-wraper" id="filters_domain">
+                <div id="validation-errors" class="alert alert-danger" style="display: none">
+                    <span></span>
+                    <i class="fa fa-close close-validation-message"></i>
+                </div>
+                    {% include 'report/_filters.html.twig' %}
+            </div>
+        </div>
+        <div class="report-content">
+        </div>
+        <div class="report-btns">
+            <div class="div-align-right">
+                <a class="mt-10 btn btn-primary mr-5" href="{{ "#" }}" target="_blank"> {{ "Download" | trans }}</a>
+{#                <a class="mt-10 btn btn-light" href="{{ "#" }}"> {{ "Back" | trans }}</a>#}
+            </div>
+        </div>
+    </div>
+    <script>
+        // Datepicker jQuery
+        $('input[name="period"]').daterangepicker({
+            locale: { cancelLabel: 'Clear' }
+        });
+        $('#period').on('cancel.daterangepicker', function(ev, picker) {
+            //do something, like clearing an input
+            $(this).data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY")); //date now
+            $(this).data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));
+        });
+
+        function validateForm() {
+            if ($('.mode-filter').val() === null) {
+                $('#validation-errors').show();
+                $('#validation-errors span').html('Kindly Select Mode!');
+                $('#report-btn').addClass('disabled');
+
+                return false;
+            }
+
+            return true;
+        }
+
+        function getReport()
+        {
+            var formData = $("#reportFiltersForm").serialize();
+            $.ajax({
+                url : '/admin/app/battery/getReport',
+                type: 'GET',
+                data : {
+                    formData: formData
+                },
+                success: function(response) {
+                    let newUrl = window.location.href.split('?',1).toString();
+                    $('.report-content').html(JSON.parse(response.data));
+                    history.pushState(null,'',newUrl + '?' + formData);
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            setTimeout(function() {
+                $('#validation-errors').fadeOut('slow');
+            }, 20000);
+
+            $('.close-validation-message').on('click', function () {
+                $(this).parent().fadeOut('slow')
+            });
+
+            $('#report-btn').addClass('disabled');
+            $('.get-report').on('click', function () {
+                if (validateForm()) {
+                    getReport();
+                }
+            });
+            $('#period, .mode-filter').on('change', function() {
+                $('#report-btn').removeClass('disabled');
+            });
+        });
+    </script>
+{% endblock %}

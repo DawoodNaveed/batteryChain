@@ -1,0 +1,191 @@
+<div class="report-listing-content">
+    {% for battery in batteries %}
+        <div class="row main-detail">
+            <div class="col-md-12">
+                <div class="header">
+                    <img src="{{ asset('resources/logo.ico') }}" class="img-fluid detail-page-logo img-thumbnail my-3" width="25px" alt="profile">
+                    <h4 style="display: inline-block; border-bottom: 1px solid gray">
+                        {{ battery.manufacturer.name | upper }}
+                    </h4>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Serial Number" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.serialNumber }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Status" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.status | capitalize }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Type" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.batteryType.type }}
+                    </div>
+                </div>
+                {% if battery.cellType != '' and battery.cellType is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Cell Type" | trans }}
+                        </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.cellType }}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if battery.moduleType != '' and battery.moduleType is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Module Type" | trans }}
+                        </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.moduleType }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Production Date" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.productionDate | date('Y-m-d') }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Tray Number" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.trayNumber }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Voltage" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalVoltage }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Capacity" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalCapacity }}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Nominal Energy" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.nominalEnergy }}
+                    </div>
+                </div>
+                {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Acid Volume" | trans }}
+                        </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.acidVolume }}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if battery.co2 != '' and battery.co2 is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "CO2" | trans }}
+                        </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.co2 }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Cycle Life" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.cycleLife }}
+                    </div>
+                </div>
+                {% if battery.height != 0 and battery.height is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                            <span class="heading">
+                                {{ "Height" | trans }}
+                            </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.height }}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if battery.width != 0 and battery.width is not null  %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                            <span class="heading">
+                                {{ "Width" | trans }}
+                            </span>
+                        </div>
+                        <div class="col-md-8">
+                            {{ battery.width }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-md-12 p-0 p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Mass" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.mass }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% else %}
+        <div class="alert alert-danger" id="result_not_found">
+            {{ 'No results found.'|trans }}
+        </div>
+    {% endfor %}
+</div>

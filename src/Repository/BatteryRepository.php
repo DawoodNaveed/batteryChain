@@ -66,4 +66,16 @@ class BatteryRepository extends ServiceEntityRepository
     {
         $this->_em->getFilters()->enable($name);
     }
+
+    /**
+     * @param string $dqlStatement
+     * @return int|mixed|string
+     */
+    public function getBatteriesByFilters(string $dqlStatement)
+    {
+        return $this->createQueryBuilder('b')
+            ->where($dqlStatement)
+            ->getQuery()
+            ->getResult();
+    }
 }
