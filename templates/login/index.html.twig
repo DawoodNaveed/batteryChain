@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <div>
-                    <form class="card-body" action="{{ path('app_login') }}" method="post">
+                    <form class="card-body needs-validation" novalidate="novalidate" action="{{ path('app_login') }}" method="post">
                         {% set bg_input = '' %}
                         {% if error is defined and error %}
                             {% set bg_input = 'border-danger' %}
@@ -27,10 +27,16 @@
 
                         <div class="mb-3">
                             <input type="text" class="form-control border {{ bg_input }}" id="username" name="_username" aria-describedby="emailHelp"
-                                   placeholder="Username" value="{{ last_username }}">
+                                   placeholder="Username" value="{{ last_username }}" required>
+                            <div class="invalid-feedback">
+                                {{ "*Please enter a valid username." }}
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <input type="password" id="password" name="_password" class="form-control border {{ bg_input }}" placeholder="Password" />
+                            <input type="password" id="password" name="_password" class="form-control border {{ bg_input }}" placeholder="Password" required />
+                            <div class="invalid-feedback">
+                                {{ "*Please enter a password." }}
+                            </div>
                         </div>
                         <div class="mb-3">
                             {# If you want to control the URL the user is redirected to on success #}
@@ -42,7 +48,9 @@
                         <div class="mb-3">
                             <div class="g-recaptcha" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
                         </div>
-                        <div class="text-center"><button type="submit" class="btn btn-primary px-5 mb-2 w-100">Login</button></div>
+                        <div class="text-center">
+                            <input type="submit" class="btn btn-primary px-5 mb-2 w-100">
+                        </div>
                         <small>
                             <a href="{{ path('app_forgot_password_request') }}" class="label label-primary">
                                 {{ "Forgot Password?" | trans }}
@@ -56,5 +64,25 @@
 
     {% include 'footer.html.twig' %}
 
+    <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = $('.needs-validation');
+
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
     </body>
 {% endblock %}
