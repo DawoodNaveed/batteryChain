@@ -144,7 +144,7 @@ class DefaultController extends AbstractController
     public function scanQrAction(): Response
     {
         return $this->render(
-            'public_templates/scan.html.twig'
+            'public_templates/scan1.html.twig'
         );
 
     }
@@ -156,7 +156,7 @@ class DefaultController extends AbstractController
     public function scanQrExtraAction(): Response
     {
         return $this->render(
-            'public_templates/scan1.html.twig'
+            'public_templates/scan.html.twig'
         );
 
     }
