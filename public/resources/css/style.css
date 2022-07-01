@@ -15,6 +15,12 @@
     object-fit: fill;
 }
 
+.report-logo {
+    height: 25px;
+    width: 25px;
+    object-fit: fill;
+}
+
 .cardbody-color {
     background-color: #ebf2fa;
 }

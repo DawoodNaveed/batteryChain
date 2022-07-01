@@ -70,5 +70,39 @@ class CustomHelper
         self::BATTERY_STATUS_SHIPPED => 3,
         self::BATTERY_STATUS_RETURNED => 4,
     ];
+
+    const REPORT_MODE = [
+        self::BATTERY_STATUS_REGISTERED,
+        self::BATTERY_STATUS_DELIVERED,
+        self::BATTERY_STATUS_RETURNED
+    ];
+
     const IS_VERIFIED = 1;
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    public static function getValidValuesByFilters($filters)
+    {
+        return array_filter(
+            $filters,
+            function ($value) {
+                return $value !== '';
+            }
+        );
+    }
+
+    /**
+     * @param $mode
+     * @return bool
+     */
+    public static function validateReportMode($mode): bool
+    {
+        if (in_array($mode, self::REPORT_MODE)) {
+            return true;
+        }
+
+        return false;
+    }
 }

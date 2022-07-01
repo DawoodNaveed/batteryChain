@@ -361,4 +361,46 @@ class BatteryService
 
         return [];
     }
+
+    /**
+     * @param array $filters
+     * @return int|mixed|string
+     * @throws \Exception
+     */
+    public function getBatteriesByFilters(array $filters)
+    {
+        // get only valid fields from the filters array and return it as selected fields
+        $validFilters = CustomHelper::getValidValuesByFilters($filters);
+        $dqlStatement = '';
+        $this->filterByMode($dqlStatement, $validFilters);
+        $this->filterByDates($dqlStatement, $validFilters);
+
+        return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByMode(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['mode']) && CustomHelper::validateReportMode($validFilters['mode'])) {
+            $dqlStatement .= "(b.status = '" . $validFilters['mode'] . "')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     * @throws \Exception
+     */
+    private function filterByDates(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['period'])) {
+            $dates = explode(' - ', $validFilters['period']);
+            $startDate = (new \DateTime($dates[0]))->format('Y-m-d');
+            $endDate = (new \DateTime('+1 day' . $dates[1]))->format('Y-m-d');
+            $dqlStatement .= "AND (b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
+        }
+    }
 }

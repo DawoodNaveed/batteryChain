@@ -1,5 +1,10 @@
 {% extends '@SonataAdmin/standard_layout.html.twig' %}
 
+{% block meta_tags %}
+    {{ parent() }}
+    <link rel="icon" type="image/x-icon" href="{{ asset('resources/logo.ico') }}" />
+{% endblock %}
+
 {% block sonata_top_nav_menu %}
     {% if app.user %}
         <div class="navbar-custom-menu">
