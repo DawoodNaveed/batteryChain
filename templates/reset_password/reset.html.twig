@@ -2,27 +2,78 @@
 
 {% block title %}{{ "Reset your password" | trans }}{% endblock %}
 
-{% block body %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="mt-5">
-                <div class="p-3 border card-body cardbody-color p-lg-5">
-                    <div class="text-center">
-                        <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                             width="150px" alt="profile">
-                    </div>
-                    <div>
-                        <h3>{{ "Reset your password" | trans }}</h3>
+{% block stylesheets %}
+    <style>
+        .form-error ul {
+            color: red;
+            list-style: none;
+            padding: 0;
+            font-size: small;
+        }
+    </style>
+{% endblock %}
 
-                        {{ form_start(resetForm) }}
-                        {{ form_row(resetForm.plainPassword) }}
-                        <button class="btn btn-primary">{{ "Reset password" | trans }}</button>
-                        {{ form_end(resetForm) }}
+{% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
+    <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+            <h2>{{ "Battery Chain" | trans }}</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="">
+                    <div class="p-3 card-body">
+                        <div>
+                            {{ form_start(resetForm, {'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="mb-3">
+                                {{ form_widget(resetForm.plainPassword.first) }}
+                                <div class="form-error">
+                                    {{ form_errors(resetForm.plainPassword.first) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ "Please enter a valid password" }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {{ form_widget(resetForm.plainPassword.second) }}
+                                <div class="form-error">
+                                    {{ form_errors(resetForm.plainPassword.second) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ "Please re-enter a valid password" }}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">{{ "Reset password" | trans }}</button>
+                            {{ form_end(resetForm) }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    {% include 'footer.html.twig' %}
+
+    <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+    </body>
 {% endblock %}
