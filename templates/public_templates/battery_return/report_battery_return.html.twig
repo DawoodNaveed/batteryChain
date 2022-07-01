@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
     <div id="flash-messages">
         {% for type, messages in app.session.flashbag.all() %}
             {% for message in messages %}
@@ -13,19 +14,19 @@
     </div>
     <div class="container mb-5">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="mt-5">
-                    <div class="p-3 border card-body cardbody-color p-lg-5">
+            <div class="col-md-8 offset-md-2">
+                <div class="">
+                    <div class="p-3 card-body p-lg-5">
                         <div class="text-center">
-                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                                 width="150px" alt="profile">
+                            <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+                            <h2>{{ "Battery Chain" | trans }}</h2>
                         </div>
                         {{ form_start(form) }}
                         <div class="row">
                             <div class="col-md-12 p-0">
                                 {{ form_row(form.recyclers) }}
                             </div>
-                            <div class="row-div">
+                            <div class="row-div p-0">
                                 {{ form_row(form.submit) }}
                                 {{ form_row(form.cancel) }}
                             </div>
@@ -36,4 +37,7 @@
             </div>
         </div>
     </div>
+
+    {% include 'footer.html.twig' %}
+    </body>
 {% endblock %}

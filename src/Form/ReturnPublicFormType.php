@@ -94,7 +94,7 @@ class ReturnPublicFormType extends AbstractType
                 [
                     'label' => 'Cancel',
                     'attr' => [
-                        'class' => 'btn btn-light',
+                        'class' => 'btn btn-light btn-outline-dark',
                         'style'=> 'margin-top:10px;',
                         'formnovalidate'=>'formnovalidate'
                     ]
