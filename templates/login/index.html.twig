@@ -5,21 +5,17 @@
 {% endblock %}
 
 {% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
     <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+            <h2>{{ "Battery Chain" | trans }}</h2>
+        </div>
         <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <a href="{{ path('homepage') }}" class="back-to-home">
-                    <h3 class="text-center text-dark mt-4">{{ "Battery Chain" }}</h3>
-                </a>
-                <div class="card my-3">
-                    <form class="card-body cardbody-color p-lg-5" action="{{ path('app_login') }}" method="post">
+            <div class="col-md-8 offset-md-2">
+                <div>
+                    <form class="card-body" action="{{ path('app_login') }}" method="post">
                         {% set bg_input = '' %}
-                        <div class="text-center">
-                            <a href="{{ path('homepage') }}" class="back-to-home">
-                                <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                                     width="150px" alt="profile">
-                            </a>
-                        </div>
                         {% if error is defined and error %}
                             {% set bg_input = 'border-danger' %}
                             <div class="mb-1">
@@ -57,4 +53,8 @@
             </div>
         </div>
     </div>
+
+    {% include 'footer.html.twig' %}
+
+    </body>
 {% endblock %}
