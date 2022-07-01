@@ -6,6 +6,25 @@
         .container {
             max-width: 960px;
         }
+        #qr-img {
+            width: 100%;
+        }
+        @media (max-width: 767px) {
+            #battery_detail_form_search {
+                width: 100%;
+            }
+            .div-captcha {
+                display: flex;
+                text-align: center;
+                justify-content: space-around;
+            }
+            #battery-detail-form {
+                padding: 0 15px;
+            }
+            #qr-img {
+                width: 50%;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -28,7 +47,7 @@
                     {% endfor %}
                 </div>
                 <div class="col-md-8 mb-4">
-                    {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'id': 'battery-detail-form', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
                             <label for="serialNumber">{{ "Serial Number" }}</label>
                             {{ form_widget(searchForm.battery) }}
@@ -36,7 +55,7 @@
                                 {{ "Please enter a valid serial number." }}
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 col-md-12 col-sm-12">
                             <div class="mb-3 mt-2 p-0 div-captcha">
                                 <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
                             </div>
@@ -45,10 +64,10 @@
                         {{ form_row(searchForm.search) }}
                     {{ form_end(searchForm) }}
                 </div>
-                <div class="col-md-4 col-sm-6 scan-qr-div mb-4">
+                <div class="col-md-4 col-sm-12 scan-qr-div mb-4">
                     <div class="mb-3">
                         <div class="text-center" style="padding: 10px 60px">
-                            <img src="{{ asset('resources/qr-code-scan.svg') }}" width="100%"/>
+                            <img src="{{ asset('resources/qr-code-scan.svg') }}" id="qr-img"/>
                         </div>
                         <div class="d-grid gap-2" style="padding: 0 10px">
                             <a href="{{ path('scan_qr') }}" class="btn btn-primary btn-block">

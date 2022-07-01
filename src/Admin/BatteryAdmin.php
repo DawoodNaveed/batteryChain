@@ -203,6 +203,8 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('import');
         $collection->add('detail');
         $collection->add('download');
+        $collection->add('report');
+        $collection->add('getReport');
         $collection->add('scanQr');
         $collection->add('getScanResult');
     }
@@ -223,6 +225,12 @@ class BatteryAdmin extends AbstractAdmin
             'label' => 'Detail View',
             'translation_domain' => 'SonataAdminBundle',
             'url' => $this->generateUrl('detail'),
+            'icon' => 'fa fa-info-circle',
+        ];
+        $actions['report'] = [
+            'label' => 'Report View',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('report'),
             'icon' => 'fa fa-info-circle',
         ];
 

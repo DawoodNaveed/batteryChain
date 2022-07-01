@@ -268,4 +268,41 @@ class BatteryController extends CRUDController
             ]
         );
     }
+
+    /**
+     * @return Response
+     */
+    public function reportAction(): Response
+    {
+        return $this->render(
+            'report/view.html.twig', []
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function getReportAction(Request $request): Response
+    {
+        $filters = [];
+        $formData = $request->get('formData');
+        parse_str($formData, $filters);
+        $data = null;
+        $batteries = $this->batteryService->getBatteriesByFilters($filters);
+        $templateListing = $this->renderView('report/report_content.html.twig', [
+            'batteries' => $batteries
+        ]);
+        $data = json_encode($templateListing);
+        $responsePagination =
+            new Response(
+                json_encode([
+                    'data' => $data
+                ]
+            ), 200);
+        $responsePagination->headers->set('Content-Type', 'application/json');
+
+        return $responsePagination;
+    }
 }

@@ -1,0 +1,46 @@
+<div class="report-filter">
+    <form id="reportFiltersForm" method="post">
+        <div class="filters__first">
+            <div class="col-xs-12 col-md-9">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4">
+                        {% set modeArray = {'registered': 'Registered Batteries', 'returned': 'Returned Batteries', 'delivered': 'Delivered Batteries'} %}
+                        <ul class="filters__checklists">
+                            <h4 class="mb-0">{{ 'Report Mode'|trans }}{{ ":" }}</h4>
+                            <li>
+                                <label>
+                                    <select name="mode" class="mode-filter">
+                                        <option value="-1" disabled selected>{{ 'Select Report Mode'|trans }}</option>
+                                        {% for key, value in modeArray %}
+                                            <option
+                                                    {% if app.request.get('mode') is defined and app.request.get('mode') is not empty %}
+                                                        {% if modeArray[app.request.get('mode')] == value %}
+                                                            selected
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    value="{{ key }}">{{ value }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <h4>{{ 'Period'|trans }}{{ ":" }}</h4>
+                        <div class="icon-addon addon-sm">
+                            <input readonly type="text" class="form-control" id="period" name="period"
+                                   value="{{ app.request.get('period') }}" placeholder="{{ "Select range"|trans }}">
+                            <label for="period" class="fa fa-calendar" rel="tooltip" title="period"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> {#filters__first#}
+    </form>
+    <div class="clearfix"></div>
+    <div class="div-align-right">
+        <a class="mt-10 btn btn-primary mr-5 get-report" id="report-btn" target="_blank"> {{ "Get Report" | trans }}</a>
+    </div>
+</div>
+<div class="clearfix"></div>
