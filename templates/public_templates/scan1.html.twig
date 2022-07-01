@@ -13,7 +13,7 @@
             -moz-transform:rotateY(180deg); /* Firefox */
         }
         @media (max-width: 900px) {
-            video#preview {
+            video#video {
                 width: 100% !important;
             }
         }
@@ -37,17 +37,10 @@
                     </div>
                     <div class="text-center">
                         <div class="scan-qr-div pt-7">
-                            <video id="video" width="640" height="480" style="border: 1px solid gray"></video>
+                            <video id="video" width="50%" style="border: 1px solid gray"></video>
                         </div>
                     </div>
                     <hr>
-                    <div class="mb-3 text-center">
-                        <div id="sourceSelectPanel" style="display:none">
-                            <label for="sourceSelect">Change video source:</label>
-                            <select id="sourceSelect" style="max-width:400px">
-                            </select>
-                        </div>
-                    </div>
                     <div class="mb-3 text-center">
                         <form class="card p-2" action="{{ path('battery_detail') }}">
                             <div class="input-group">
@@ -90,24 +83,15 @@
                             console.log('No video devices found');
                             return;
                         }
-
-                        const sourceSelect = document.getElementById('sourceSelect')
-                        selectedDeviceId = videoInputDevices[0].deviceId
-                        if (videoInputDevices.length >= 1) {
-                            videoInputDevices.forEach((element) => {
-                                const sourceOption = document.createElement('option')
-                                sourceOption.text = element.label
-                                sourceOption.value = element.deviceId
-                                sourceSelect.appendChild(sourceOption)
-                            })
-
-                            sourceSelect.onchange = () => {
-                                selectedDeviceId = sourceSelect.value;
-                            };
-
-                            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-                            sourceSelectPanel.style.display = 'block'
-                        }
+                        selectedDeviceId = videoInputDevices[0].deviceId;
+                        $('.scan-qr-div').addClass('videoElement');
+                        $.each(videoInputDevices, (i, c) => {
+                            if (c.label.indexOf('back') != -1 || c.label.indexOf('Back') != -1) {
+                                $('.scan-qr-div').removeClass('videoElement');
+                                selectedDeviceId = c.deviceId;
+                                return false;
+                            }
+                        });
 
                         codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                             if (result) {
