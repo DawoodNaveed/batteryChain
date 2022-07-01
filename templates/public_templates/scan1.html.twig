@@ -87,6 +87,7 @@
                         $('.scan-qr-div').addClass('videoElement');
                         $.each(videoInputDevices, (i, c) => {
                             if (c.label.indexOf('back') != -1 || c.label.indexOf('Back') != -1) {
+                                $('.scan-qr-div').removeClass('videoElement');
                                 selectedDeviceId = c.deviceId;
                                 return false;
                             }
