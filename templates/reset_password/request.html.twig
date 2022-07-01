@@ -3,28 +3,34 @@
 {% block title %}{{ "Reset your password" | trans }}{% endblock %}
 
 {% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
     {% for flash_error in app.flashes('reset_password_error') %}
         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
     {% endfor %}
     <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
+            <h2>{{ "Battery Chain" | trans }}</h2>
+        </div>
         <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="mt-5">
-                    <div class="p-3 border card-body cardbody-color p-lg-5">
-                        <div class="text-center">
-                            <img src="{{ asset('resources/logo.ico') }}" class="img-fluid profile-image-pic img-thumbnail my-3"
-                                 width="150px" alt="profile">
-                        </div>
+            <div class="col-md-8 offset-md-2">
+                <div class="">
+                    <div class="p-3 card-body">
                         <div>
-                            {{ form_start(requestForm) }}
-                            {{ form_row(requestForm.email) }}
+                            {{ form_start(requestForm, {'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="mb-3">
+                                {{ form_widget(requestForm.email) }}
+                                <div class="invalid-feedback">
+                                    {{ "Please enter a valid email address." }}
+                                </div>
+                            </div>
                             <div class="alert alert-info">
                                 <small>
                                     {{ "Enter your email address and we will send you a link to reset your password." | trans }}
                                 </small>
                             </div>
                             <button class="btn btn-primary mt-2">{{ "Send password reset email" | trans }}</button>
-                            <a href="{{ path('app_login') }}" class="btn btn-secondary mt-2 ml-2">{{ "Cancel" | trans }}</a>
+                            <a href="{{ path('app_login') }}" class="btn btn-light btn-outline-dark mt-2 ml-2">{{ "Cancel" | trans }}</a>
                             {{ form_end(requestForm) }}
                         </div>
                     </div>
@@ -32,5 +38,27 @@
             </div>
         </div>
     </div>
+    {% include 'footer.html.twig' %}
 
+    <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+</body>
 {% endblock %}
