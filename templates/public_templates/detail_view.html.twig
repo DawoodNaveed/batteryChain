@@ -30,11 +30,21 @@
             .row-div a {
                 width: 100%;
             }
+            .sub-header-div {
+                display: table;
+            }
+            .sub-header-div span {
+                display: block;
+            }
+            .sub-header-div span.ml-1 {
+                margin: 0 !important;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
     <div id="flash-messages">
         {% for type, messages in app.session.flashbag.all() %}
             {% for message in messages %}
@@ -49,7 +59,7 @@
         <div class="row">
             <div class="col-md-10 offset-md-1">
                 <div class="mt-5">
-                    <div class="p-3 border card-body cardbody-color p-lg-5">
+                    <div class="p-3 card-body p-lg-5">
                         <div class="header-div">
                             <div>
                                 <img src="{{ asset('resources/logo.ico') }}" class="img-fluid detail-page-logo img-thumbnail my-3"
@@ -65,11 +75,15 @@
                                 {{ battery.manufacturer.address ~ ' * ' }}
                             </span>
                             <span class="ml-1">
-                                {{ 'Tel.:' | trans }}
+                                <b>
+                                    {{ 'Tel.:' | trans }}
+                                </b>
                                 {{ battery.manufacturer.contact ~ ' * ' }}
                             </span>
                             <span class="ml-1">
-                                {{ 'Email:' | trans }}
+                                <b>
+                                    {{ 'Email:' | trans }}
+                                </b>
                                 {{ battery.manufacturer.user.email }}
                             </span>
                         </div>
@@ -284,7 +298,7 @@
                             <a class="mt-10 btn btn-success mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Add Return" | trans }}</a>
                             <a class="mt-10 btn btn-success mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report Recycled Battery" | trans }}</a>
                             <a class="mt-10 btn btn-primary mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
-                            <a class="mt-10 btn btn-light" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
+                            <a class="mt-10 btn btn-light btn-outline-dark" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>
                     </div>
                 </div>
@@ -293,5 +307,5 @@
     </div>
 
     {% include 'footer.html.twig' %}
-
+    </body>
 {% endblock %}

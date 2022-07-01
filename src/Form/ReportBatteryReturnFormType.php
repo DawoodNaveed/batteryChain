@@ -28,7 +28,7 @@ class ReportBatteryReturnFormType extends AbstractType
                     'class' => 'form-select'
                 ],
                 'label_attr' => [
-                    'class' => 'fw-bold'
+                    'class' => 'fw-bold mb-1 mt-1'
                 ],
             ])
             ->add(
@@ -42,7 +42,7 @@ class ReportBatteryReturnFormType extends AbstractType
                 [
                     'label' => 'Cancel',
                     'attr' => [
-                        'class' => 'btn btn-light',
+                        'class' => 'btn btn-light btn-outline-dark',
                         'style'=> 'margin-top:10px;',
                         'formnovalidate'=>'formnovalidate'
                     ]
