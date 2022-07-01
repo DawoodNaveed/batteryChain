@@ -71,7 +71,7 @@
                 if (cameras.length > 0) {
                     var selectedCam = cameras[0];
                     $.each(cameras, (i, c) => {
-                        if (c.name.indexOf('back') != -1) {
+                        if (c.name.indexOf('back') != -1 || c.name.indexOf('Back') != -1) {
                             $('.scan-qr-div').addClass('videoElement');
                             selectedCam = c;
                             return false;
