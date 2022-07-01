@@ -21,7 +21,10 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ asset('resources/instascan.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('resources/instascan.js') }}"></script>
+    <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+
 {% endblock %}
 
 {% block body %}
@@ -37,7 +40,7 @@
                     </div>
                     <div class="text-center">
                         <div class="scan-qr-div pt-7">
-                            <video width="50%" id="preview"></video>
+                            <video width="50%" id="preview" playsinline></video>
                         </div>
                     </div>
                     <hr>
