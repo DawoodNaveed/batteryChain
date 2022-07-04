@@ -113,7 +113,7 @@ class ReturnController extends AbstractController
                 ]));
             }
 
-//            $this->recyclerService->sendNewBatteryReturnEmail($recycler, $battery, $formData);
+            $this->recyclerService->sendNewBatteryReturnEmail($recycler, $battery, $formData);
             $this->addFlash('success', 'Return Added Successfully!');
 
             return new RedirectResponse($this->generateUrl('battery_detail', [
