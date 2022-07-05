@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row">
             <ul class="dropdown-menu col-md-12">
-                {% if is_granted('ROLE_MANUFACTURER') and not is_granted('ROLE_SUPER_ADMIN') %}
+                {% if is_granted('ROLE_MANUFACTURER') and not is_granted('ROLE_SUPER_ADMIN') and not is_granted('ROLE_ADMIN') %}
                     <li role="presentation" class="divider"></li>
                     <li role="presentation" class="dropdown-header">
                         <a href="{{ url('update_profile') }}">
