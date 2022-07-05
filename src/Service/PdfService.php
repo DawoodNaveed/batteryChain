@@ -38,7 +38,7 @@ class PdfService
     {
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
-        $poweredByLogo = $this->getEncodedImage('resources/batterychain_logo.png');
+        $poweredByLogo = $this->getEncodedImage('resources/pdf_logo.png');
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/detail_view_download.html.twig', [
