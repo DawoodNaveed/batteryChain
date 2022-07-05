@@ -43,7 +43,7 @@ class PdfService
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/detail_view_download.html.twig', [
             'battery' => $battery,
-            'documentTitle' => "Battery Pass",
+            'documentTitle' => "Battery Passport",
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
         ]);
