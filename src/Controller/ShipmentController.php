@@ -65,6 +65,7 @@ class ShipmentController extends CRUDController
         $manufacturer = null;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $manufacturer = $user->getManufacturer();
         }
@@ -102,7 +103,8 @@ class ShipmentController extends CRUDController
             }
 
             /** If Admin / Super Admin - we will use battery's manufacturer's User */
-            if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+            if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+                in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
                 $user = $battery->getManufacturer()->getUser();
             }
 
@@ -145,7 +147,7 @@ class ShipmentController extends CRUDController
         $user = $this->security->getUser();
         $manufacturers = null;
 
-        // In-Case of Super Admin
+        // In-Case of Admin / Super Admin
         if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
             in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
             $manufacturers = $this->manufacturerService->getManufactures($user);
