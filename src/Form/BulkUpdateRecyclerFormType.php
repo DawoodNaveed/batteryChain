@@ -29,7 +29,7 @@ class BulkUpdateRecyclerFormType extends AbstractType
         $builder->add(
             'save',
             SubmitType::class,
-            ['label' => 'Bulk Update/Insert', 'attr' => ['class' => 'btn btn-primary', 'style'=> 'margin-top:10px;']]
+            ['label' => 'Bulk Update/Insert', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
         );
     }
 
