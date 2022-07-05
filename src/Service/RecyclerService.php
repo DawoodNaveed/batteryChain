@@ -262,8 +262,9 @@ class RecyclerService
      * @param Recycler $recycler
      * @param Battery $battery
      * @param array $formData
+     * @param string $detailPath
      */
-    public function sendNewBatteryReturnEmail(Recycler $recycler, Battery $battery, array $formData)
+    public function sendNewBatteryReturnEmail(Recycler $recycler, Battery $battery, array $formData, string $detailPath)
     {
         $data = [
             'user' => [
@@ -271,7 +272,8 @@ class RecyclerService
                 'email' => $formData['information']['email'] ?? null,
                 'contact' => $formData['information']['contact'] ?? null,
             ],
-            'battery' => $battery
+            'battery' => $battery,
+            'detail' => $detailPath
         ];
 
         $subject = $this->translator->trans('New Battery Return', [], 'messages');
