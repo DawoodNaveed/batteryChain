@@ -95,3 +95,9 @@ a {
 .pt-7 {
     padding-top: 7px;
 }
+
+.help-qr-code {
+    position: absolute;
+    top: calc(var(--bs-gutter-x) * .5);
+    right: 0;
+}

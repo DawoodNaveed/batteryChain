@@ -6,7 +6,7 @@ sonata_block:
 
 sonata_admin:
   title: Battery Chain
-  title_logo: resources/logo.ico
+  title_logo: resources/batterychain_logo.png
   templates:
     layout: 'layout.html.twig'
   options:

@@ -9,6 +9,7 @@ use App\Service\ManufacturerService;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -22,9 +23,18 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
  * @property $roles
  * @property $passwordEncoder
  * @property ManufacturerService $manufacturerService
+ * @property $tokenStorage
  */
 class UserAdmin extends AbstractAdmin
 {
+    /**
+     * @param $tokenStorage
+     */
+    public function setTokenStorage($tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
     /**
      * @param FormMapper $form
      */
@@ -198,5 +208,25 @@ class UserAdmin extends AbstractAdmin
             /** @var User $object */
             $this->manufacturerService->updateBasicManufacturer($object);
         }
+    }
+
+    /**
+     * @param ProxyQueryInterface $query
+     * @return ProxyQueryInterface
+     */
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $query = parent::configureQuery($query);
+        /** @var User $user */
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+            $rootAlias = current($query->getRootAliases());
+            $query->andWhere(
+                $query->expr()->neq($rootAlias . '.id', $user->getId())
+            );
+        }
+
+        return $query;
     }
 }

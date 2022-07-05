@@ -9,6 +9,12 @@
         #qr-img {
             width: 100%;
         }
+        .help p {
+            display: inline-block;
+        }
+        .mr-1 {
+            margin-right: 0.2rem;
+        }
         @media (max-width: 767px) {
             #battery_detail_form_search {
                 width: 100%;
@@ -32,8 +38,13 @@
     <body class="bg-light d-flex flex-column min-vh-100">
         <div class="container">
             <div class="py-5 text-center">
-                <img class="d-block mx-auto mb-4" src="{{ asset('resources/logo.ico') }}" alt="" width="72" height="72">
-                <h2>{{ "Battery Chain" | trans }}</h2>
+                <img class="mx-auto mb-4" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                <h1 style="display: inline-block">{{ "Battery Chain" | trans }}</h1>
+            </div>
+            <div class="row text-center pb-5">
+                <h5>{{ "Welcome at Battery Chain." }}</h5>
+                <span>{{ "This website allows you to request information about your batteries and register them for return or recycling." }}</span>
+                <span>{{ "Simply enter the battery serial number or use our QR and barcode scanner." }}</span>
             </div>
             <div class="row">
                 <div id="flash-messages">
@@ -51,6 +62,9 @@
                         <div class="mb-3">
                             <label for="serialNumber">{{ "Serial Number" }}</label>
                             {{ form_widget(searchForm.battery) }}
+                            <small class="help">
+                                {{ form_help(searchForm.battery)}}
+                            </small>
                             <div class="invalid-feedback">
                                 {{ "Please enter a valid serial number." }}
                             </div>
@@ -66,12 +80,13 @@
                 </div>
                 <div class="col-md-4 col-sm-12 scan-qr-div mb-4">
                     <div class="mb-3">
-                        <div class="text-center" style="padding: 10px 60px">
+                        <div class="text-center" style="position:relative; padding: 10px 60px">
+                            <i class="fa fa-info-circle help-qr-code"></i>
                             <img src="{{ asset('resources/qr-code-scan.svg') }}" id="qr-img"/>
                         </div>
-                        <div class="d-grid gap-2" style="padding: 0 10px">
-                            <a href="{{ path('scan_qr') }}" class="btn btn-primary btn-block">
-                                <i class="fa fa-qrcode"></i> {{ "Scan QR" | trans }}
+                        <div class="d-grid gap-2" style="padding: 0 10px; margin-top: 30px">
+                            <a href="{{ path('scan_qr') }}" class="btn btn-success btn-block" style="background-color: #55bc5e; border-color: #55bc5e">
+                                <i class="fa fa-qrcode"></i> {{ "Scan QR or Barcode" | trans }}
                             </a>
                         </div>
                     </div>

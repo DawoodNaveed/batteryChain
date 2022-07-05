@@ -23,7 +23,9 @@
             font-size: 16px;
         }
         .battery-detail-div {
-            width: max-content;
+            align-items: center;
+            justify-content: space-between;
+            width: 50%;
             box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
             padding: 1rem 3rem;
         }
@@ -45,59 +47,67 @@
         .m-0 {
             margin: 0;
         }
+        .mt-0 {
+            margin-top: 0;
+        }
+        .mb-0 {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
     <span>{{ "Dear Recycler," | trans }}</span>
     <p>
-        {{ "A new battery return has been added by" | trans }} {{ body.user.name }}
-        {% if body.user.email is not null %}
-            <a href="mailto:{{ body.user.email }}"> {{ body.user.email }} </a>,
-        {% endif %}
-        {% if body.user.contact is not null %}
-            <span> {{ "contact#" ~ body.user.contact }}</span>
-        {% endif %}
+        {{ "A new battery return has been added by" | trans }} {{ body.user.name ~ '.'}}
     </p>
-    <p>
+    <p class="mb-0">
         {{ "Please find below some highlight details of Battery:" | trans }}
     </p>
     <div class="row" style="margin-bottom:20px;">
-        <div class="column" style="margin-bottom: 15px;">
-            <div class="clearfix">
-                <div class="battery-detail-div">
-                    <p>
-                        <b>{{ "Serial Number" | trans }}</b> {{ body.battery.serialNumber }}
-                    </p>
-                    <p>
-                        <b>{{ "Manufacturer Name" | trans }}</b> {{ body.battery.manufacturer.name }}
-                    </p>
-                    <p>
-                        <b>{{ "Type" | trans }}</b> {{ body.battery.batteryType.type }}
-                    </p>
-                    <p>
-                        <b>{{ "Nominal Voltage" | trans }}</b> {{ body.battery.nominalVoltage }}
-                    </p>
-                    <p>
-                        <b>{{ "Nominal Capacity" | trans }}</b> {{ body.battery.nominalCapacity }}
-                    </p>
-                    <p>
-                        <b>{{ "Nominal Energy" | trans }}</b> {{ body.battery.nominalEnergy }}
-                    </p>
-                    <p>
-                        <b>{{ "Cycle Life" | trans }}</b> {{ body.battery.cycleLife }}
-                    </p>
-                    <p>
-                        <b>{{ "Height" | trans }}</b> {{ body.battery.height }}
-                    </p>
-                    <p>
-                        <b>{{ "Width" | trans }}</b> {{ body.battery.width }}
-                    </p>
-                    <p>
-                        <b>{{ "Mass" | trans }}</b> {{ body.battery.mass }}
-                    </p>
+        <div class="clearfix">
+            <div class="column" style="margin-bottom: 15px;">
+                <div class="clearfix">
+                    <div class="battery-detail-div">
+                        <p class="m-0">
+                            <b>{{ "Serial Number" | trans }}</b>
+                            <span style="float: right">
+                                {{ body.battery.serialNumber }}
+                            </span>
+                        </p>
+                        <p class="m-0">
+                            <b>{{ "Manufacturer Name" | trans }}</b>
+                            <span style="float: right">
+                                {{ body.battery.manufacturer.name }}
+                            </span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="mb-0">
+                            {{ "To see more details of the battery. Click" }}
+                            <a href="{{ body.detail }}" target="_blank"> {{ "here" }}</a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <p class="mb-0">
+            {{ "Please contact" | trans }} {{ body.user.name }} {{ "for further discussion" }}
+        </p>
+        <ul class="mt-0">
+            {% if body.user.email is not null %}
+                <li>
+                    {{ "Email: " }} <a href="mailto:{{ body.user.email }}"> {{ body.user.email }} </a>
+                </li>
+            {% endif %}
+            {% if body.user.contact is not null %}
+                <li>
+                    <span> {{ "Contact: " ~ body.user.contact }}</span>
+                </li>
+            {% endif %}
+        </ul>
     </div>
     <div>
         <p>

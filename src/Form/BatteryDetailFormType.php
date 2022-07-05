@@ -21,10 +21,15 @@ class BatteryDetailFormType extends AbstractType
             ->add('battery', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Insert Serial Number'
+                    'placeholder' => 'Enter Serial Number'
                 ],
                 'label' => false,
                 'required' => true,
+                'help' => '<i class="fa fa-info-circle mr-1"></i>You can find the Serial Number or ID on the label of your battery',
+                'help_html' => true,
+                'help_attr' => [
+                    'class' => 'mt-2'
+                ]
             ])
             ->add('search', SubmitType::class, [
                 'attr' => [
