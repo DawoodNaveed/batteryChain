@@ -34,6 +34,7 @@ services:
             - [ setRoles, [ "%security.role_hierarchy.roles%" ] ]
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
             - [ setManufacturerService, [ '@App\Service\ManufacturerService' ] ]
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: User, show_in_dashboard: true, group: User }
 
