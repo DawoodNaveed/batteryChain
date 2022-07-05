@@ -17,6 +17,8 @@ use Twig\Error\SyntaxError;
  */
 class PdfService
 {
+    const PREFIX_BASE64 = 'data:image/png;base64,';
+
     /**
      * PdfService constructor.
      * @param Environment $twig
@@ -35,13 +37,15 @@ class PdfService
     public function createBatteryPdf(Battery $battery)
     {
         $pdfOptions = new Options();
-        $pdfOptions->setIsRemoteEnabled(true);
+        $pdfOptions->set('isRemoteEnabled', true);
+        $poweredByLogo = $this->getEncodedImage('resources/batterychain_logo.png');
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/detail_view_download.html.twig', [
             'battery' => $battery,
-            'documentTitle' => "Battery Detail",
-            'createdDate' => date('d.m.Y')
+            'documentTitle' => "Battery Pass",
+            'createdDate' => date('d.m.Y'),
+            'poweredByLogo' => $poweredByLogo,
         ]);
 
         $domPdf->loadHtml($html);
@@ -50,5 +54,14 @@ class PdfService
         $domPdf->stream('battery.pdf', [
             "Attachment" => true
         ]);
+    }
+
+    /**
+     * @param string|null $reference
+     * @return string|null
+     */
+    public function getEncodedImage(?string $reference): ?string
+    {
+        return self::PREFIX_BASE64 . base64_encode(file_get_contents($reference));
     }
 }
