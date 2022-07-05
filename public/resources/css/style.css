@@ -117,3 +117,21 @@ a {
 .ps-6 {
     padding-left: 4rem !important;
 }
+
+.btn-green {
+    background-color: #55bc5e !important;
+    border-color: #55bc5e !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-green {
+    background-color: transparent !important;
+    border-color: #55bc5e !important;
+    color: #55bc5e !important;
+}
+
+.btn-outline-green:hover {
+    background-color: #55bc5e !important;
+    border-color: #55bc5e !important;
+    color: #ffffff !important;
+}

@@ -304,10 +304,10 @@
                             </div>
                         </div>
                         <div class="row-div">
-                            <a class="mt-10 btn btn-success mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Add Return" | trans }}</a>
-                            <a class="mt-10 btn btn-success mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report Recycled Battery" | trans }}</a>
-                            <a class="mt-10 btn btn-primary mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
-                            <a class="mt-10 btn btn-light btn-outline-dark" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
+                            <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Add Return" | trans }}</a>
+                            <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report Recycled Battery" | trans }}</a>
+                            <a class="mt-10 btn btn-primary btn-green mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
+                            <a class="mt-10 btn btn-light btn-outline-green" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>
                     </div>
                 </div>
