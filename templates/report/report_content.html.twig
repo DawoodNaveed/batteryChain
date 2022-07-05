@@ -89,7 +89,7 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.nominalVoltage ~ 'V'}}
+                        {{ battery.nominalVoltage ~ ' V'}}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
@@ -99,7 +99,7 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.nominalCapacity ~ 'Ah'}}
+                        {{ battery.nominalCapacity ~ ' Ah'}}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
@@ -109,7 +109,7 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.nominalEnergy ~ 'kWh' }}
+                        {{ battery.nominalEnergy ~ ' kWh' }}
                     </div>
                 </div>
                 {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
@@ -120,7 +120,7 @@
                         </span>
                         </div>
                         <div class="col-md-8">
-                            {{ battery.acidVolume ~ 'l' }}
+                            {{ battery.acidVolume ~ ' l' }}
                         </div>
                     </div>
                 {% endif %}
@@ -132,7 +132,7 @@
                         </span>
                         </div>
                         <div class="col-md-8">
-                            {{ battery.co2 ~ '- Footprint'}}
+                            {{ battery.co2 ~ ' footprint'}}
                         </div>
                     </div>
                 {% endif %}
@@ -154,7 +154,7 @@
                             </span>
                         </div>
                         <div class="col-md-8">
-                            {{ battery.height ~ 'cm' }}
+                            {{ battery.height ~ ' cm' }}
                         </div>
                     </div>
                 {% endif %}
@@ -166,7 +166,7 @@
                             </span>
                         </div>
                         <div class="col-md-8">
-                            {{ battery.width ~ 'cm' }}
+                            {{ battery.width ~ ' cm' }}
                         </div>
                     </div>
                 {% endif %}
@@ -177,7 +177,7 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.mass ~ 'kg' }}
+                        {{ battery.mass ~ ' kg' }}
                     </div>
                 </div>
             </div>
