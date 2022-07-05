@@ -101,3 +101,11 @@ a {
     top: calc(var(--bs-gutter-x) * .5);
     right: 0;
 }
+
+.m-0 {
+    margin: 0;
+}
+
+.float-left {
+    float: left;
+}

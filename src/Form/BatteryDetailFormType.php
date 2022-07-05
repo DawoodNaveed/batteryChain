@@ -34,6 +34,7 @@ class BatteryDetailFormType extends AbstractType
             ->add('search', SubmitType::class, [
                 'attr' => [
                     'class' => 'search-btn btn btn-primary',
+                    'style' => "background-color: #55bc5e; border-color: #55bc5e"
                 ],
                 'label' => 'Search'
             ]);
