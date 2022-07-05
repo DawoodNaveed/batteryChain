@@ -109,3 +109,11 @@ a {
 .float-left {
     float: left;
 }
+
+.pti-0 {
+    padding-top: 0 !important;
+}
+
+.ps-6 {
+    padding-left: 4rem !important;
+}
