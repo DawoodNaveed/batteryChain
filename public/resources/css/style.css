@@ -139,3 +139,9 @@ a {
 .p-0-3 {
     padding: 0.38rem !important;
 }
+
+.homepage-link, .homepage-link:hover, .homepage-link:visited, .homepage-link:focus, .homepage-link:active {
+    text-decoration: none;
+    text-underline: none;
+    color: black;
+}
