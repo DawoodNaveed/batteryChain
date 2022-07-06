@@ -36,6 +36,17 @@
             #qr-img {
                 width: 50%;
             }
+            .btn-div {
+                display: block !important;
+            }
+            .btn-div a {
+                display: block !important;
+            }
+            .btn-div .or-span {
+                display: block;
+                margin: auto;
+                text-align: center;
+            }
         }
     </style>
 {% endblock %}
@@ -68,7 +79,7 @@
                         {% endfor %}
                     {% endfor %}
                 </div>
-                <div class="col-md-8 mb-4">
+                <div class="col-md-12 mb-4">
                     {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'id': 'battery-detail-form', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
                             <label for="serialNumber">{{ "Serial Number" }}</label>
@@ -86,21 +97,16 @@
                             </div>
                         </div>
                         <hr class="mb-4">
-                        {{ form_row(searchForm.search) }}
-                    {{ form_end(searchForm) }}
-                </div>
-                <div class="col-md-4 col-sm-12 scan-qr-div mb-4">
-                    <div class="mb-3">
-                        <div class="text-center" style="position:relative; padding: 10px 60px">
-                            <i class="fa fa-info-circle help-qr-code"></i>
-                            <img src="{{ asset('resources/qr-code-scan.svg') }}" id="qr-img"/>
-                        </div>
-                        <div class="d-grid gap-2" style="padding: 0 10px; margin-top: 30px">
+                        <div style="display: inline-block" class="mb-5 btn-div">
+                            {{ form_widget(searchForm.search) }}
+                            <span class="p-0-3 or-span">
+                                {{ " OR " }}
+                            </span>
                             <a href="{{ path('scan_qr') }}" class="btn btn-success btn-block btn-green">
                                 <i class="fa fa-qrcode"></i> {{ "Scan QR or Barcode" | trans }}
                             </a>
                         </div>
-                    </div>
+                    {{ form_end(searchForm) }}
                 </div>
             </div>
         </div>

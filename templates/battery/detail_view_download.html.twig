@@ -98,7 +98,7 @@
 <body>
 <div class="py-5 text-center">
     <div style="display: inline-block">
-{#        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">#}
+        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">
     </div>
     <div style="display: inline-block">
         <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
@@ -171,13 +171,12 @@
             </span>
         </div>
         <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "CO2" | trans }}</span>
+            <span class="heading-span">
+                {{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                {{ " - Footprint" }}
+            </span>
             <span class="heading-title-hash">
-                {% if battery.co2 != '' and battery.co2 is not null  %}
-                    {{ battery.co2 ~ ' footprint'}}
-                {% else %}
-                    {{ battery.co2 }}
-                {% endif %}
+                {{ battery.co2 }}
             </span>
         </div>
         <div class="row-border-bottom row-div">
