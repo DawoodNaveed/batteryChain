@@ -101,3 +101,37 @@ a {
     top: calc(var(--bs-gutter-x) * .5);
     right: 0;
 }
+
+.m-0 {
+    margin: 0;
+}
+
+.float-left {
+    float: left;
+}
+
+.pti-0 {
+    padding-top: 0 !important;
+}
+
+.ps-6 {
+    padding-left: 4rem !important;
+}
+
+.btn-green {
+    background-color: #55bc5e !important;
+    border-color: #55bc5e !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-green {
+    background-color: transparent !important;
+    border-color: #55bc5e !important;
+    color: #55bc5e !important;
+}
+
+.btn-outline-green:hover {
+    background-color: #55bc5e !important;
+    border-color: #55bc5e !important;
+    color: #ffffff !important;
+}

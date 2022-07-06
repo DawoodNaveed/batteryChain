@@ -84,14 +84,26 @@
             justify-content: space-between;
             height: 40px;
         }
+        .m-0 {
+            margin: 0;
+        }
+        .lh-1 {
+            line-height: 1;
+        }
+        .f-bold {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div class="py-5 text-center">
-{#    <img class="mx-auto mb-4" src="{{ poweredByLogo }}" alt="" width="72" height="72">#}
-    <h1 style="display: inline-block; font-weight: bold">
-        {{ "Battery Chain" | trans }}
-    </h1>
+    <div style="display: inline-block">
+{#        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">#}
+    </div>
+    <div style="display: inline-block">
+        <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
+        <h1 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h1>
+    </div>
 </div>
 <h1 class="title">{{ documentTitle }}</h1>
 <hr>
@@ -138,21 +150,21 @@
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Nominal Voltage" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.nominalVoltage ~ 'V'}}</span>
+            <span class="heading-title-hash">{{ battery.nominalVoltage ~ ' V'}}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Nominal Capacity" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.nominalCapacity ~ 'Ah'}}</span>
+            <span class="heading-title-hash">{{ battery.nominalCapacity ~ ' Ah'}}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Nominal Energy" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.nominalEnergy ~ 'kWh' }}</span>
+            <span class="heading-title-hash">{{ battery.nominalEnergy ~ ' kWh' }}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Acid Volume" | trans }}</span>
             <span class="heading-title-hash">
                 {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
-                    {{ battery.acidVolume ~ 'l' }}
+                    {{ battery.acidVolume ~ ' l' }}
                 {% else %}
                     {{ battery.acidVolume }}
                 {% endif %}
@@ -162,7 +174,7 @@
             <span class="heading-span">{{ "CO2" | trans }}</span>
             <span class="heading-title-hash">
                 {% if battery.co2 != '' and battery.co2 is not null  %}
-                    {{ battery.co2 ~ '- Footprint'}}
+                    {{ battery.co2 ~ ' footprint'}}
                 {% else %}
                     {{ battery.co2 }}
                 {% endif %}
@@ -174,15 +186,15 @@
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Height" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.height ~ 'cm' }}</span>
+            <span class="heading-title-hash">{{ battery.height ~ ' cm' }}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Width" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.width ~ 'cm' }}</span>
+            <span class="heading-title-hash">{{ battery.width ~ ' cm' }}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Weight" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.mass ~ 'kg' }}</span>
+            <span class="heading-title-hash">{{ battery.mass ~ ' kg' }}</span>
         </div>
     </div>
     <br><br><br><br><br><br><br><br><br>

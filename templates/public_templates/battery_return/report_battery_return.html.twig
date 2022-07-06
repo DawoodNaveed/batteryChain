@@ -17,9 +17,14 @@
             <div class="col-md-8 offset-md-2">
                 <div class="">
                     <div class="p-3 card-body p-lg-5">
-                        <div class="text-center">
-                            <img class="d-block mx-auto mb-4" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
-                            <h2>{{ "Battery Chain" | trans }}</h2>
+                        <div class="text-center mb-5">
+                            <div style="display: inline-block">
+                                <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                            </div>
+                            <div style="display: inline-block">
+                                <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
+                                <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
+                            </div>
                         </div>
                         {{ form_start(form) }}
                         <div class="row">

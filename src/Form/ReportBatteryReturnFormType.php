@@ -34,7 +34,7 @@ class ReportBatteryReturnFormType extends AbstractType
             ->add(
                 'submit',
                 SubmitType::class,
-                ['label' => 'Report Battery Return', 'attr' => ['class' => 'btn btn-primary mr-5', 'style'=> 'margin-top:10px;']]
+                ['label' => 'Report Battery Return', 'attr' => ['class' => 'btn btn-green mr-5', 'style'=> 'margin-top:10px;']]
             )
             ->add(
                 'cancel',
@@ -42,7 +42,7 @@ class ReportBatteryReturnFormType extends AbstractType
                 [
                     'label' => 'Cancel',
                     'attr' => [
-                        'class' => 'btn btn-light btn-outline-dark',
+                        'class' => 'btn btn-light btn-outline-green',
                         'style'=> 'margin-top:10px;',
                         'formnovalidate'=>'formnovalidate'
                     ]
