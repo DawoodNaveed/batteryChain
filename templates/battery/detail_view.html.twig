@@ -191,11 +191,12 @@
                     <div class="col-md-12 p-0 row-border-bottom p-tb-5">
                         <div class="col-md-4 p-0">
                         <span class="heading">
-                            {{ "CO2" | trans }}
+                            {{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                            {{ " - Footprint" }}
                         </span>
                         </div>
                         <div class="col-md-8">
-                            {{ battery.co2 ~ ' footprint'}}
+                            {{ battery.co2 }}
                         </div>
                     </div>
                 {% endif %}
