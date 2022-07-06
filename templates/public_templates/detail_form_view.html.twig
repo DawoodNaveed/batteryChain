@@ -36,6 +36,17 @@
             #qr-img {
                 width: 50%;
             }
+            .btn-div {
+                display: block !important;
+            }
+            .btn-div a {
+                display: block !important;
+            }
+            .btn-div .or-span {
+                display: block;
+                margin: auto;
+                text-align: center;
+            }
         }
     </style>
 {% endblock %}
@@ -86,9 +97,9 @@
                             </div>
                         </div>
                         <hr class="mb-4">
-                        <div style="display: inline-block" class="mb-5">
+                        <div style="display: inline-block" class="mb-5 btn-div">
                             {{ form_widget(searchForm.search) }}
-                            <span class="p-0-3">
+                            <span class="p-0-3 or-span">
                                 {{ " OR " }}
                             </span>
                             <a href="{{ path('scan_qr') }}" class="btn btn-success btn-block btn-green">
