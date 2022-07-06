@@ -171,13 +171,12 @@
             </span>
         </div>
         <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "CO2" | trans }}</span>
+            <span class="heading-span">
+                {{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                {{ " - Footprint" }}
+            </span>
             <span class="heading-title-hash">
-                {% if battery.co2 != '' and battery.co2 is not null  %}
-                    {{ battery.co2 ~ ' footprint'}}
-                {% else %}
-                    {{ battery.co2 }}
-                {% endif %}
+                {{ battery.co2 }}
             </span>
         </div>
         <div class="row-border-bottom row-div">
