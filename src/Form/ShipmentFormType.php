@@ -54,14 +54,14 @@ class ShipmentFormType extends AbstractType
         $builder->add(
             'submit',
             SubmitType::class,
-            ['label' => 'Add Delivery', 'attr' => ['class' => 'btn btn-primary', 'style'=> 'margin-top:10px;']]
+            ['label' => 'Add Delivery', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
         )
         ->add('cancel',
             SubmitType::class,
             [
                 'label' => 'Cancel',
                 'attr' => [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-outline-green',
                     'style'=> 'margin-top:10px;',
                     'formnovalidate'=>'formnovalidate'
                 ]

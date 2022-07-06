@@ -87,14 +87,14 @@ class ReturnPublicFormType extends AbstractType
         $builder->add(
             'submit',
             SubmitType::class,
-            ['label' => 'Add Return', 'attr' => ['class' => 'btn btn-primary mr-5', 'style'=> 'margin-top:10px;']]
+            ['label' => 'Add Return', 'attr' => ['class' => 'btn btn-green mr-5', 'style'=> 'margin-top:10px;']]
         )
             ->add('cancel',
                 SubmitType::class,
                 [
                     'label' => 'Cancel',
                     'attr' => [
-                        'class' => 'btn btn-light btn-outline-dark',
+                        'class' => 'btn btn-light btn-outline-green',
                         'style'=> 'margin-top:10px;',
                         'formnovalidate'=>'formnovalidate'
                     ]

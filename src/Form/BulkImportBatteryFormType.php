@@ -36,7 +36,7 @@ class BulkImportBatteryFormType extends AbstractType
         $builder->add(
             'save',
             SubmitType::class,
-            ['label' => 'Bulk Import', 'attr' => ['class' => 'btn btn-primary', 'style'=> 'margin-top:10px;']]
+            ['label' => 'Bulk Import', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
         );
     }
 

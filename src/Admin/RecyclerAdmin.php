@@ -136,7 +136,8 @@ class RecyclerAdmin extends AbstractAdmin
         $query = parent::configureQuery($query);
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+        && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
             $manufacturer = $user->getManufacturer();
             $rootAlias = current($query->getRootAliases());
             $query->join($rootAlias . '.manufacturers', 'm', Join::WITH,

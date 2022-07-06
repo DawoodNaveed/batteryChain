@@ -72,6 +72,7 @@ class ReturnController extends CRUDController
         $manufacturer = null;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
             $manufacturer = $user->getManufacturer();
@@ -167,6 +168,7 @@ class ReturnController extends CRUDController
         }
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers());
         } else {

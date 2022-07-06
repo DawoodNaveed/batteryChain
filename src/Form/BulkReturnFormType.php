@@ -40,7 +40,7 @@ class BulkReturnFormType extends AbstractType
         $builder->add(
             'save',
             SubmitType::class,
-            ['label' => 'Add Bulk Return', 'attr' => ['class' => 'btn btn-primary', 'style'=> 'margin-top:10px;']]
+            ['label' => 'Add Bulk Return', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
         );
         $builder->add(
             'cancel',
@@ -48,7 +48,7 @@ class BulkReturnFormType extends AbstractType
             [
                 'label' => 'Cancel',
                 'attr' => [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-outline-green',
                     'style'=> 'margin-top:10px;',
                     'formnovalidate'=>'formnovalidate'
                 ]

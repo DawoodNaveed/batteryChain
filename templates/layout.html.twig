@@ -5,6 +5,11 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('resources/batterychain_logo.png') }}" />
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('resources/css/style.css')}}" rel="stylesheet">
+{% endblock %}
+
 {% block sonata_top_nav_menu %}
     {% if app.user %}
         <div class="navbar-custom-menu">

@@ -32,7 +32,8 @@ class BatteryAdmin extends AbstractAdmin
 
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+            in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
             $form
                 ->add('manufacturer', ModelType::class, [
                     'property' => 'name',
@@ -155,11 +156,12 @@ class BatteryAdmin extends AbstractAdmin
         $user = $this->tokenStorage->getToken()->getUser();
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+            && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
             $manufacturer = $user->getManufacturer();
             $rootAlias = current($query->getRootAliases());
             $query->andWhere(
-                $query->expr()->eq($rootAlias . '.currentPossessor', $user->getId())
+                $query->expr()->eq($rootAlias . '.manufacturer', $manufacturer->getId())
             );
         }
 
@@ -188,9 +190,8 @@ class BatteryAdmin extends AbstractAdmin
         }
 
         if ((!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-        && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) ||
-            (!in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
-                && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true))) {
+            && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
+            && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true))) {
             $object->setManufacturer($user->getManufacturer());
         }
 
