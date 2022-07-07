@@ -1,5 +1,42 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .intro {
+            font-weight: 100;
+            font-size: 0.9rem;
+        }
+        .intro span {
+            padding: 0 !important;
+        }
+        .row-div {
+            width: 100%;
+        }
+        @media (max-width: 767px) {
+            .row-div {
+                display: table;
+            }
+            .row-div button {
+                width: 100%;
+            }
+            .page-heading {
+                margin-top: 1rem;
+                display: block !important;
+                float: none !important;
+            }
+            .page-heading h2 {
+                float: none !important;
+                display: inline-block;
+            }
+            .page-heading br {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+
 {% block body %}
     <body class="bg-light d-flex flex-column min-vh-100">
     <div id="flash-messages">
@@ -12,21 +49,32 @@
             {% endfor %}
         {% endfor %}
     </div>
-    <div class="container mb-5">
+    <div class="container p-tb-5 mb-5">
         <div class="row">
-            <div class="col-md-8 offset-md-2">
+            <div class="col-md-10 offset-md-1 ps-6 pb-2 pt-5 text-left">
+                <a href="{{ path('homepage') }}" class="homepage-link">
+                    <div style="display: inline-block">
+                        <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                    </div>
+                    <div style="display: inline-block">
+                        <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
+                        <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
+                    </div>
+                </a>
+                <div class="page-heading pe-5" style="display: inline-block; float: right; padding-top: 1.4rem">
+                    <h2 class="m-0 float-right lh-1">{{ "Pickup" | trans | upper }}</h2><br>
+                    <h2 class="m-0 float-right lh-1">{{ "Service" | trans | upper }}</h2><br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 offset-md-1 ps-1-5 pe-1-5">
                 <div class="">
-                    <div class="p-3 card-body p-lg-5">
-                        <div class="text-center mb-5">
-                            <a href="{{ path('homepage') }}" class="homepage-link">
-                                <div style="display: inline-block">
-                                    <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
-                                </div>
-                                <div style="display: inline-block">
-                                    <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
-                                    <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
-                                </div>
-                            </a>
+                    <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">
+                        <div class="row text-left pb-4 intro">
+                            <span>
+                                {{ "Now you have the option of registering your battery for a pickup service or receive information about the proper disposal" | trans }}
+                            </span>
                         </div>
                         {{ form_start(form) }}
                         <div class="row">
@@ -37,8 +85,14 @@
                                 {{ form_row(form.recyclers) }}
                             </div>
                             <hr style="margin: 12px 0;">
+                            {% if form.information is defined %}
+                                <div class="col-md-12 p-0">
+                                    {{ form_row(form.information) }}
+                                </div>
+                            {% endif %}
                             <div class="col-md-12 p-0">
-                                {{ form_row(form.information) }}
+                                {{ form_widget(form.dataPolicy) }}
+                                {{ form_label(form.dataPolicy) }}
                             </div>
                             <div class="row-div p-0">
                                 {{ form_row(form.submit) }}
@@ -56,6 +110,16 @@
 
     <script>
         $(document).ready(function () {
+            if ($('#return_public_form_fallback').val() == 1) {
+                $('#return_public_form_information').parent().hide();
+            }
+            $('#return_public_form_dataPolicy').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#return_public_form_submit').attr('disabled', false);
+                } else {
+                    $('#return_public_form_submit').attr('disabled', true);
+                }
+            });
             var $country = $('#return_public_form_country');
             $country.change(function() {
                 var data = {};
@@ -72,13 +136,18 @@
                         // Get the raw DOM object for the select box
                         select = $('#return_public_form_recyclers');
                         select.html('');
+                        if (data.fall_back == 1) {
+                            $('#return_public_form_information').parent().hide();
+                        } else {
+                            $('#return_public_form_information').parent().show();
+                        }
                         options = data.recyclers; // Or whatever source information you're working with
                         if (options === null) {
-                            var newOption = new Option('No Recycler Found', "" , false, true);
+                            var newOption = new Option('No Pickup Partner Found', "" , false, true);
                             newOption.setAttribute('disabled', 'disabled');
                             select.append(newOption);
                         } else {
-                            var newOption = new Option('Select Recycler', "", false, true);
+                            var newOption = new Option('Select Pickup Partner', "", false, true);
                             newOption.setAttribute('disabled', 'disabled');
                             select.append(newOption);
                             $.each(options, function(index, element) {

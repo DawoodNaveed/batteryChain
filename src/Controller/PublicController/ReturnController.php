@@ -70,20 +70,37 @@ class ReturnController extends AbstractController
      * @param Request $request
      * @param $slug
      * @return Response
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function returnAction(Request $request, $slug): Response
     {
         /** @var Battery|null $battery */
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
+        $isFallback = false;
 
         if (empty($battery)) {
             $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
+        $country = $this->countryService->getCountryByName('Switzerland');
+        $recyclers = $this->recyclerService->fetchManufacturerRecyclersByCountry(
+            $battery->getManufacturer(),
+            $country
+        );
+
+        /** Fallback */
+        if (empty($recyclers)) {
+            $recyclers = $this->recyclerService->fetchFallbackRecyclersByCountry($country);
+            $isFallback = true;
+        }
+
         $countries = $this->countryService->getCountries();
         $form = $this->createForm(ReturnPublicFormType::class, null, [
-            'countries' => $countries
+            'countries' => $countries,
+            'default_country' => $country->getId(),
+            'recyclers' => $this->recyclerService->toChoiceArray($recyclers),
+            'fall_back' => $isFallback
         ]);
         $form->handleRequest($request);
 
@@ -96,6 +113,11 @@ class ReturnController extends AbstractController
             $formData = $form->getData();
             $recyclerId = $formData['recyclerId'] ?? null;
 
+            // Fallback if user doesn't change dropdown
+            if (empty($recyclerId)) {
+                $recyclerId = $formData['recyclers'] ?? null;
+            }
+
             if (empty($recyclerId)) {
                 $this->addFlash('danger', 'Kindly Select Recycler!');
                 return new RedirectResponse($this->generateUrl('homepage'));
@@ -104,18 +126,25 @@ class ReturnController extends AbstractController
             /** @var Recycler $recycler */
             $recycler = $this->recyclerService->getRecyclerByIds([$recyclerId])[0];
 
-            if (empty($formData['information']['contact']) && empty($formData['information']['email'])) {
+            if (empty($formData['fallback']) && empty($formData['information']['contact']) && empty($formData['information']['email'])) {
                 $this->addFlash('danger', 'Kindly Provide Email or Contact Information!');
                 return new RedirectResponse($this->generateUrl('add_return', [
                     'slug' => $slug
                 ]));
             }
 
-            if (empty($formData['information']['name'])) {
+            if (empty($formData['fallback']) && empty($formData['information']['name'])) {
                 $this->addFlash('danger', 'Kindly Provide User Information!');
                 return new RedirectResponse($this->generateUrl('add_return', [
                     'slug' => $slug
                 ]));
+            }
+
+            // If fallback Recycler, user details will be his own
+            if ($formData['fallback'] == 1) {
+                $formData['information']['name'] = $recycler->getName();
+                $formData['information']['email'] = $recycler->getEmail();
+                $formData['information']['contact'] = $recycler->getContact();
             }
 
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);

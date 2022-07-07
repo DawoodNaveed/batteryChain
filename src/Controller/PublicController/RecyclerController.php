@@ -64,6 +64,7 @@ class RecyclerController extends AbstractController
      */
     public function getRecyclerAction(Request $request, $id): JsonResponse
     {
+        $isFallback = false;
         $serialNumber = $request->request->get('serial_number');
         $battery = $this->batteryService->batteryRepository->findOneBy([
             'serialNumber' => $serialNumber
@@ -78,10 +79,12 @@ class RecyclerController extends AbstractController
         /** Fallback */
         if (empty($recyclers)) {
             $recyclers = $this->recyclerService->fetchFallbackRecyclersByCountry($country);
+            $isFallback = true;
         }
 
         return new JsonResponse([
-            'recyclers' => $this->recyclerService->toChoiceArray($recyclers)
+            'recyclers' => $this->recyclerService->toChoiceArray($recyclers),
+            'fall_back' => $isFallback
         ]);
     }
 }
