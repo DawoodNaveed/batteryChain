@@ -13,6 +13,9 @@
         .row-div {
             width: 100%;
         }
+        .hidden {
+            display: none;
+        }
         @media (max-width: 767px) {
             .row-div {
                 display: table;
@@ -90,6 +93,28 @@
                                     {{ form_row(form.information) }}
                                 </div>
                             {% endif %}
+                            {% if fallBack is defined and fallBack == true %}
+                                {% set hidden = '' %}
+                            {% else %}
+                                {% set hidden = 'hidden' %}
+                            {% endif %}
+                            <div class="col-md-12 p-0 fallback-div {{ hidden }}">
+                                <p>
+                                    <span class="fw-bold">{{ "Name:" }}</span>
+                                    <span id="fallback-name">
+                                    </span>
+                                </p>
+                                <p>
+                                    <span class="fw-bold">{{ "Email:" }}</span>
+                                    <span id="fallback-email">
+                                    </span>
+                                </p>
+                                <p>
+                                    <span class="fw-bold">{{ "Contact:" }}</span>
+                                    <span id="fallback-contact">
+                                    </span>
+                                </p>
+                            </div>
                             <div class="col-md-12 p-0">
                                 {{ form_widget(form.dataPolicy) }}
                                 {{ form_label(form.dataPolicy) }}
@@ -114,7 +139,7 @@
                 $('#return_public_form_information').parent().hide();
             }
             $('#return_public_form_dataPolicy').change(function () {
-                if ($(this).is(':checked')) {
+                if ($(this).is(':checked') && $('#return_public_form_recyclers').val() !== null) {
                     $('#return_public_form_submit').attr('disabled', false);
                 } else {
                     $('#return_public_form_submit').attr('disabled', true);
@@ -136,20 +161,27 @@
                         // Get the raw DOM object for the select box
                         select = $('#return_public_form_recyclers');
                         select.html('');
-                        if (data.fall_back == 1) {
+                        if (data.fall_back == 1 && data.details !== null) {
                             $('#return_public_form_information').parent().hide();
+                            $('#fallback-name').html(data.details.name);
+                            $('#fallback-email').html(data.details.email);
+                            $('#fallback-contact').html(data.details.contact);
+                            $('.fallback-div').show();
                         } else {
                             $('#return_public_form_information').parent().show();
+                            $('.fallback-div').hide();
                         }
                         options = data.recyclers; // Or whatever source information you're working with
                         if (options === null) {
-                            var newOption = new Option('No Pickup Partner Found', "" , false, true);
+                            $('#return_public_form_submit').attr('disabled', true);
+                            var newOption = new Option('No Pickup Partner Found', "none" , false, true);
                             newOption.setAttribute('disabled', 'disabled');
                             select.append(newOption);
                         } else {
-                            var newOption = new Option('Select Pickup Partner', "", false, true);
-                            newOption.setAttribute('disabled', 'disabled');
-                            select.append(newOption);
+                            if ($('#return_public_form_dataPolicy').is(':checked')) {
+                                $('#return_public_form_submit').attr('disabled', false);
+                            }
+
                             $.each(options, function(index, element) {
                                 var newOption = new Option(index, element, false, false);
                                 select.append(newOption);
@@ -162,7 +194,26 @@
 
             $recycler.change(function () {
                 $('#return_public_form_recyclerId').val($recycler.val());
+                $.ajax({
+                    url : '/recyclers/' + $recycler.val(),
+                    type: 'GET',
+                    success: function(data) {
+                        $('#fallback-name').html(data.name);
+                        $('#fallback-email').html(data.email);
+                        $('#fallback-contact').html(data.contact);
+                    }
+                });
             })
+
+            $.ajax({
+                url : '/recyclers/' + $recycler.val(),
+                type: 'GET',
+                success: function(data) {
+                    $('#fallback-name').html(data.name);
+                    $('#fallback-email').html(data.email);
+                    $('#fallback-contact').html(data.contact);
+                }
+            });
         });
     </script>
     </body>

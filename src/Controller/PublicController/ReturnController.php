@@ -120,7 +120,9 @@ class ReturnController extends AbstractController
 
             if (empty($recyclerId)) {
                 $this->addFlash('danger', 'Kindly Select Recycler!');
-                return new RedirectResponse($this->generateUrl('homepage'));
+                return new RedirectResponse($this->generateUrl('add_return', [
+                    'slug' => $slug
+                ]));
             }
 
             /** @var Recycler $recycler */
@@ -175,7 +177,9 @@ class ReturnController extends AbstractController
             'public_templates/battery_return/add_battery_return.html.twig',
             array(
                 'form' => $form->createView(),
-                'serialNumber' => $slug
+                'serialNumber' => $slug,
+                'recycler' => (!empty($recyclers[0]) && $isFallback === true) ? $recyclers[0] : null,
+                'fallBack' => $isFallback
             )
         );
     }

@@ -82,9 +82,38 @@ class RecyclerController extends AbstractController
             $isFallback = true;
         }
 
+        $details = null;
+
+        //only for fallback recycler if available
+        if (!empty($recyclers[0]) && $isFallback) {
+            $details = [
+                'email' => $recyclers[0]->email,
+                'name' => $recyclers[0]->name,
+                'contact' => $recyclers[0]->contact,
+            ];
+        }
+
         return new JsonResponse([
             'recyclers' => $this->recyclerService->toChoiceArray($recyclers),
-            'fall_back' => $isFallback
+            'fall_back' => $isFallback,
+            'details' => $details
+        ]);
+    }
+
+    /**
+     * @Route(path="/recyclers/{id}", name="recycler_id")
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function getRecyclerByIdAction(Request $request, $id): JsonResponse
+    {
+        $recycler = $this->recyclerService->getRecyclerById($id);
+
+        return new JsonResponse([
+            'name' => $recycler->getName(),
+            'email' => $recycler->getEmail(),
+            'contact' => $recycler->getContact(),
         ]);
     }
 }
