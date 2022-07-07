@@ -53,6 +53,7 @@ class ReturnPublicFormType extends AbstractType
                     'label_attr' => [
                         'class' => 'fw-bold mb-1 mt-1'
                     ],
+                    'label' => 'Select Pickup Service or Recycler'
                 ]);
         } else {
             $builder
@@ -66,6 +67,7 @@ class ReturnPublicFormType extends AbstractType
                     'label_attr' => [
                         'class' => 'fw-bold mb-1 mt-1'
                     ],
+                    'label' => 'Select Pickup Service or Recycler'
                 ]);
         }
 
@@ -96,7 +98,7 @@ class ReturnPublicFormType extends AbstractType
                 $builder->create('information', FormType::class, [
                     'by_reference' => false,
                     'label_attr' => ['style' => 'font-size: medium', 'class' => 'fw-bold'],
-                    'required' => false, 'label' => 'User Information',
+                    'required' => false, 'label' => 'Contact Information (Who to contact for the pickup service)',
                 ])
                     ->add('name', TextType::class, [
                         'attr' => [
@@ -120,6 +122,7 @@ class ReturnPublicFormType extends AbstractType
                         'attr' => [
                             'class' => 'form-control'
                         ],
+                        'label' => "Phone Number (optional)",
                         'required' => false,
                         'label_attr' => [
                             'class' => 'fw-bold mb-1 mt-1'
@@ -131,7 +134,7 @@ class ReturnPublicFormType extends AbstractType
             'submit',
             SubmitType::class,
             [
-                'label' => 'Contact Public Partner',
+                'label' => 'Contact Partner',
                 'attr' => [
                     'class' => 'btn btn-green mr-5',
                     'style' => 'margin-top:10px;',

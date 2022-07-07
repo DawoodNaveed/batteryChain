@@ -73,8 +73,8 @@
         <div class="row">
             <div class="col-md-10 offset-md-1 ps-1-5 pe-1-5">
                 <div class="">
-                    <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">
-                        <div class="row text-left pb-4 intro">
+                    <div class="p-3 card-body ps-5 pe-5 pb-5 pt-5">
+                        <div class="row text-left pb-5 intro">
                             <span>
                                 {{ "Now you have the option of registering your battery for a pickup service or receive information about the proper disposal" | trans }}
                             </span>
@@ -90,6 +90,11 @@
                             <hr style="margin: 12px 0;">
                             {% if form.information is defined %}
                                 <div class="col-md-12 p-0">
+                                    <p>
+                                        <i class="fa fa-info-circle"></i>
+                                        {{ "In order to initiate the return or recycling process,
+                                         please provide your contact information below and our partner will get in touch with you shortly" | trans }}
+                                    </p>
                                     {{ form_row(form.information) }}
                                 </div>
                             {% endif %}
@@ -101,17 +106,26 @@
                             {% endif %}
                             <div class="col-md-12 p-0 fallback-div {{ hidden }}">
                                 <p>
-                                    <span class="fw-bold">{{ "Name:" }}</span>
+                                    <i class="fa fa-info-circle"></i>
+                                    {{ "Please contact the institution list below regarding the disposal or recycling of your battery" | trans }}
+                                </p>
+                                <p>
+                                    <span class="fw-bold">{{ "Name:" | trans }}</span>
                                     <span id="fallback-name">
                                     </span>
                                 </p>
                                 <p>
-                                    <span class="fw-bold">{{ "Email:" }}</span>
+                                    <span class="fw-bold">{{ "Address:" | trans }}</span>
+                                    <span id="fallback-address">
+                                    </span>
+                                </p>
+                                <p>
+                                    <span class="fw-bold">{{ "Email:" | trans }}</span>
                                     <span id="fallback-email">
                                     </span>
                                 </p>
                                 <p>
-                                    <span class="fw-bold">{{ "Contact:" }}</span>
+                                    <span class="fw-bold">{{ "Phone Number:" | trans }}</span>
                                     <span id="fallback-contact">
                                     </span>
                                 </p>
@@ -137,7 +151,10 @@
     <script>
         $(document).ready(function () {
             if ($('#return_public_form_fallback').val() == 1) {
-                $('#return_public_form_information').parent().hide();
+                $('#return_public_form_dataPolicy').parent().hide();
+                $('#return_public_form_information').parent().parent().hide();
+                $("#return_public_form_cancel").text('Back');
+                $('#return_public_form_submit').hide();
             }
             $('#return_public_form_dataPolicy').change(function () {
                 if ($(this).is(':checked') && $('#return_public_form_recyclers').val() !== null) {
@@ -163,21 +180,28 @@
                         select = $('#return_public_form_recyclers');
                         select.html('');
                         if (data.fall_back == 1 && data.details !== null) {
-                            $('#return_public_form_information').parent().hide();
+                            $('#return_public_form_information').parent().parent().hide();
                             $('#fallback-name').html(data.details.name);
                             $('#fallback-email').html(data.details.email);
                             $('#fallback-contact').html(data.details.contact);
+                            $('#fallback-address').html(data.details.address + ', ' + data.details.city);
                             $('.fallback-div').show();
                             $('#return_public_form_fallback').val(1);
+                            $("#return_public_form_cancel").text('Back');
+                            $('#return_public_form_submit').hide();
+                            $('#return_public_form_dataPolicy').parent().hide();
                         } else {
+                            $('#return_public_form_dataPolicy').parent().show();
+                            $('#return_public_form_submit').show();
+                            $("#return_public_form_cancel").text('Cancel');
                             $('#return_public_form_fallback').val(0);
-                            $('#return_public_form_information').parent().show();
+                            $('#return_public_form_information').parent().parent().show();
                             $('.fallback-div').hide();
                         }
                         options = data.recyclers; // Or whatever source information you're working with
                         if (options === null) {
                             $('#return_public_form_submit').attr('disabled', true);
-                            $('#return_public_form_information').parent().hide();
+                            $('#return_public_form_information').parent().parent().hide();
                             var newOption = new Option('No Pickup Partner Found', "none" , false, true);
                             newOption.setAttribute('disabled', 'disabled');
                             select.append(newOption);
@@ -205,6 +229,7 @@
                         $('#fallback-name').html(data.name);
                         $('#fallback-email').html(data.email);
                         $('#fallback-contact').html(data.contact);
+                        $('#fallback-address').html(data.address + ', ' + data.city);
                     }
                 });
             })
@@ -218,6 +243,7 @@
                             $('#fallback-name').html(data.name);
                             $('#fallback-email').html(data.email);
                             $('#fallback-contact').html(data.contact);
+                            $('#fallback-address').html(data.address + ', ' + data.city);
                         } else {
                             $('.fallback-div').hide();
                         }

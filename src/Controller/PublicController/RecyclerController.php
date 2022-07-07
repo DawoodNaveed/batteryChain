@@ -91,6 +91,8 @@ class RecyclerController extends AbstractController
                 'email' => $recyclers[0]->email,
                 'name' => $recyclers[0]->name,
                 'contact' => $recyclers[0]->contact,
+                'address' => $recyclers[0]->address,
+                'city' => $recyclers[0]->city,
             ];
         } elseif (!empty($recyclers[0]) && $isFallback === false) {
             $id = $recyclers[0]->getId();
@@ -126,6 +128,8 @@ class RecyclerController extends AbstractController
             'name' => $recycler->getName(),
             'email' => $recycler->getEmail(),
             'contact' => $recycler->getContact(),
+            'address' => $recycler->getAddress(),
+            'city' => $recycler->getCity(),
         ]);
     }
 }

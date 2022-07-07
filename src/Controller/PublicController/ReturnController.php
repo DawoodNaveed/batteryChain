@@ -107,7 +107,9 @@ class ReturnController extends AbstractController
         if ($form->isSubmitted())
         {
             if ($form->get('cancel')->isClicked()) {
-                return new RedirectResponse($this->generateUrl('homepage'));
+                return new RedirectResponse($this->generateUrl('battery_detail', [
+                    'search' => $slug
+                ]));
             }
 
             $formData = $form->getData();
