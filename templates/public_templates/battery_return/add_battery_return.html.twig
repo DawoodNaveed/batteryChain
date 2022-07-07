@@ -93,7 +93,8 @@
                                     {{ form_row(form.information) }}
                                 </div>
                             {% endif %}
-                            {% if fallBack is defined and fallBack == true %}
+                            {% if fallBack is defined and fallBack == true and
+                                recycler is defined and recycler is not null %}
                                 {% set hidden = '' %}
                             {% else %}
                                 {% set hidden = 'hidden' %}
@@ -168,12 +169,14 @@
                             $('#fallback-contact').html(data.details.contact);
                             $('.fallback-div').show();
                         } else {
+                            $('#return_public_form_fallback').val(0);
                             $('#return_public_form_information').parent().show();
                             $('.fallback-div').hide();
                         }
                         options = data.recyclers; // Or whatever source information you're working with
                         if (options === null) {
                             $('#return_public_form_submit').attr('disabled', true);
+                            $('#return_public_form_information').parent().hide();
                             var newOption = new Option('No Pickup Partner Found', "none" , false, true);
                             newOption.setAttribute('disabled', 'disabled');
                             select.append(newOption);
@@ -181,7 +184,7 @@
                             if ($('#return_public_form_dataPolicy').is(':checked')) {
                                 $('#return_public_form_submit').attr('disabled', false);
                             }
-
+                            $('#return_public_form_recyclerId').val(data.id);
                             $.each(options, function(index, element) {
                                 var newOption = new Option(index, element, false, false);
                                 select.append(newOption);
@@ -205,15 +208,21 @@
                 });
             })
 
-            $.ajax({
-                url : '/recyclers/' + $recycler.val(),
-                type: 'GET',
-                success: function(data) {
-                    $('#fallback-name').html(data.name);
-                    $('#fallback-email').html(data.email);
-                    $('#fallback-contact').html(data.contact);
-                }
-            });
+            if ($recycler.val() !== '' && $recycler.val() !== null ) {
+                $.ajax({
+                    url : '/recyclers/' + $recycler.val(),
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.status == true) {
+                            $('#fallback-name').html(data.name);
+                            $('#fallback-email').html(data.email);
+                            $('#fallback-contact').html(data.contact);
+                        } else {
+                            $('.fallback-div').hide();
+                        }
+                    }
+                });
+            }
         });
     </script>
     </body>
