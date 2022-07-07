@@ -6,6 +6,7 @@ use App\Entity\Battery;
 use App\Entity\Recycler;
 use App\Form\ReturnPublicFormType;
 use App\Helper\CustomHelper;
+use App\Service\BatteryReturnService;
 use App\Service\BatteryService;
 use App\Service\CountryService;
 use App\Service\ManufacturerService;
@@ -29,6 +30,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property RecyclerService recyclerService
  * @property TranslatorInterface translator
  * @property CountryService countryService
+ * @property BatteryReturnService returnService
  */
 class ReturnController extends AbstractController
 {
@@ -41,6 +43,7 @@ class ReturnController extends AbstractController
      * @param RecyclerService $recyclerService
      * @param CountryService $countryService
      * @param TranslatorInterface $translator
+     * @param BatteryReturnService $returnService
      */
     public function __construct(
         Security $security,
@@ -49,7 +52,8 @@ class ReturnController extends AbstractController
         BatteryService $batteryService,
         RecyclerService $recyclerService,
         CountryService $countryService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        BatteryReturnService $returnService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
@@ -58,6 +62,7 @@ class ReturnController extends AbstractController
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
         $this->countryService = $countryService;
+        $this->returnService = $returnService;
     }
 
     /**
@@ -112,6 +117,14 @@ class ReturnController extends AbstractController
                     'slug' => $slug
                 ]));
             }
+
+            $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $this->returnService
+                ->createReturn(
+                    $battery->getManufacturer()->getUser(),
+                    $battery,
+                    $recycler
+                );
 
             $this->recyclerService
                 ->sendNewBatteryReturnEmail(

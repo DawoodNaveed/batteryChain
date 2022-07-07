@@ -29,6 +29,7 @@ class BatteryReturnRepository extends ServiceEntityRepository
     /**
      * @param User $user
      * @param Battery $battery
+     * @param Recycler $recycler
      * @return BatteryReturn
      * @throws ORMException
      * @throws OptimisticLockException
