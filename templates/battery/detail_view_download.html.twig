@@ -84,6 +84,9 @@
             justify-content: space-between;
             height: 40px;
         }
+        .h-auto {
+            height: auto !important;
+        }
         .m-0 {
             margin: 0;
         }
@@ -92,6 +95,12 @@
         }
         .f-bold {
             font-weight: bold;
+        }
+        .f-size-24 {
+            font-size: 24px;
+        }
+        .f-size-14 {
+            font-size: 14px;
         }
     </style>
 </head>
@@ -123,10 +132,6 @@
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Manufacturer" | trans }}</span>
             <span class="heading-title">{{ battery.manufacturer.name }}</span>
-        </div>
-        <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "Status" | trans }}</span>
-            <span class="heading-title">{{ battery.status | capitalize }}</span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Type" | trans }}</span>
@@ -196,7 +201,15 @@
             <span class="heading-title-hash">{{ battery.mass ~ ' kg' }}</span>
         </div>
     </div>
-    <br><br><br><br><br><br><br><br><br>
+    <br><br><br>
+    <div class="row-div h-auto">
+        <span class="heading-span f-bold f-size-24">{{ "Status" | trans }}</span>
+        <span class="heading-title">{{ battery.status | capitalize }}</span>
+    </div>
+    <span class="heading-span f-bold f-size-14">
+        <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
+    </span>
+    <br><br><br><br><br><br>
 </div>
 </body>
 </html>

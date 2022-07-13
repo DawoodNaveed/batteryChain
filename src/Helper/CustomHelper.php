@@ -81,6 +81,13 @@ class CustomHelper
 
     const IS_VERIFIED = 1;
 
+    const BATTERY_STATUSES_DETAILS = [
+        self::BATTERY_STATUS_REGISTERED => 'A registered battery has been manufactured but not (yet) delivered.',
+        self::BATTERY_STATUS_DELIVERED => 'A delivered battery is either in an intermediate station or at the end customer.',
+        self::BATTERY_STATUS_RETURNED => 'This battery has been registered for a pickup service or its on his way to a recycler.',
+        self::BATTERY_STATUS_RECYCLED => 'The life cycle of the battery ended with recycling or disposal.',
+    ];
+
     /**
      * @param array $filters
      * @return array

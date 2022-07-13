@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Battery;
+use App\Helper\CustomHelper;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Twig\Environment;
@@ -46,6 +47,7 @@ class PdfService
             'documentTitle' => "Battery Passport",
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
+            'detail' => CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()]
         ]);
 
         $domPdf->loadHtml($html);
