@@ -64,6 +64,7 @@ class RecyclerController extends AbstractController
      */
     public function getRecyclerAction(Request $request, $id): JsonResponse
     {
+        $isFallback = false;
         $serialNumber = $request->request->get('serial_number');
         $battery = $this->batteryService->batteryRepository->findOneBy([
             'serialNumber' => $serialNumber
@@ -78,10 +79,57 @@ class RecyclerController extends AbstractController
         /** Fallback */
         if (empty($recyclers)) {
             $recyclers = $this->recyclerService->fetchFallbackRecyclersByCountry($country);
+            $isFallback = true;
+        }
+
+        $details = null;
+
+        //only for fallback recycler if available
+        if (!empty($recyclers[0]) && $isFallback) {
+            $id = $recyclers[0]->id;
+            $details = [
+                'email' => $recyclers[0]->email,
+                'name' => $recyclers[0]->name,
+                'contact' => $recyclers[0]->contact,
+                'address' => $recyclers[0]->address,
+                'city' => $recyclers[0]->city,
+            ];
+        } elseif (!empty($recyclers[0]) && $isFallback === false) {
+            $id = $recyclers[0]->getId();
+        }
+
+
+        return new JsonResponse([
+            'recyclers' => $this->recyclerService->toChoiceArray($recyclers),
+            'fall_back' => $isFallback,
+            'details' => $details,
+            'id' => $id
+        ]);
+    }
+
+    /**
+     * @Route(path="/recyclers/{id}", name="recycler_id")
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function getRecyclerByIdAction(Request $request, $id): JsonResponse
+    {
+        $recycler = $this->recyclerService->getRecyclerById($id);
+
+        if (empty($recycler)) {
+            return new JsonResponse([
+                'status' => false
+            ]);
         }
 
         return new JsonResponse([
-            'recyclers' => $this->recyclerService->toChoiceArray($recyclers)
+            'status' => true,
+            'name' => $recycler->getName(),
+            'email' => $recycler->getEmail(),
+            'contact' => $recycler->getContact(),
+            'address' => $recycler->getAddress(),
+            'city' => $recycler->getCity(),
         ]);
     }
 }

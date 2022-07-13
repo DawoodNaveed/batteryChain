@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -10,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\IsTrue;
 
 /**
  * Class ReturnPublicFormType
@@ -33,33 +35,76 @@ class ReturnPublicFormType extends AbstractType
                 ],
                 'label_attr' => [
                     'class' => 'fw-bold mb-1 mt-1'
-                ]
-            ])
-            ->add('recyclers', ChoiceType::class, [
-                'multiple' => false,
-                'required' => true,
-                'choices' => array_merge([
-                    'Select Recycler' => ""
-                ], $options['recyclers']),
-                'attr' => [
-                    'class' => 'form-select'
                 ],
+                'data' => $options['default_country']
+            ]);
+
+        if (empty($options['recyclers'])) {
+            $builder
+                ->add('recyclers', ChoiceType::class, [
+                    'multiple' => false,
+                    'required' => true,
+                    'choices' => [
+                        'No Pickup Partner Found' => ""
+                    ],
+                    'attr' => [
+                        'class' => 'form-select'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fw-bold mb-1 mt-1'
+                    ],
+                    'label' => 'Select Pickup Service or Recycler'
+                ]);
+        } else {
+            $builder
+                ->add('recyclers', ChoiceType::class, [
+                    'multiple' => false,
+                    'required' => true,
+                    'choices' => $options['recyclers'],
+                    'attr' => [
+                        'class' => 'form-select'
+                    ],
+                    'label_attr' => [
+                        'class' => 'fw-bold mb-1 mt-1'
+                    ],
+                    'label' => 'Select Pickup Service or Recycler'
+                ]);
+        }
+
+        $builder
+            ->add('recyclerId', HiddenType::class, [])
+            ->add('fallback', HiddenType::class, [
+                'data' => $options['fall_back']
+            ])
+            ->add('dataPolicy', CheckboxType::class, [
+                'attr' => [
+                    'class' => 'mt-3'
+                ],
+                'required' => false,
+                'label'    => 'Accept the data privacy policy.',
                 'label_attr' => [
                     'class' => 'fw-bold mb-1 mt-1'
                 ],
-            ])
-            ->add('recyclerId', HiddenType::class, [])
+                'mapped' => false,
+                'constraints' => [
+                    new IsTrue([
+                        'message' => 'You must agree to our terms.'
+                    ])
+                ]
+            ]);
+
+        $builder
             ->add(
                 $builder->create('information', FormType::class, [
                     'by_reference' => false,
                     'label_attr' => ['style' => 'font-size: medium', 'class' => 'fw-bold'],
-                    'required' => true, 'label' => 'User Information',
+                    'required' => false, 'label' => 'Contact Information (Who to contact for the pickup service)',
                 ])
                     ->add('name', TextType::class, [
                         'attr' => [
                             'class' => 'form-control'
                         ],
-                        'required' => true,
+                        'required' => false,
                         'label_attr' => [
                             'class' => 'fw-bold mb-1 mt-1'
                         ]
@@ -77,6 +122,7 @@ class ReturnPublicFormType extends AbstractType
                         'attr' => [
                             'class' => 'form-control'
                         ],
+                        'label' => "Phone Number (optional)",
                         'required' => false,
                         'label_attr' => [
                             'class' => 'fw-bold mb-1 mt-1'
@@ -87,7 +133,14 @@ class ReturnPublicFormType extends AbstractType
         $builder->add(
             'submit',
             SubmitType::class,
-            ['label' => 'Add Return', 'attr' => ['class' => 'btn btn-green mr-5', 'style'=> 'margin-top:10px;']]
+            [
+                'label' => 'Contact Partner',
+                'attr' => [
+                    'class' => 'btn btn-green mr-5',
+                    'style' => 'margin-top:10px;',
+                    'disabled' => 'disabled'
+                ]
+            ]
         )
             ->add('cancel',
                 SubmitType::class,
@@ -111,6 +164,8 @@ class ReturnPublicFormType extends AbstractType
         $resolver->setDefaults([
             'recyclers' => [],
             'countries' => [],
+            'default_country' => 1,
+            'fall_back' => false
         ]);
     }
 }

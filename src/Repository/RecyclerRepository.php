@@ -151,7 +151,7 @@ class RecyclerRepository extends ServiceEntityRepository
     {
         $query = 'SELECT r.* from recycler r left outer join manufacturers_recyclers ' .
             'ON (r.id = manufacturers_recyclers.recycler_id) ' .
-            'WHERE manufacturers_recyclers.manufacturer_id is null and r.country_id = ' . $country->getId();
+            'WHERE manufacturers_recyclers.manufacturer_id is null and r.country_id = ' . $country->getId() .' and r.deleted_at is null';
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
         $stmt->executeQuery();
 
