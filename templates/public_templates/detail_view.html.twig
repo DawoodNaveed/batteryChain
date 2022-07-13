@@ -8,6 +8,7 @@
             align-items: center;
             justify-content: center;
             height: 60px;
+            position: relative;
         }
         .sub-header-div {
             margin: 5px;
@@ -22,6 +23,35 @@
         .row-border-bottom {
             line-height: 2;
             border-bottom: 1px solid lightgray;
+        }
+        .status-div {
+            padding: 0 7px;
+            font-weight: bold;
+        }
+        .status-div span {
+            font-size: 1.25rem;
+        }
+        .status-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .intro {
+            font-weight: 100;
+            font-size: 0.9rem;
+        }
+        .btn-download {
+            position: absolute;
+            right: 0;
+        }
+        .row-div {
+            width: 100%;
+        }
+        .btn-download:hover, .btn-download:hover {
+            text-decoration: none !important;
+            color: #212529 !important;
+            border-color: #212529 !important;
+            background-color: white;
         }
         @media (max-width: 767px) {
             .row-div {
@@ -38,6 +68,20 @@
             }
             .sub-header-div span.ml-1 {
                 margin: 0 !important;
+            }
+            .page-heading {
+                margin-top: 1rem;
+                display: block !important;
+                float: none !important;
+            }
+            .page-heading h2 {
+                float: none !important;
+            }
+            .page-heading br {
+                display: none;
+            }
+            .btn-download {
+                position: relative;
             }
         }
     </style>
@@ -57,28 +101,43 @@
     </div>
     <div class="container p-tb-5 mb-5">
         <div class="row">
-                <div class="col-md-10 offset-md-1 ps-6 py-5 text-left">
-                    <a href="{{ path('homepage') }}" class="homepage-link">
-                        <div style="display: inline-block">
-                            <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
-                        </div>
-                        <div style="display: inline-block">
-                            <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
-                            <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
-                        </div>
-                    </a>
+            <div class="col-md-10 offset-md-1 ps-6 pb-2 pt-5 text-left">
+                <a href="{{ path('homepage') }}" class="homepage-link">
+                    <div style="display: inline-block">
+                        <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                    </div>
+                    <div style="display: inline-block">
+                        <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
+                        <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
+                    </div>
+                </a>
+                <div class="page-heading pe-5" style="display: inline-block; float: right; padding-top: 1rem">
+                    <h2 class="m-0 float-right lh-1">{{ "Battery" | trans | upper }}</h2><br>
+                    <h2 class="m-0 float-right lh-1">{{ "Information" | trans | upper }}</h2><br>
+                    <h2 class="m-0 float-right lh-1">{{ "Overview" | trans | upper }}</h2>
                 </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-10 offset-md-1">
                 <div class="">
-                    <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">
+                    <div class="p-3 card-body ps-5 pe-5 pb-5 pt-5">
+                        <div class="row text-left pb-5 intro">
+                            <span>
+                                {{ "Here you will find an overview of all information about your battery. At the bottom you can register your battery for a pickup service (if supported for your area) or get disposal information" | trans }}
+                            </span>
+                        </div>
                         <div class="header-div">
                             <div>
                                 <h2 style="display: inline-block">
                                     {{ battery.manufacturer.name | upper }}
                                 </h2>
                             </div>
+                            <a class="btn-outline-dark mr-5 btn-download"
+                               href="{{ path('download', {"slug": battery.serialNumber}) }}"
+                               target="_blank">
+                                <i class="far fa-file-pdf fa-3x"></i>
+                            </a>
                         </div>
                         <hr class="mb-0">
                         <div class="sub-header-div">
@@ -115,18 +174,6 @@
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
-                                        {{ "Status" | trans }}
-                                     </span>
-                                </div>
-                                <div class="col-md-8">
-                                    <span class="float-right">
-                                        {{ battery.status | capitalize }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row p-0 row-border-bottom p-tb-5">
-                                <div class="col-md-4 p-0">
-                                    <span class="heading">
                                         {{ "Type" | trans }}
                                      </span>
                                 </div>
@@ -136,34 +183,30 @@
                                     </span>
                                 </div>
                             </div>
-                            {% if battery.cellType != '' and battery.cellType is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                <span class="heading">
+                                    {{ "Cell Type" | trans }}
+                                 </span>
+                                </div>
+                                <div class="col-md-8">
+                                <span class="float-right">
+                                    {{ battery.cellType }}
+                                </span>
+                                </div>
+                            </div>
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
                                     <span class="heading">
-                                        {{ "Cell Type" | trans }}
+                                        {{ "Module Type" | trans }}
                                      </span>
-                                    </div>
-                                    <div class="col-md-8">
+                                </div>
+                                <div class="col-md-8">
                                     <span class="float-right">
-                                        {{ battery.cellType }}
+                                        {{ battery.moduleType }}
                                     </span>
-                                    </div>
                                 </div>
-                            {% endif %}
-                            {% if battery.moduleType != '' and battery.moduleType is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
-                                        <span class="heading">
-                                            {{ "Module Type" | trans }}
-                                         </span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span class="float-right">
-                                            {{ battery.moduleType }}
-                                        </span>
-                                    </div>
-                                </div>
-                            {% endif %}
+                            </div>
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
@@ -224,35 +267,35 @@
                                     </span>
                                 </div>
                             </div>
-                            {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
-                                        <span class="heading">
-                                            {{ "Acid Volume" | trans }}
-                                         </span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span class="float-right">
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Acid Volume" | trans }}
+                                     </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
                                             {{ battery.acidVolume ~ ' l' }}
-                                        </span>
-                                    </div>
+                                        {% else %}
+                                            {{ battery.acidVolume }}
+                                        {% endif %}
+                                    </span>
                                 </div>
-                            {% endif %}
-                            {% if battery.co2 != '' and battery.co2 is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
-                                        <span class="heading">
-                                            {{ "CO" | trans }}<sub>{{ "2" }}</sub>
-                                            {{ " - Footprint" }}
-                                         </span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span class="float-right">
-                                            {{ battery.co2 }}
-                                        </span>
-                                    </div>
+                            </div>
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                                        {{ " - Footprint" }}
+                                     </span>
                                 </div>
-                            {% endif %}
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.co2 }}
+                                    </span>
+                                </div>
+                            </div>
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
@@ -265,34 +308,30 @@
                                     </span>
                                 </div>
                             </div>
-                            {% if battery.height != 0 and battery.height is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
-                                        <span class="heading">
-                                            {{ "Height" | trans }}
-                                         </span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span class="float-right">
-                                            {{ battery.height ~ ' cm' }}
-                                        </span>
-                                    </div>
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Height" | trans }}
+                                     </span>
                                 </div>
-                            {% endif %}
-                            {% if battery.width != 0 and battery.width is not null  %}
-                                <div class="row p-0 row-border-bottom p-tb-5">
-                                    <div class="col-md-4 p-0">
-                                        <span class="heading">
-                                            {{ "Width" | trans }}
-                                         </span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <span class="float-right">
-                                            {{ battery.width ~ ' cm' }}
-                                        </span>
-                                    </div>
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.height ~ ' cm' }}
+                                    </span>
                                 </div>
-                            {% endif %}
+                            </div>
+                            <div class="row p-0 row-border-bottom p-tb-5">
+                                <div class="col-md-4 p-0">
+                                    <span class="heading">
+                                        {{ "Width" | trans }}
+                                     </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <span class="float-right">
+                                        {{ battery.width ~ ' cm' }}
+                                    </span>
+                                </div>
+                            </div>
                             <div class="row p-0 row-border-bottom p-tb-5">
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
@@ -306,10 +345,38 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="card-body ps-5 pe-5 pb-2 pti-0">
+                        {% set statusArray = {
+                            'registered': 'A registered battery has been manufactured but not (yet) delivered.',
+                            'delivered': 'A delivered battery is either in an intermediate station or at the end customer.',
+                            'returned': 'This battery has been registered for a pickup service or its on his way to a recycler.',
+                            'recycled': 'The life cycle of the battery ended with recycling or disposal.',
+                        } %}
+                        <div class="status-div p-0">
+                            <div class="status-content">
+                                <span>
+                                    {{ "Status" | trans }}
+                                </span>
+                                <span class="float-right">
+                                    {{ battery.status | capitalize }}
+                                </span>
+                            </div>
+                            <div class="status-info">
+                                <small>
+                                    <i class="fa fa-info-circle"></i>
+                                    {{ statusArray[battery.status] | trans }}
+                                 </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">
                         <div class="row-div">
-                            <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Add Return" | trans }}</a>
-                            <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report Recycled Battery" | trans }}</a>
-                            <a class="mt-10 btn btn-primary btn-green mr-5" href="{{ path('download', {"slug": battery.serialNumber}) }}" target="_blank"> {{ "Download" | trans }}</a>
+                            {% if battery.status == 'registered' or battery.status == 'delivered' %}
+                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Pickup Battery" | trans }}</a>
+                            {% elseif battery.status == 'returned' %}
+                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report as recycled/Disposed" | trans }}</a>
+                            {% endif %}
                             <a class="mt-10 btn btn-light btn-outline-green" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>
                     </div>

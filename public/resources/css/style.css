@@ -145,3 +145,11 @@ a {
     text-underline: none;
     color: black;
 }
+
+.ps-1-5 {
+    padding-left: 1.5rem !important;
+}
+
+.pe-1-5 {
+    padding-right: 1.5rem !important;
+}

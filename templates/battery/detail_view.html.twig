@@ -101,30 +101,26 @@
                         {{ battery.batteryType.type }}
                     </div>
                 </div>
-                {% if battery.cellType != '' and battery.cellType is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                        <span class="heading">
-                            {{ "Cell Type" | trans }}
-                        </span>
-                        </div>
-                        <div class="col-md-8">
-                            {{ battery.cellType }}
-                        </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                    <span class="heading">
+                        {{ "Cell Type" | trans }}
+                    </span>
                     </div>
-                {% endif %}
-                {% if battery.moduleType != '' and battery.moduleType is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                        <span class="heading">
-                            {{ "Module Type" | trans }}
-                        </span>
-                        </div>
-                        <div class="col-md-8">
-                            {{ battery.moduleType }}
-                        </div>
+                    <div class="col-md-8">
+                        {{ battery.cellType }}
                     </div>
-                {% endif %}
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                    <span class="heading">
+                        {{ "Module Type" | trans }}
+                    </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.moduleType }}
+                    </div>
+                </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
                     <div class="col-md-4 p-0">
                         <span class="heading">
@@ -175,31 +171,31 @@
                         {{ battery.nominalEnergy ~ ' kWh' }}
                     </div>
                 </div>
-                {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                        <span class="heading">
-                            {{ "Acid Volume" | trans }}
-                        </span>
-                        </div>
-                        <div class="col-md-8">
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                    <span class="heading">
+                        {{ "Acid Volume" | trans }}
+                    </span>
+                    </div>
+                    <div class="col-md-8">
+                        {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
                             {{ battery.acidVolume ~ ' l' }}
-                        </div>
+                        {% else %}
+                            {{ battery.acidVolume }}
+                        {% endif %}
                     </div>
-                {% endif %}
-                {% if battery.co2 != '' and battery.co2 is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                        <span class="heading">
-                            {{ "CO" | trans }}<sub>{{ "2" }}</sub>
-                            {{ " - Footprint" }}
-                        </span>
-                        </div>
-                        <div class="col-md-8">
-                            {{ battery.co2 }}
-                        </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                    <span class="heading">
+                        {{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                        {{ " - Footprint" }}
+                    </span>
                     </div>
-                {% endif %}
+                    <div class="col-md-8">
+                        {{ battery.co2 }}
+                    </div>
+                </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
                     <div class="col-md-4 p-0">
                         <span class="heading">
@@ -210,30 +206,26 @@
                         {{ battery.cycleLife }}
                     </div>
                 </div>
-                {% if battery.height != 0 and battery.height is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                            <span class="heading">
-                                {{ "Height" | trans }}
-                            </span>
-                        </div>
-                        <div class="col-md-8">
-                            {{ battery.height ~ ' cm' }}
-                        </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Height" | trans }}
+                        </span>
                     </div>
-                {% endif %}
-                {% if battery.width != 0 and battery.width is not null  %}
-                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                        <div class="col-md-4 p-0">
-                            <span class="heading">
-                                {{ "Width" | trans }}
-                            </span>
-                        </div>
-                        <div class="col-md-8">
-                            {{ battery.width ~ ' cm' }}
-                        </div>
+                    <div class="col-md-8">
+                        {{ battery.height ~ ' cm' }}
                     </div>
-                {% endif %}
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Width" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {{ battery.width ~ ' cm' }}
+                    </div>
+                </div>
                 <div class="col-md-12 p-0 p-tb-5">
                     <div class="col-md-4 p-0">
                         <span class="heading">
