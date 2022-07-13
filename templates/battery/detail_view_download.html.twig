@@ -191,11 +191,33 @@
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Height" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.height ~ ' cm' }}</span>
+            <span class="heading-title-hash">
+                {% if battery.height != 0 and battery.height is not null  %}
+                    {{ battery.height ~ ' cm' }}
+                {% else %}
+                    {{ battery.height }}
+                {% endif %}
+            </span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Width" | trans }}</span>
-            <span class="heading-title-hash">{{ battery.width ~ ' cm' }}</span>
+            <span class="heading-title-hash">
+                {% if battery.width != 0 and battery.width is not null  %}
+                    {{ battery.width ~ ' cm' }}
+                {% else %}
+                    {{ battery.width }}
+                {% endif %}
+            </span>
+        </div>
+        <div class="row-border-bottom row-div">
+            <span class="heading-span">{{ "Length" | trans }}</span>
+            <span class="heading-title-hash">
+                {% if battery.length != 0 and battery.length is not null  %}
+                    {{ battery.length ~ ' cm' }}
+                {% else %}
+                    {{ battery.length }}
+                {% endif %}
+            </span>
         </div>
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Weight" | trans }}</span>
@@ -210,7 +232,7 @@
     <span class="heading-span f-bold f-size-14">
         <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
     </span>
-    <br><br><br><br><br><br>
+    <br><br><br><br><br>
 </div>
 </body>
 </html>

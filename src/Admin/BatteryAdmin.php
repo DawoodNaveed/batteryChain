@@ -77,7 +77,12 @@ class BatteryAdmin extends AbstractAdmin
             ->add('width', NumberType::class, [
                 'required' => false
             ])
-            ->add('mass', NumberType::class);
+            ->add('length', NumberType::class, [
+                'required' => false
+            ])
+            ->add('mass', NumberType::class, [
+                'label' => 'Weight'
+            ]);
     }
 
     /**
@@ -104,7 +109,9 @@ class BatteryAdmin extends AbstractAdmin
             ->addIdentifier('nominalVoltage')
             ->addIdentifier('nominalCapacity')
             ->addIdentifier('nominalEnergy')
-            ->addIdentifier('mass');
+            ->addIdentifier('mass', TextType::class, [
+                'label' => 'Weight'
+            ]);
     }
 
     /**
@@ -142,7 +149,8 @@ class BatteryAdmin extends AbstractAdmin
             ->add('nominalEnergy')
             ->add('height')
             ->add('width')
-            ->add('mass')
+            ->add('length')
+            ->add('mass', TextType::class, ['label' => 'Weight'])
             ->add('status');
     }
 

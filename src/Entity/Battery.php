@@ -86,6 +86,12 @@ class Battery extends AbstractEntity
 
     /**
      * @var double|null
+     * @ORM\Column(name="length", type="float", options={"unsigned"=true}, nullable="true")
+     */
+    private $length;
+
+    /**
+     * @var double|null
      * @ORM\Column(name="mass", type="float", options={"unsigned"=true}, nullable="true",)
      */
     private $mass;
@@ -319,6 +325,22 @@ class Battery extends AbstractEntity
     public function setWidth(?float $width): void
     {
         $this->width = $width;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getLength(): ?float
+    {
+        return $this->length;
+    }
+
+    /**
+     * @param float|null $length
+     */
+    public function setLength(?float $length): void
+    {
+        $this->length = $length;
     }
 
     /**

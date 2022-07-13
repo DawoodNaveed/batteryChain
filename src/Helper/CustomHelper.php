@@ -34,6 +34,7 @@ class CustomHelper
         'cycle_life',
         'height',
         'width',
+        'length',
         'mass'
     ];
 
