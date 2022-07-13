@@ -109,7 +109,7 @@ class RecyclerAdmin extends AbstractAdmin
         }
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
-         || !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+         && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
             $object->addManufacturer($user->getManufacturer());
         }
     }

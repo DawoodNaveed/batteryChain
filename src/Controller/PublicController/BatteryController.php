@@ -89,51 +89,12 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
-        $form = $this->createForm(ReportBatteryReturnFormType::class, null, [
-            'recyclers' => $this->recyclerService->toChoiceArray(($battery->getManufacturer()->getRecyclers()), true)
-        ]);
+        $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
+        $this->entityManager->flush();
+        $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted())
-        {
-            if ($form->get('cancel')->isClicked()) {
-                return new RedirectResponse($this->generateUrl('homepage'));
-            }
-
-            $formData = $form->getData();
-            $recycler = $formData['recyclers'] ?? null;
-
-            if (empty($recycler)) {
-                $this->addFlash('danger', $this->translator->trans('Kindly Select Recycler!'));
-                return new RedirectResponse($this->generateUrl('report_battery_return', [
-                    'slug' => $slug
-                ]));
-            }
-
-            if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
-                $this->addFlash('danger', $this->translator->trans('Battery is already returned!'));
-
-                return new RedirectResponse($this->generateUrl('battery_detail', [
-                    'search' => $battery->getSerialNumber()
-                ]));
-            }
-
-            $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
-            $this->entityManager->flush();
-            $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
-
-            return new RedirectResponse($this->generateUrl('battery_detail', [
-                'search' => $battery->getSerialNumber()
-            ]));
-        }
-
-        return $this->render(
-            'public_templates/battery_return/report_battery_return.html.twig',
-            array(
-                'form' => $form->createView(),
-            )
-        );
+        return new RedirectResponse($this->generateUrl('battery_detail', [
+            'search' => $battery->getSerialNumber()
+        ]));
     }
 }

@@ -52,4 +52,15 @@ class CountryService
 
         return $result;
     }
+
+    /**
+     * @param string $name
+     * @return Country|null
+     */
+    public function getCountryByName(string $name): ?Country
+    {
+        return $this->countryRepository->findOneBy([
+            'name' => $name
+        ]);
+    }
 }
