@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Helper\CustomHelper;
 use App\Repository\TransactionLogRepository;
 use App\Service\BlockchainService;
 use Symfony\Component\Console\Command\Command;
@@ -52,7 +53,13 @@ class CreateTransactionHashCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $log = $this->transactionLogRepository->getTransactionToCreateHash();
-        $this->blockchainService->createTransactionHash($log);
-
+        $response = $this->blockchainService->createTransactionHash($log);
+        if ($response[CustomHelper::STATUS] === CustomHelper::STATUS_SUCCESS) {
+            $this->transactionLogRepository
+                ->updateTransactionLog(
+                    $log,
+                    null,
+                    $response[CustomHelper::DATA][CustomHelper::TRANSACTION_HASH]);
+        }
     }
 }

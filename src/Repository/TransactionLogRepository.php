@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Battery;
 use App\Entity\TransactionLog;
 use App\Helper\CustomHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -28,7 +29,7 @@ class TransactionLogRepository extends ServiceEntityRepository
      * @param string $status
      * @return TransactionLog|null
      */
-    public function getTransaction($status = CustomHelper::PENDING): ?TransactionLog
+    public function getTransaction($status = CustomHelper::STATUS_PENDING): ?TransactionLog
     {
         return $this->createQueryBuilder('tl')
             ->where('tl.transactionHash is not null')
@@ -42,17 +43,27 @@ class TransactionLogRepository extends ServiceEntityRepository
 
     /**
      * @param TransactionLog|null $log
-     * @param string $status
+     * @param string|null $status
+     * @param string|null $transactionHash
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function updateTransactionLog(?TransactionLog $log, string $status)
-    {
+    public function updateTransactionLog(
+        ?TransactionLog $log,
+        ?string $status = null,
+        ?string $transactionHash = null
+    ) {
         if (!empty($log)) {
-            $log->setStatus($status);
+            if (!empty($status)) {
+                $log->setStatus($status);
 
-            if ($status === CustomHelper::STATUS_COMPLETE) {
-                $log->getBattery()->setBlockchainSecured(true);
+                if ($status === CustomHelper::STATUS_COMPLETE) {
+                    $log->getBattery()->setBlockchainSecured(true);
+                }
+            }
+
+            if (!empty($transactionHash)) {
+                $log->setTransactionHash($transactionHash);
             }
 
             $this->_em->flush();
@@ -70,5 +81,25 @@ class TransactionLogRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param Battery $battery
+     * @param string $transactionType
+     * @param string $status
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function createTransactionLog(Battery $battery, string $transactionType, string $status = CustomHelper::STATUS_PENDING)
+    {
+        $transactionLog = new TransactionLog();
+        $transactionLog->setBattery($battery);
+        $transactionLog->setTransactionType($transactionType);
+        $transactionLog->setStatus($status);
+        $transactionLog->setCreated(new \DateTime('now'));
+        $transactionLog->setUpdated(new \DateTime('now'));
+
+        $this->_em->persist($transactionLog);
+        $this->_em->flush();
     }
 }

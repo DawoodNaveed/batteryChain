@@ -61,6 +61,7 @@ class CustomHelper
         'serial_number'
     ];
 
+    const BATTERY_STATUS_PRE_REGISTERED = 'pre-registered';
     const BATTERY_STATUS_REGISTERED = 'registered';
     const BATTERY_STATUS_DELIVERED = 'delivered';
     const BATTERY_STATUS_BLOCKCHAIN_SECURED = 'blockchain-secured';
@@ -95,7 +96,9 @@ class CustomHelper
     public const STATUS = 'status';
     public const STATUS_COMPLETE = 'complete';
     public const STATUS_FAIL = 'fail';
-    public const PENDING = 'pending';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_SUCCESS = 'success';
+    public const TRANSACTION_HASH = 'transaction_hash';
     public const DATA = 'data';
 
     /**

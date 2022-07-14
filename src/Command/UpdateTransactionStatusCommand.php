@@ -57,7 +57,7 @@ class UpdateTransactionStatusCommand extends Command
             dd($response);
             $status = strtolower($response[CustomHelper::STATUS]);
 
-            if ($status === CustomHelper::PENDING &&
+            if ($status === CustomHelper::STATUS_PENDING &&
                 is_null(strtolower($response[CustomHelper::DATA]))) {
                 return;
             }
