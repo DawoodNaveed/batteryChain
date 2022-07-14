@@ -211,7 +211,7 @@ class BatteryService
      * @param Manufacturer|null $manufacturer
      * @return Battery|null
      */
-    public function fetchBatteryBySerialNumber($serialNumber, ?Manufacturer $manufacturer = null): ?Battery
+    public function fetchBatteryBySerialNumber($serialNumber, ?Manufacturer $manufacturer = null, $isAdmin = false): ?Battery
     {
         $params = [
             'serialNumber' => $serialNumber,
@@ -221,7 +221,7 @@ class BatteryService
             $params['manufacturer'] = $manufacturer;
         }
 
-        if (!$manufacturer) {
+        if (!$manufacturer && !$isAdmin) {
             $params['blockchainSecured'] = true;
         }
 

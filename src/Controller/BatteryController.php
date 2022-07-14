@@ -184,7 +184,10 @@ class BatteryController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $user->getManufacturer() ?? null,
+                $user->getManufacturer() ? false : true);
 
             if (empty($battery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
@@ -229,7 +232,11 @@ class BatteryController extends CRUDController
         }
 
         /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $user->getManufacturer() ?? null,
+                $user->getManufacturer() ? false : true);
 
         if (empty($battery)) {
             $this->addFlash('sonata_flash_error', 'Battery does not exist!');
