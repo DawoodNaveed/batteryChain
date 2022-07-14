@@ -214,11 +214,15 @@ class BatteryService
     public function fetchBatteryBySerialNumber($serialNumber, ?Manufacturer $manufacturer = null): ?Battery
     {
         $params = [
-            'serialNumber' => $serialNumber
+            'serialNumber' => $serialNumber,
         ];
 
         if ($manufacturer) {
             $params['manufacturer'] = $manufacturer;
+        }
+
+        if (!$manufacturer) {
+            $params['blockchainSecured'] = true;
         }
 
         return $this->batteryRepository->findOneBy($params);
