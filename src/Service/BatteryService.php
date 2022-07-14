@@ -130,6 +130,7 @@ class BatteryService
                 $cycleLife = (float) $row['cycle_life'] ?? null;
                 $height = ((float) $row['height']) ?? null;
                 $width = ((float) $row['width']) ?? null;
+                $length = ((float) $row['length']) ?? null;
                 $mass = (float) $row['mass'];
                 $status = CustomHelper::BATTERY_STATUS_REGISTERED;
 
@@ -138,7 +139,7 @@ class BatteryService
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
                     "', '" . $acidVolume . "', '" . $co2 . "', '" . $cycleLife
-                    . "', '" . $height . "', '" . $width . "', '" . $mass . "', '" . $status
+                    . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
                 $rowCount++;

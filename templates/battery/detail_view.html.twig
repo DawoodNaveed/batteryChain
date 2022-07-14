@@ -213,7 +213,11 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.height ~ ' cm' }}
+                        {% if battery.height != 0 and battery.height is not null  %}
+                            {{ battery.height ~ ' cm' }}
+                        {% else %}
+                            {{ battery.height }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
@@ -223,7 +227,25 @@
                         </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.width ~ ' cm' }}
+                        {% if battery.width != 0 and battery.width is not null  %}
+                            {{ battery.width ~ ' cm' }}
+                        {% else %}
+                            {{ battery.width }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                    <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Length" | trans }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        {% if battery.length != 0 and battery.length is not null  %}
+                            {{ battery.length ~ ' cm' }}
+                        {% else %}
+                            {{ battery.length }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 p-tb-5">
