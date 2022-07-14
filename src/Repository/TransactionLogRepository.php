@@ -67,6 +67,7 @@ class TransactionLogRepository extends ServiceEntityRepository
                 $log->setTransactionHash($transactionHash);
             }
 
+            $log->setUpdated(new \DateTime('now'));
             $this->_em->flush();
         }
     }

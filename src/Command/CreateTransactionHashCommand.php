@@ -53,10 +53,10 @@ class CreateTransactionHashCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void
+     * @return int
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var TransactionLog $log */
         $log = $this->transactionLogRepository->getTransactionToCreateHash();
@@ -75,6 +75,10 @@ class CreateTransactionHashCommand extends Command
             } else {
                 $this->logger->error('[ERROR:CREATE TRANSACTION HASH]:', $response);
             }
+
+            return 1;
         }
+
+        return 0;
     }
 }
