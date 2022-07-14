@@ -89,17 +89,19 @@ class BlockchainService
         $responseData = json_decode(stripslashes($response), true);
         $isResponseDataArray = is_array($responseData);
 
-        if ($isResponseDataArray && (
-                strtolower($responseData[CustomHelper::STATUS]) === CustomHelper::STATUS_COMPLETE ||
-                strtolower($responseData[CustomHelper::STATUS]) === CustomHelper::STATUS_FAIL
-            )) {
-            $this->logger->info($url . ' Info! Ethereum app sent data successfully.', [
-                $postFields, $response
-            ]);
+        if ($getHashStatus) {
+            if ($isResponseDataArray && (
+                    strtolower($responseData[CustomHelper::STATUS]) === CustomHelper::STATUS_COMPLETE ||
+                    strtolower($responseData[CustomHelper::STATUS]) === CustomHelper::STATUS_FAIL
+                )) {
+                $this->logger->info($url . ' Info! Ethereum app sent data successfully.', [
+                    $postFields, $response
+                ]);
 
-            return $responseData;
-        }  elseif ($isResponseDataArray && strtolower($responseData[\AppBundle\Helper\CustomHelper::STATUS]) === self::STATUS_SUCCESS) {
-            $this->logger->info($url . ' Info! NFT Ethereum app sent data successfully.', [
+                return $responseData;
+            }
+        } elseif ($isResponseDataArray && strtolower($responseData[CustomHelper::STATUS]) === CustomHelper::STATUS_SUCCESS) {
+            $this->logger->info($url . ' Info! Ethereum app sent data successfully.', [
                 $postFields, $response
             ]);
 
@@ -128,6 +130,7 @@ class BlockchainService
 
             $postFields = [
                 'serial_number' => $log->getBattery()->getSerialNumber(),
+                'meta_data' => "",
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];
 

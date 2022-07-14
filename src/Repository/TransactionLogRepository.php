@@ -27,9 +27,9 @@ class TransactionLogRepository extends ServiceEntityRepository
 
     /**
      * @param string $status
-     * @return TransactionLog|null
+     * @return array|null
      */
-    public function getTransaction($status = CustomHelper::STATUS_PENDING): ?TransactionLog
+    public function getTransaction($status = CustomHelper::STATUS_PENDING): ?array
     {
         return $this->createQueryBuilder('tl')
             ->where('tl.transactionHash is not null')
@@ -59,6 +59,7 @@ class TransactionLogRepository extends ServiceEntityRepository
 
                 if ($status === CustomHelper::STATUS_COMPLETE) {
                     $log->getBattery()->setBlockchainSecured(true);
+                    $log->getBattery()->setStatus($log->getTransactionType());
                 }
             }
 
@@ -71,13 +72,13 @@ class TransactionLogRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return TransactionLog|null
+     * @return array|null
      */
-    public function getTransactionToCreateHash(): ?TransactionLog
+    public function getTransactionToCreateHash(): ?array
     {
         return $this->createQueryBuilder('tl')
             ->where('tl.transactionHash is null')
-            ->orderBy('id', 'ASC')
+            ->orderBy('tl.id', 'ASC')
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\TransactionLog;
 use App\Helper\CustomHelper;
 use App\Repository\TransactionLogRepository;
 use App\Service\BlockchainService;
@@ -47,22 +48,30 @@ class UpdateTransactionStatusCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return void
+     * @return int|void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $log = $this->transactionLogRepository->getTransaction();
-            $response = $this->blockchainService->getTransactionStatusByRef($log->getTransactionHash());
-            dd($response);
-            $status = strtolower($response[CustomHelper::STATUS]);
 
-            if ($status === CustomHelper::STATUS_PENDING &&
-                is_null(strtolower($response[CustomHelper::DATA]))) {
-                return;
+            if (!empty($log) && isset($log[0])) {
+                /** @var TransactionLog $log */
+                $log = $log[0];
+                $response = $this->blockchainService->getTransactionStatusByRef($log->getTransactionHash());
+                $status = strtolower($response[CustomHelper::STATUS]);
+
+                if ($status === CustomHelper::STATUS_PENDING &&
+                    is_null(strtolower($response[CustomHelper::DATA]))) {
+                    return 0;
+                }
+
+                $this->transactionLogRepository->updateTransactionLog($log, $status);
+
+                return 1;
             }
 
-            $this->transactionLogRepository->updateTransactionLog($log, $status);
+            return 0;
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
