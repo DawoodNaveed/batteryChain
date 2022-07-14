@@ -2,6 +2,9 @@
 
 namespace App\Helper;
 
+use AppBundle\Exception\API\ApiException;
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Class CustomHelper
  * @package App\Helper
@@ -89,6 +92,12 @@ class CustomHelper
         self::BATTERY_STATUS_RECYCLED => 'The life cycle of the battery ended with recycling or disposal.',
     ];
 
+    public const STATUS = 'status';
+    public const STATUS_COMPLETE = 'complete';
+    public const STATUS_FAIL = 'fail';
+    public const PENDING = 'pending';
+    public const DATA = 'data';
+
     /**
      * @param array $filters
      * @return array
@@ -114,5 +123,66 @@ class CustomHelper
         }
 
         return false;
+    }
+
+    /**
+     * @param $requestUrl
+     * @param $requestType
+     * @param array $httpHeader
+     * @param string $postFields
+     * @param false $responseHeader
+     * @param false $responseWithoutDecoding
+     * @return array|bool|string
+     */
+    public static function sendCurlRequest(
+        $requestUrl,
+        $requestType,
+        $httpHeader = array(),
+        $postFields = '',
+        $responseHeader = false,
+        $responseWithoutDecoding = false
+    ) {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $requestUrl);
+            curl_setopt($ch, CURLOPT_HEADER, $responseHeader);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $requestType);
+            if (!empty($httpHeader)) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+            }
+            if (!empty($postFields)) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+            }
+            $response = curl_exec($ch);
+            if ($responseHeader) {
+                $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+                $headers = substr($response, 0, $header_size);
+                $body = substr($response, $header_size);
+                $response = array('headers' => $headers, 'body' => $body);
+            }
+            curl_close($ch);
+
+            if ($responseWithoutDecoding) {
+                return array('data' => $response, 'status' => true);
+            }
+
+            return $response;
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * @param $message
+     * @throws \Exception
+     */
+    public static function exceptionBadRequest(
+        $message
+    ) {
+        throw new \Exception(json_encode([
+            'http_status_code' => Response::HTTP_BAD_REQUEST,
+            'message' => $message
+        ]));
     }
 }
