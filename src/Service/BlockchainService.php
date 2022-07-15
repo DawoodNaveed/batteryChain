@@ -23,6 +23,7 @@ class BlockchainService
     const OPERATION = [
         CustomHelper::BATTERY_STATUS_REGISTERED => 1,
         CustomHelper::BATTERY_STATUS_DELIVERED => 2,
+        CustomHelper::BATTERY_STATUS_RETURNED => 2,
         CustomHelper::BATTERY_STATUS_RECYCLED => 3,
     ];
 
@@ -130,7 +131,9 @@ class BlockchainService
 
             $postFields = [
                 'serial_number' => $log->getBattery()->getSerialNumber(),
-                'meta_data' => "",
+                'meta_data' => [
+                    'type' => $log->getTransactionType()
+                ],
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];
 

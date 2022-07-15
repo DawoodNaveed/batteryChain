@@ -9,6 +9,7 @@ use App\Service\BatteryService;
 use App\Service\CountryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
+use App\Service\TransactionLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -28,6 +29,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property RecyclerService recyclerService
  * @property TranslatorInterface translator
  * @property CountryService countryService
+ * @property TransactionLogService transactionLogService
  */
 class BatteryController extends AbstractController
 {
@@ -37,17 +39,20 @@ class BatteryController extends AbstractController
      * @param BatteryService $batteryService
      * @param RecyclerService $recyclerService
      * @param TranslatorInterface $translator
+     * @param TransactionLogService $transactionLogService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         BatteryService $batteryService,
         RecyclerService $recyclerService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TransactionLogService $transactionLogService
     ) {
         $this->entityManager = $entityManager;
         $this->batteryService = $batteryService;
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
+        $this->transactionLogService = $transactionLogService;
     }
 
     /**
@@ -89,6 +94,7 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
+        $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RECYCLED);
         $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
         $this->entityManager->flush();
         $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));

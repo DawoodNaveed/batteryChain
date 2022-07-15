@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @property BatteryRepository batteryRepository
  * @property ShipmentService shipmentService
  * @property BatteryReturnService returnService
+ * @property TransactionLogService transactionLogService
  * @property LoggerInterface logger
  * @property $csvFileUploadSize
  */
@@ -29,6 +30,7 @@ class BatteryService
      * @param BatteryRepository $batteryRepository
      * @param ShipmentService $shipmentService
      * @param BatteryReturnService $returnService
+     * @param TransactionLogService $transactionLogService
      * @param LoggerInterface $logger
      * @param $csvFileUploadSize
      */
@@ -36,12 +38,14 @@ class BatteryService
         BatteryRepository $batteryRepository,
         ShipmentService $shipmentService,
         BatteryReturnService $returnService,
+        TransactionLogService $transactionLogService,
         LoggerInterface $logger,
         $csvFileUploadSize
     ) {
         $this->batteryRepository = $batteryRepository;
         $this->shipmentService = $shipmentService;
         $this->returnService = $returnService;
+        $this->transactionLogService = $transactionLogService;
         $this->logger = $logger;
         $this->csvFileUploadSize = $csvFileUploadSize;
     }
@@ -263,22 +267,26 @@ class BatteryService
                     }
 
                     $rowCount++;
-                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number'],
-                        $user->getManufacturer() ?? null);
+                    $battery = $this->fetchBatteryBySerialNumber(
+                        (string) $row['serial_number'],
+                        $user->getManufacturer() ?? null,
+                        $user->getManufacturer() ? false : true);
 
-                    if (empty($battery)) {
+                    if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
                         $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
                         continue;
                     }
 
                     if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
+                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED] ||
+                        ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_DELIVERED))) {
                         $alreadyDeliveredCount++;
                         $error['error']['already_delivered_error'] = ['message' => $alreadyDeliveredCount . ' Battery(s) already delivered!'];
                         continue;
                     }
 
+                    $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setCurrentPossessor($user);
                     $shipment = $this->shipmentService->createShipment($user, $battery);
@@ -333,22 +341,26 @@ class BatteryService
                     }
 
                     $rowCount++;
-                    $battery = $this->fetchBatteryBySerialNumber((string) $row['serial_number'],
-                        $user->getManufacturer() ?? null);
+                    $battery = $this->fetchBatteryBySerialNumber(
+                        (string) $row['serial_number'],
+                        $user->getManufacturer() ?? null,
+                        $user->getManufacturer() ? false : true);
 
-                    if (empty($battery)) {
+                    if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
                         $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
                         continue;
                     }
 
-                    if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
+                    if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) ||
+                        ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RETURNED))) {
                         $alreadyReturnedCount++;
-                        $error['error']['already_delivered_error'] = ['message' => $alreadyReturnedCount . ' Battery(s) already delivered!'];
+                        $error['error']['already_delivered_error'] = ['message' => $alreadyReturnedCount . ' Battery(s) already returned!'];
                         continue;
                     }
 
+                    $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setCurrentPossessor($user);
                     $return = $this->returnService->createReturn($user, $battery, $recycler);

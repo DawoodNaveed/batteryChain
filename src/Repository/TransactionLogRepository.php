@@ -36,7 +36,7 @@ class TransactionLogRepository extends ServiceEntityRepository
             ->andWhere('tl.status = :status')
             ->setParameter('status', $status)
             ->setMaxResults(1)
-            ->orderBy('tl.updated', 'DESC')
+            ->orderBy('tl.id', 'ASC')
             ->getQuery()
             ->getResult();
     }
