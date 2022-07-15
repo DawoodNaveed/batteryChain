@@ -175,6 +175,25 @@ class BatteryAdmin extends AbstractAdmin
         $query = parent::configureQuery($query);
         $user = $this->tokenStorage->getToken()->getUser();
 
+        if (!empty($this->getRequest()->get('intermediate_screen'))) {
+            if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+                && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
+                && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {
+                $manufacturerId = $user->getManufacturer()->getId();
+            } else {
+                $manufacturerId = $this->getRequest()->get('manufacturer');
+            }
+
+            $rootAlias = current($query->getRootAliases());
+            $query
+                ->andWhere(
+                $query->expr()->eq($rootAlias . '.manufacturer', $manufacturerId));
+            $query->andWhere(
+                $query->expr()->eq($rootAlias . '.isBulkImport', 1));
+
+            return $query;
+        }
+
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
             && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)
             && in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true)) {

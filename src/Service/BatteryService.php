@@ -132,13 +132,13 @@ class BatteryService
                 $width = ((float) $row['width']) ?? null;
                 $length = ((float) $row['length']) ?? null;
                 $mass = (float) $row['mass'];
-                $status = CustomHelper::BATTERY_STATUS_REGISTERED;
+                $status = CustomHelper::BATTERY_STATUS_PRE_REGISTERED;
 
                 $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
-                    "', '" . $acidVolume . "', '" . $co2 . "', '" . $cycleLife
+                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $cycleLife
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
@@ -406,6 +406,23 @@ class BatteryService
             $startDate = (new \DateTime($dates[0]))->format('Y-m-d');
             $endDate = (new \DateTime('+1 day' . $dates[1]))->format('Y-m-d');
             $dqlStatement .= "AND (b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
+        }
+    }
+
+    /**
+     * @param Manufacturer|null $manufacturer
+     * @return int|mixed|string|null
+     */
+    public function updateBulkImportField(?Manufacturer $manufacturer)
+    {
+        try {
+            if (empty($manufacturer)) {
+                return null;
+            }
+
+            return $this->batteryRepository->updateBulkImportField($manufacturer);
+        } catch (\Exception $exception) {
+            $this->logger->error('[ERROR][UPDATE BATTERY FIELD]' . $exception->getMessage());
         }
     }
 }

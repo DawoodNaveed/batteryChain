@@ -157,10 +157,16 @@ class Battery extends AbstractEntity
     private $trayNumber;
 
     /**
-     * @var string|null
+     * @var boolean|null
      * @ORM\Column(name="blockchain_secured", type="boolean", nullable=true, options={"default"=false})
      */
     private $blockchainSecured;
+
+    /**
+     * @var boolean|null
+     * @ORM\Column(name="is_bulk_import", type="boolean", nullable=true, options={"default"=false})
+     */
+    private $isBulkImport;
 
     /**
      * One Battery has many transaction Logs.
@@ -573,19 +579,35 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return boolean|null
      */
-    public function getBlockchainSecured(): ?string
+    public function getBlockchainSecured(): ?bool
     {
         return $this->blockchainSecured;
     }
 
     /**
-     * @param string|null $blockchainSecured
+     * @param boolean|null $blockchainSecured
      */
-    public function setBlockchainSecured(?string $blockchainSecured): void
+    public function setBlockchainSecured(?bool $blockchainSecured): void
     {
         $this->blockchainSecured = $blockchainSecured;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsBulkImport(): ?bool
+    {
+        return $this->isBulkImport;
+    }
+
+    /**
+     * @param bool|null $isBulkImport
+     */
+    public function setIsBulkImport(?bool $isBulkImport): void
+    {
+        $this->isBulkImport = $isBulkImport;
     }
 
     /**
