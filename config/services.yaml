@@ -66,6 +66,15 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
 
+    admin.battery.filtered:
+        class: App\Admin\BatteryFilteredAdmin
+        arguments: [~, App\Entity\Battery, App\Controller\BatteryController]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+            - [ setTransactionLogService, [ '@App\Service\TransactionLogService' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: BatteryFiltered, group: BatteryFiltered }
+
     admin.return:
         class: App\Admin\BatteryReturnAdmin
         arguments: [~, App\Entity\BatteryReturn, App\Controller\ReturnController]
