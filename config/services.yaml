@@ -55,7 +55,7 @@ services:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
             - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: Recycler, group: Recycler }
+            - { name: sonata.admin, manager_type: orm, label: "Pickup Partner and Recycler", group: "Pickup Partner and Recycler" }
 
     admin.battery:
         class: App\Admin\BatteryAdmin
