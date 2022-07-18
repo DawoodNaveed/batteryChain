@@ -2,41 +2,41 @@
 
 namespace App\Listener;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class LocaleListener
+ * @package App\Listener
+ * @property TranslatorInterface translator
+ * @property UrlGeneratorInterface urlGenerator
+ * @property SessionInterface session
+ */
 class LocaleListener implements EventSubscriberInterface
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
-
-    /** @var RouterInterface */
-    private $router;
-
     /**
      * LocaleListener constructor.
      * @param TranslatorInterface $translator
      * @param UrlGeneratorInterface $urlGenerator
-     * @param RouterInterface $router
+     * @param SessionInterface $session
      */
     public function __construct(
         TranslatorInterface $translator,
         UrlGeneratorInterface $urlGenerator,
-        RouterInterface $router
+        SessionInterface $session
     ) {
         $this->translator = $translator;
         $this->urlGenerator = $urlGenerator;
-        $this->router = $router;
+        $this->session = $session;
     }
 
+    /**
+     * @param RequestEvent $event
+     */
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
@@ -53,31 +53,18 @@ class LocaleListener implements EventSubscriberInterface
         if (strlen($request->get('_locale') )) {
             $request->setLocale($request->get('_locale'));
             $this->translator->setLocale($request->get('_locale'));
+            $this->session->set('_locale', $request->get('_locale'));
         }
 
-        // try to see if the locale has been set as a _locale routing parameter
-        if ($locale = $request->query->get('switch_language')) {
-
-            $request->getSession()->set('_locale', $locale);
-            $routing = $this->router->match($request->getPathInfo());
-
-            $route_params = array();
-
-            foreach ($routing as $key => $value) {
-                if($key[0] !== "_")
-                {
-                    $route_params[$key] = $value;
-                }
-            }
-
-            $parameters = \array_merge($route_params, array("_locale" => $locale));
-            $url = $this->urlGenerator->generate($routing['_route'], $parameters);
-
-            $response = new RedirectResponse($url);
-            $event->setResponse($response);
+        if (!empty($this->session->get('_locale'))) {
+            $request->setLocale($this->session->get('_locale'));
+            $this->translator->setLocale($this->session->get('_locale'));
         }
     }
 
+    /**
+     * @return \array[][]
+     */
     static public function getSubscribedEvents()
     {
         return array(
