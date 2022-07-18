@@ -153,3 +153,15 @@ a {
 .pe-1-5 {
     padding-right: 1.5rem !important;
 }
+
+.lang_link, .lang_link:hover, .lang_link:focus, .lang_link:active {
+    color: black;
+}
+
+.underline {
+    text-decoration: underline !important;
+}
+
+.underline-none {
+    text-decoration: none;
+}
