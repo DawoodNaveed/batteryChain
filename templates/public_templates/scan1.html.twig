@@ -6,6 +6,12 @@
         .container {
             max-width: 960px;
         }
+        .intro {
+            font-weight: 100;
+        }
+        .intro span {
+            font-size: 0.9rem;
+        }
         .videoElement
         {
             transform: rotateY(180deg);
@@ -38,6 +44,10 @@
                     </div>
                 </a>
             </div>
+            <div class="row text-center pb-5 intro">
+                <h6>{{ "Please allow this website to use the camera." | trans }}</h6>
+                <span>{{ "If you are facing any issues, please check the settings of your Browser or Device." | trans }}</span>
+            </div>
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div id="error-messages" class="alert alert-danger" style="display: none">
@@ -48,11 +58,17 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="mb-3">
+                        <small>
+                           <i class="fa fa-info-circle"></i>
+                            {{ "Bring the QR or barcode within the camera's field of view. After the serial number has been successfully read, it appears in the input field below the camera window. To retrieve the information, press the search button." | trans }}
+                        </small>
+                    </div>
                     <div class="mb-3 text-center">
                         <form class="card p-2" action="{{ path('battery_detail') }}">
                             <div class="input-group">
                                 <pre><code id="result"></code></pre>
-                                <input type="text" name="search" id="search" class="form-control" placeholder="Go to detail page">
+                                <input type="text" name="search" id="search" class="form-control" placeholder="{{ "Detected ID" | trans }}">
                                 <div class="input-group-append">
                                     <button type="submit" id="btn-search" class="btn btn-secondary" style="background-color: #55bc5e; border-color: #55bc5e">{{ "Search" | trans }}</button>
                                 </div>

@@ -6,6 +6,7 @@ use App\Entity\Battery;
 use App\Helper\CustomHelper;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -15,6 +16,7 @@ use Twig\Error\SyntaxError;
  * Class PdfService
  * @package App\Service
  * @property Environment twig
+ * @property TranslatorInterface translator
  */
 class PdfService
 {
@@ -23,10 +25,12 @@ class PdfService
     /**
      * PdfService constructor.
      * @param Environment $twig
+     * @param TranslatorInterface $translator
      */
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, TranslatorInterface $translator)
     {
         $this->twig = $twig;
+        $this->translator = $translator;
     }
 
     /**
@@ -47,7 +51,9 @@ class PdfService
             'documentTitle' => "Battery Passport",
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
-            'detail' => CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()] ?? null
+            'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                : null
         ]);
 
         $domPdf->loadHtml($html);
