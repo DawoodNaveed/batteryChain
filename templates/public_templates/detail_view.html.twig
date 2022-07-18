@@ -287,7 +287,7 @@
                                 <div class="col-md-4 p-0">
                                     <span class="heading">
                                         {{ "CO" | trans }}<sub>{{ "2" }}</sub>
-                                        {{ " - Footprint" }}
+                                        {{ "Footprint" | trans }}
                                      </span>
                                 </div>
                                 <div class="col-md-8">
@@ -372,7 +372,7 @@
                     </div>
                     <div class="card-body ps-5 pe-5 pb-2 pti-0">
                         {% set statusArray = {
-                            'registered': 'A registered battery has been manufactured but not (yet) delivered.',
+                            'registered': 'A manufactured battery was registered in the BatteryChain but not (yet) delivered or processed.',
                             'delivered': 'A delivered battery is either in an intermediate station or at the end customer.',
                             'returned': 'This battery has been registered for a pickup service or its on his way to a recycler.',
                             'recycled': 'The life cycle of the battery ended with recycling or disposal.',
@@ -383,7 +383,7 @@
                                     {{ "Status" | trans }}
                                 </span>
                                 <span class="float-right">
-                                    {{ battery.status | capitalize }}
+                                    {{ battery.status | capitalize | trans }}
                                 </span>
                             </div>
                             <div class="status-info">
