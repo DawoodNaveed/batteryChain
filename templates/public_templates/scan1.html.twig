@@ -12,6 +12,15 @@
         .intro span {
             font-size: 0.9rem;
         }
+        .detected {
+            margin-right: 0.3rem;
+            border-radius: 15px;
+            color: #212529;
+            background-color: #fff;
+            border-color: #55bc5e;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem #d4edda;
+        }
         .videoElement
         {
             transform: rotateY(180deg);
@@ -124,6 +133,7 @@
                                 $('#btn-search').prop('disabled', false);
                                 console.log(result.getText())
                                 $('#search').val(result.text);
+                                $('#search').addClass('detected');
                             }
                             if (err && !(err instanceof ZXing.NotFoundException)) {
                                 console.error(err)
