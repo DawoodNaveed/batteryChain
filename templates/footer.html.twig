@@ -1,4 +1,26 @@
 <footer class="mt-auto text-muted text-center text-small">
+    {% set route = app.request.attributes.get('_route') %}
+    {% set route_params = app.request.attributes.get('_route_params') %}
+    {% set params = route_params|merge(app.request.query.all) %}
+    {% set applocales = locales|split('|') %}
+    {% set count = applocales|length %}
+    {% for key, locale in applocales %}
+        {% if locale == app.request.locale %}
+            {% set underline_class = 'underline' %}
+        {% else %}
+            {% set underline_class = 'underline-none' %}
+        {% endif %}
+        <small>
+            <a class="lang_link {{ underline_class }}" href="{{ path(route, params|merge({ _locale: locale })) }}">
+                {{ locale | trans }}
+            </a>
+        </small>
+        {% if key != (count - 1) %}
+            <span class="ms-1 me-1">
+                {{ "|" }}
+            </span>
+        {% endif %}
+    {% endfor %}
     <p class="mb-1">&copy; {{ 'now' | date('Y') }} Battery Chain</p>
     <ul class="list-inline">
         <li class="list-inline-item"><a href="#">Privacy</a></li>

@@ -149,7 +149,7 @@ class BatteryController extends CRUDController
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
 
-                return new RedirectResponse($this->admin->generateUrl('list'));
+                return $this->redirectToRoute('battery-intermediate_battery_list');
             }
         }
 
@@ -361,6 +361,8 @@ class BatteryController extends CRUDController
     public function registerAction(Request $request): RedirectResponse
     {
         try {
+            $updateBulkImportField = false;
+            $manufacturer = null;
             $ids = $request->get('ids');
             $failure = 0;
 
@@ -376,6 +378,11 @@ class BatteryController extends CRUDController
             foreach ($ids as $id) {
                 $battery = $this->batteryService->batteryRepository->find($id);
 
+                if ($battery->getIsBulkImport() == true) {
+                    $updateBulkImportField = true;
+                    $manufacturer = $battery->getManufacturer();
+                }
+
                 if (!empty($battery)
                     && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
@@ -386,6 +393,10 @@ class BatteryController extends CRUDController
                 } else {
                     $failure++;
                 }
+            }
+
+            if ($updateBulkImportField) {
+                $this->batteryService->updateBulkImportField($manufacturer);
             }
 
             if ($failure > 0) {

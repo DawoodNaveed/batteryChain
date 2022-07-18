@@ -66,9 +66,9 @@
                 </a>
             </div>
             <div class="row text-center pb-5 intro">
-                <h6>{{ "Welcome at Battery Chain." }}</h6>
-                <span>{{ "This website allows you to request information about your batteries and register them for return or recycling." }}</span>
-                <span>{{ "Simply enter the battery serial number or use our QR and barcode scanner." }}</span>
+                <h6>{{ "Welcome at Battery Chain." | trans }}</h6>
+                <span>{{ "This website allows you to request information about your batteries and register them for return or recycling." | trans }}</span>
+                <span>{{ "Simply enter the battery serial number or use our QR and barcode scanner." | trans }}</span>
             </div>
             <div class="row">
                 <div id="flash-messages">
@@ -84,13 +84,13 @@
                 <div class="col-md-12 mb-4">
                     {{ form_start(searchForm, {'attr': { 'class': 'needs-validation', 'id': 'battery-detail-form', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
-                            <label for="serialNumber">{{ "Serial Number" }}</label>
+                            <label for="serialNumber">{{ "Serial Number" | trans }}</label>
                             {{ form_widget(searchForm.battery) }}
                             <small class="help">
                                 {{ form_help(searchForm.battery)}}
                             </small>
                             <div class="invalid-feedback">
-                                {{ "Please enter a valid serial number." }}
+                                {{ "Please enter a valid serial number." | trans }}
                             </div>
                         </div>
                         <div class="mb-3 col-md-12 col-sm-12">
@@ -102,7 +102,7 @@
                         <div style="display: inline-block" class="mb-5 btn-div">
                             {{ form_widget(searchForm.search) }}
                             <span class="p-0-3 or-span">
-                                {{ " OR " }}
+                                {{ " OR " | trans }}
                             </span>
                             <a href="{{ path('scan_qr') }}" class="btn btn-success btn-block btn-green">
                                 <i class="fa fa-qrcode"></i> {{ "Scan QR or Barcode" | trans }}

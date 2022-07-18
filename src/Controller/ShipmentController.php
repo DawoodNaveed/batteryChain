@@ -12,6 +12,7 @@ use App\Form\ShipmentFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\ManufacturerService;
+use App\Service\TransactionLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -29,6 +30,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property ManufacturerService manufacturerService
  * @property BatteryService batteryService
  * @property TranslatorInterface translator
+ * @property TransactionLogService transactionLogService
  */
 class ShipmentController extends CRUDController
 {
@@ -39,19 +41,22 @@ class ShipmentController extends CRUDController
      * @param ManufacturerService $manufacturerService
      * @param BatteryService $batteryService
      * @param TranslatorInterface $translator
+     * @param TransactionLogService $transactionLogService
      */
     public function __construct(
         Security $security,
         EntityManagerInterface $entityManager,
         ManufacturerService $manufacturerService,
         BatteryService $batteryService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TransactionLogService $transactionLogService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->manufacturerService = $manufacturerService;
         $this->batteryService = $batteryService;
         $this->translator = $translator;
+        $this->transactionLogService = $transactionLogService;
     }
 
     /**
@@ -88,15 +93,21 @@ class ShipmentController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $manufacturer);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $manufacturer,
+                $user->getManufacturer() ? false : true
+            );
 
-            if (empty($battery)) {
+            if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
                 return new RedirectResponse($this->admin->generateUrl('shipment'));
             }
 
             if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED] ||
+                ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_DELIVERED))
+            ) {
                 $this->addFlash('sonata_flash_error', 'Battery is already delivered!');
 
                 return new RedirectResponse($this->admin->generateUrl('list'));
@@ -108,6 +119,7 @@ class ShipmentController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
+            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
             $shipment = new Shipment();
             $shipment->setUpdated(new \DateTime('now'));
             $shipment->setCreated(new \DateTime('now'));

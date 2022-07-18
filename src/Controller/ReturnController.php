@@ -14,6 +14,7 @@ use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
+use App\Service\TransactionLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -33,6 +34,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property BatteryService batteryService
  * @property RecyclerService recyclerService
  * @property TranslatorInterface translator
+ * @property TransactionLogService transactionLogService
  */
 class ReturnController extends CRUDController
 {
@@ -44,6 +46,7 @@ class ReturnController extends CRUDController
      * @param BatteryService $batteryService
      * @param RecyclerService $recyclerService
      * @param TranslatorInterface $translator
+     * @param TransactionLogService $transactionLogService
      */
     public function __construct(
         Security $security,
@@ -51,7 +54,8 @@ class ReturnController extends CRUDController
         ManufacturerService $manufacturerService,
         BatteryService $batteryService,
         RecyclerService $recyclerService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TransactionLogService $transactionLogService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
@@ -59,6 +63,7 @@ class ReturnController extends CRUDController
         $this->batteryService = $batteryService;
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
+        $this->transactionLogService = $transactionLogService;
     }
 
     /**
@@ -103,15 +108,21 @@ class ReturnController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $manufacturer);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $manufacturer,
+                $user->getManufacturer() ? false : true
+            );
 
-            if (empty($battery)) {
+            if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
-                return new RedirectResponse($this->admin->generateUrl('list'));
+                return new RedirectResponse($this->admin->generateUrl('return'));
             }
 
             if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) {
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED] ||
+                ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RETURNED))
+            ) {
                 $this->addFlash('sonata_flash_error', 'Battery is already returned!');
 
                 return new RedirectResponse($this->admin->generateUrl('list'));
@@ -122,6 +133,7 @@ class ReturnController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
+            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $return = new BatteryReturn();
             $return->setUpdated(new \DateTime('now'));
             $return->setCreated(new \DateTime('now'));
