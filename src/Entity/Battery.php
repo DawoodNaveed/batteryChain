@@ -157,11 +157,30 @@ class Battery extends AbstractEntity
     private $trayNumber;
 
     /**
+     * @var boolean|null
+     * @ORM\Column(name="blockchain_secured", type="boolean", nullable=true, options={"default"=false})
+     */
+    private $blockchainSecured;
+
+    /**
+     * @var boolean|null
+     * @ORM\Column(name="is_bulk_import", type="boolean", nullable=true, options={"default"=false})
+     */
+    private $isBulkImport;
+
+    /**
+     * One Battery has many transaction Logs.
+     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="battery")
+     */
+    private $transactionLogs;
+
+    /**
      * Battery constructor.
      */
     public function __construct() {
         $this->shipments = new ArrayCollection();
         $this->returns = new ArrayCollection();
+        $this->transactionLogs = new ArrayCollection();
     }
 
     /**
@@ -557,5 +576,69 @@ class Battery extends AbstractEntity
     public function setTrayNumber(?string $trayNumber): void
     {
         $this->trayNumber = $trayNumber;
+    }
+
+    /**
+     * @return boolean|null
+     */
+    public function getBlockchainSecured(): ?bool
+    {
+        return $this->blockchainSecured;
+    }
+
+    /**
+     * @param boolean|null $blockchainSecured
+     */
+    public function setBlockchainSecured(?bool $blockchainSecured): void
+    {
+        $this->blockchainSecured = $blockchainSecured;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsBulkImport(): ?bool
+    {
+        return $this->isBulkImport;
+    }
+
+    /**
+     * @param bool|null $isBulkImport
+     */
+    public function setIsBulkImport(?bool $isBulkImport): void
+    {
+        $this->isBulkImport = $isBulkImport;
+    }
+
+    /**
+     * @return Collection|TransactionLog[]
+     */
+    public function getTransactionLogs(): Collection
+    {
+        return $this->transactionLogs;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function addTransactionLog(TransactionLog $transactionLog): self
+    {
+        if (!$this->transactionLogs->contains($transactionLog)) {
+            $this->transactionLogs[] = $transactionLog;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function removeTransactionLog(TransactionLog $transactionLog): self
+    {
+        $this->transactionLogs->removeElement($transactionLog);
+
+        return $this;
     }
 }

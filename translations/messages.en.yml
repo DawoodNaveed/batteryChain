@@ -6,3 +6,6 @@ service.success.battery_added_successfully: 'Batteries Added Successfully!'
 service.success.battery_import_status: '%failure_batteries% Batteries are failed to add due to same serial number, out of Total: %total_batteries% Batteries'
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
+service.error.bulk_register_batteries: '%failure_batteries% batteries are already registered or in queue to be registered!'
+en: "English"
+de: "German"
