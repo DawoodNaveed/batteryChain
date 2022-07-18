@@ -87,7 +87,7 @@
                             <label for="serialNumber">{{ "Serial Number" | trans }}</label>
                             {{ form_widget(searchForm.battery) }}
                             <small class="help">
-                                {{ form_help(searchForm.battery)}}
+                                {{ form_help(searchForm.battery) | trans | raw }}
                             </small>
                             <div class="invalid-feedback">
                                 {{ "Please enter a valid serial number." | trans }}
@@ -101,8 +101,8 @@
                         <hr class="mb-4">
                         <div style="display: inline-block" class="mb-5 btn-div">
                             {{ form_widget(searchForm.search) }}
-                            <span class="p-0-3 or-span">
-                                {{ " OR " | trans }}
+                            <span class="p-0-3 or-span ms-1 me-1">
+                                {{ "OR" | trans }}
                             </span>
                             <a href="{{ path('scan_qr') }}" class="btn btn-success btn-block btn-green">
                                 <i class="fa fa-qrcode"></i> {{ "Scan QR or Barcode" | trans }}
