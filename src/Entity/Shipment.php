@@ -69,25 +69,10 @@ class Shipment extends AbstractEntity
     private $country;
 
     /**
-     * One Shipment has many transaction Logs.
-     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="shipment")
-     */
-    private $transactionLogs;
-
-    /**
      * @var \DateTime|null
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
-
-    /**
-     * Shipment constructor.
-     */
-    public function __construct()
-    {
-        $this->transactionLogs = new ArrayCollection();
-    }
-
 
     /**
      * @return Battery|null
@@ -199,38 +184,6 @@ class Shipment extends AbstractEntity
     public function setCountry(?string $country): void
     {
         $this->country = $country;
-    }
-
-    /**
-     * @return Collection|TransactionLog[]
-     */
-    public function getTransactionLogs(): Collection
-    {
-        return $this->transactionLogs;
-    }
-
-    /**
-     * @param TransactionLog $transactionLog
-     * @return $this
-     */
-    public function addTransactionLog(TransactionLog $transactionLog): self
-    {
-        if (!$this->transactionLogs->contains($transactionLog)) {
-            $this->transactionLogs[] = $transactionLog;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param TransactionLog $transactionLog
-     * @return $this
-     */
-    public function removeTransactionLog(TransactionLog $transactionLog): self
-    {
-        $this->transactionLogs->removeElement($transactionLog);
-
-        return $this;
     }
 
     /**

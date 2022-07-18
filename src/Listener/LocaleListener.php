@@ -2,19 +2,41 @@
 
 namespace App\Listener;
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class LocaleListener
+ * @package App\Listener
+ * @property TranslatorInterface translator
+ * @property UrlGeneratorInterface urlGenerator
+ * @property SessionInterface session
+ */
 class LocaleListener implements EventSubscriberInterface
 {
-    private $translator;
-
-    public function __construct(TranslatorInterface $translator) {
+    /**
+     * LocaleListener constructor.
+     * @param TranslatorInterface $translator
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param SessionInterface $session
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        UrlGeneratorInterface $urlGenerator,
+        SessionInterface $session
+    ) {
         $this->translator = $translator;
+        $this->urlGenerator = $urlGenerator;
+        $this->session = $session;
     }
 
+    /**
+     * @param RequestEvent $event
+     */
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
@@ -31,9 +53,18 @@ class LocaleListener implements EventSubscriberInterface
         if (strlen($request->get('_locale') )) {
             $request->setLocale($request->get('_locale'));
             $this->translator->setLocale($request->get('_locale'));
+            $this->session->set('_locale', $request->get('_locale'));
+        }
+
+        if (!empty($this->session->get('_locale'))) {
+            $request->setLocale($this->session->get('_locale'));
+            $this->translator->setLocale($this->session->get('_locale'));
         }
     }
 
+    /**
+     * @return \array[][]
+     */
     static public function getSubscribedEvents()
     {
         return array(

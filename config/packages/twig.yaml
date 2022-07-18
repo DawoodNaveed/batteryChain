@@ -4,6 +4,8 @@ twig:
         gg_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
         support_email: '%env(SUPPORT_EMAIL_ADDRESS)%'
         live_url: '%env(LIVE_URL)%'
+        defaultLocale: '%env(DEFAULT_LOCALE)%'
+        locales: '%env(APP_LOCALES)%'
 when@test:
     twig:
         strict_variables: true

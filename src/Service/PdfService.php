@@ -47,7 +47,7 @@ class PdfService
             'documentTitle' => "Battery Passport",
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
-            'detail' => CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()]
+            'detail' => CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()] ?? null
         ]);
 
         $domPdf->loadHtml($html);

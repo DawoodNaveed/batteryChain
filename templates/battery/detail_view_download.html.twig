@@ -229,9 +229,11 @@
         <span class="heading-span f-bold f-size-24">{{ "Status" | trans }}</span>
         <span class="heading-title">{{ battery.status | capitalize }}</span>
     </div>
-    <span class="heading-span f-bold f-size-14">
-        <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
-    </span>
+    {% if detail is not null %}
+        <span class="heading-span f-bold f-size-14">
+            <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
+        </span>
+    {% endif %}
     <br><br><br><br><br>
 </div>
 </body>

@@ -8,14 +8,19 @@ use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\BatteryDetailFormType;
 use App\Form\BulkImportBatteryFormType;
+use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
 use App\Service\ManufacturerService;
 use App\Service\PdfService;
+use App\Service\TransactionLogService;
 use App\Service\UserService;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
+use Sonata\AdminBundle\Exception\ModelManagerThrowable;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +43,7 @@ use Twig\Error\SyntaxError;
  * @property BatteryTypeService batteryTypeService
  * @property Environment twig
  * @property PdfService pdfService
+ * @property TransactionLogService transactionLogService
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -53,6 +59,7 @@ class BatteryController extends CRUDController
      * @param BatteryTypeService $batteryTypeService
      * @param Environment $twig
      * @param PdfService $pdfService
+     * @param TransactionLogService $transactionLogService
      */
     public function __construct(
         string $kernelProjectDir,
@@ -63,7 +70,8 @@ class BatteryController extends CRUDController
         ManufacturerService $manufacturerService,
         BatteryTypeService $batteryTypeService,
         Environment $twig,
-        PdfService $pdfService
+        PdfService $pdfService,
+        TransactionLogService $transactionLogService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -73,6 +81,7 @@ class BatteryController extends CRUDController
         $this->batteryTypeService = $batteryTypeService;
         $this->twig = $twig;
         $this->pdfService = $pdfService;
+        $this->transactionLogService = $transactionLogService;
         $this->kernelProjectDir = $kernelProjectDir;
     }
 
@@ -140,7 +149,7 @@ class BatteryController extends CRUDController
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
 
-                return new RedirectResponse($this->admin->generateUrl('list'));
+                return $this->redirectToRoute('battery-intermediate_battery_list');
             }
         }
 
@@ -175,7 +184,10 @@ class BatteryController extends CRUDController
             }
 
             /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $user->getManufacturer() ?? null,
+                $user->getManufacturer() ? false : true);
 
             if (empty($battery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
@@ -220,7 +232,11 @@ class BatteryController extends CRUDController
         }
 
         /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber, $user->getManufacturer() ?? null);
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $user->getManufacturer() ?? null,
+                $user->getManufacturer() ? false : true);
 
         if (empty($battery)) {
             $this->addFlash('sonata_flash_error', 'Battery does not exist!');
@@ -304,5 +320,110 @@ class BatteryController extends CRUDController
         $responsePagination->headers->set('Content-Type', 'application/json');
 
         return $responsePagination;
+    }
+
+    /**
+     * @param ProxyQueryInterface $selectedModelQuery
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function batchActionRegister(ProxyQueryInterface $selectedModelQuery, Request $request): RedirectResponse
+    {
+        $this->admin->checkAccess('edit');
+        $this->admin->checkAccess('delete');
+        $selectedModels = $selectedModelQuery->execute();
+
+        try {
+            foreach ($selectedModels as $selectedModel) {
+                $ids[] = $selectedModel->getId();
+            }
+
+            return new RedirectResponse(
+                $this->admin->generateUrl('register', [
+                    'ids' => $ids,
+                ])
+            );
+        } catch (\Exception $e) {
+            $this->addFlash('sonata_flash_error', $e->getMessage());
+
+            return new RedirectResponse(
+                $this->admin->generateUrl('list', [
+                    'filter' => $this->admin->getFilterParameters()
+                ])
+            );
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function registerAction(Request $request): RedirectResponse
+    {
+        try {
+            $updateBulkImportField = false;
+            $manufacturer = null;
+            $ids = $request->get('ids');
+            $failure = 0;
+
+            if ($ids === null) {
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $this->translator->trans('Action aborted. No items were selected.')
+                );
+
+                return new RedirectResponse($this->admin->generateUrl('list'));
+            }
+
+            foreach ($ids as $id) {
+                $battery = $this->batteryService->batteryRepository->find($id);
+
+                if ($battery->getIsBulkImport() == true) {
+                    $updateBulkImportField = true;
+                    $manufacturer = $battery->getManufacturer();
+                }
+
+                if (!empty($battery)
+                    && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
+                    && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
+                    $this->transactionLogService->createTransactionLog(
+                        $battery,
+                        CustomHelper::BATTERY_STATUS_REGISTERED
+                    );
+                } else {
+                    $failure++;
+                }
+            }
+
+            if ($updateBulkImportField) {
+                $this->batteryService->updateBulkImportField($manufacturer);
+            }
+
+            if ($failure > 0) {
+                $this->addFlash(
+                    'sonata_flash_info',
+                    $this->translator->trans('service.error.bulk_register_batteries', [
+                        '%failure_batteries%' => $failure
+                    ])
+                );
+            }
+
+            $this->addFlash(
+                'sonata_flash_success',
+                $this->translator->trans('Success! Request to Register Battery is submitted! Batteries will be registered soon!')
+            );
+
+            return new RedirectResponse($this->admin->generateUrl('list', [
+                'filter' => $this->admin->getFilterParameters()
+            ]));
+        } catch (\Exception $exception) {
+            $this->addFlash('sonata_flash_error', $exception->getMessage());
+
+            return new RedirectResponse(
+                $this->admin->generateUrl('list', [
+                    'filter' => $this->admin->getFilterParameters()
+                ])
+            );
+        }
     }
 }

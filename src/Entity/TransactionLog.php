@@ -17,26 +17,30 @@ use Gedmo\Mapping\Annotation as Gedmo;
 class TransactionLog extends AbstractEntity
 {
     /**
-     * @var Shipment|null
-     * Many Transaction Logs have one Shipment. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\Shipment", inversedBy="transactionLogs")
-     * @JoinColumn(name="shipment_id", referencedColumnName="id")
+     * @var Battery|null
+     * Many Transaction Logs have one Battery. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Battery", inversedBy="transactionLogs")
+     * @JoinColumn(name="battery_id", referencedColumnName="id")
      */
-    private $shipment;
-
-    /**
-     * @var BatteryReturn|null
-     * Many Transaction Logs have one Return. This is the owning side.
-     * @ManyToOne(targetEntity="App\Entity\BatteryReturn", inversedBy="transactionLogs")
-     * @JoinColumn(name="return_id", referencedColumnName="id")
-     */
-    private $returns;
+    private $battery;
 
     /**
      * @var string|null
      * @ORM\Column(name="transaction_hash", nullable="true", type="string", length=255)
      */
     private $transactionHash;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="transaction_type", nullable="true", type="string", length=50)
+     */
+    private $transactionType;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="status", nullable="true", type="string", length=50)
+     */
+    private $status;
 
     /**
      * @var string|null
@@ -51,35 +55,51 @@ class TransactionLog extends AbstractEntity
     private $deletedAt;
 
     /**
-     * @return Shipment|null
+     * @return Battery
      */
-    public function getShipment(): ?Shipment
+    public function getBattery(): Battery
     {
-        return $this->shipment;
+        return $this->battery;
     }
 
     /**
-     * @param Shipment|null $shipment
+     * @param Battery|null $battery
      */
-    public function setShipment(?Shipment $shipment): void
+    public function setBattery(?Battery $battery): void
     {
-        $this->shipment = $shipment;
+        $this->battery = $battery;
     }
 
     /**
-     * @return BatteryReturn|null
+     * @return string|null
      */
-    public function getReturns(): ?BatteryReturn
+    public function getTransactionType(): ?string
     {
-        return $this->returns;
+        return $this->transactionType;
     }
 
     /**
-     * @param BatteryReturn|null $returns
+     * @param string|null $transactionType
      */
-    public function setReturns(?BatteryReturn $returns): void
+    public function setTransactionType(?string $transactionType): void
     {
-        $this->returns = $returns;
+        $this->transactionType = $transactionType;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string|null $status
+     */
+    public function setStatus(?string $status): void
+    {
+        $this->status = $status;
     }
 
     /**
