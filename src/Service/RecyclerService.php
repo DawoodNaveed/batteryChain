@@ -273,7 +273,8 @@ class RecyclerService
                 'contact' => $formData['information']['contact'] ?? null,
             ],
             'battery' => $battery,
-            'detail' => $detailPath
+            'detail' => $detailPath,
+            'recyclerName' => $recycler->getName()
         ];
 
         $subject = $this->translator->trans('New Battery Return', [], 'messages');

@@ -60,7 +60,7 @@
     </style>
 </head>
 <body>
-    <span>{{ "Dear Recycler," | trans }}</span>
+    <span>{{ "Dear" | trans }} {{ body.recyclerName ~ "," }}</span>
     <p>
         {{ "A new battery return has been added by" | trans }} {{ body.user.name ~ '.'}}
     </p>
@@ -118,7 +118,6 @@
             <br><br>
             {{ "Your Batterychain Team" | trans }}
         </p>
-        <br>
         <br>
     </div>
     <div style="clear: both;"></div>
