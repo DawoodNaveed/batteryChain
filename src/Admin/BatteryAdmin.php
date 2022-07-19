@@ -85,12 +85,16 @@ class BatteryAdmin extends AbstractAdmin
             ])
             ->add('mass', NumberType::class, [
                 'label' => 'Weight'
-            ])
-            ->add('register', CheckboxType::class, [
-                'mapped' => false,
-                'required' => false,
-                'label' => 'Is fully registered?'
             ]);
+
+        if ($battery->getId() === null) {
+            $form
+                ->add('register', CheckboxType::class, [
+                    'mapped' => false,
+                    'required' => false,
+                    'label' => 'Is fully registered?'
+                ]);
+        }
     }
 
     /**
