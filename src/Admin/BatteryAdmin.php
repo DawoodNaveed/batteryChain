@@ -285,6 +285,7 @@ class BatteryAdmin extends AbstractAdmin
             $actions['register'] = [
                 'ask_confirmation' => true,
                 'controller' => 'app.controller.battery::batchRegisterAction',
+                'template' => 'battery/ask_confirmation.html.twig'
             ];
         }
 
