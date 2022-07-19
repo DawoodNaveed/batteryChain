@@ -11,6 +11,7 @@ use App\Service\BatteryService;
 use App\Service\CountryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
+use App\Service\TransactionLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -31,6 +32,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property TranslatorInterface translator
  * @property CountryService countryService
  * @property BatteryReturnService returnService
+ * @property TransactionLogService transactionLogService
  */
 class ReturnController extends AbstractController
 {
@@ -44,6 +46,7 @@ class ReturnController extends AbstractController
      * @param CountryService $countryService
      * @param TranslatorInterface $translator
      * @param BatteryReturnService $returnService
+     * @param TransactionLogService $transactionLogService
      */
     public function __construct(
         Security $security,
@@ -53,7 +56,8 @@ class ReturnController extends AbstractController
         RecyclerService $recyclerService,
         CountryService $countryService,
         TranslatorInterface $translator,
-        BatteryReturnService $returnService
+        BatteryReturnService $returnService,
+        TransactionLogService $transactionLogService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
@@ -63,6 +67,7 @@ class ReturnController extends AbstractController
         $this->translator = $translator;
         $this->countryService = $countryService;
         $this->returnService = $returnService;
+        $this->transactionLogService = $transactionLogService;
     }
 
     /**
@@ -76,6 +81,16 @@ class ReturnController extends AbstractController
     {
         /** @var Battery|null $battery */
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
+
+        if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) ||
+            ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RETURNED))) {
+            $this->addFlash('danger', $this->translator->trans('Battery is already returned!'));
+            return new RedirectResponse($this->generateUrl('battery_detail', [
+                'search' => $slug
+            ]));
+        }
+
         $isFallback = false;
 
         if (empty($battery)) {
@@ -151,6 +166,7 @@ class ReturnController extends AbstractController
                 $formData['information']['contact'] = $recycler->getContact();
             }
 
+            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $this->returnService
                 ->createReturn(
