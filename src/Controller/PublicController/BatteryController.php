@@ -94,6 +94,15 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->generateUrl('homepage'));
         }
 
+        if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RECYCLED]) ||
+            ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RECYCLED))) {
+            $this->addFlash('danger', $this->translator->trans('Battery is already recycled!'));
+            return new RedirectResponse($this->generateUrl('battery_detail', [
+                'search' => $slug
+            ]));
+        }
+
         $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RECYCLED);
         $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
         $this->entityManager->flush();
