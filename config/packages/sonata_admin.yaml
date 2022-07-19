@@ -21,7 +21,7 @@ sonata_admin:
         icon: '<i class="fa fa-industry"></i>'
         on-top: true
         roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']
-      Recycler:
+      "Pickup Partner and Recycler":
         icon: '<i class="fa fa-recycle"></i>'
         on-top: true
         roles: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER']

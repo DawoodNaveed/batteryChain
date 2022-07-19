@@ -1,0 +1,40 @@
+{% extends 'layout.html.twig' %}
+
+ {% block sonata_admin_content_actions_wrappers %}
+     {% if _actions|replace({ '<li>': '', '</li>': '' })|trim is not empty %}
+         <ul class="nav navbar-nav navbar-right">
+             {% if _actions|split('</a>')|length > 2 %}
+                 <li class="dropdown sonata-actions">
+                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'link_actions'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>
+                     <ul class="dropdown-menu" role="menu">
+                         {{ _actions|raw }}
+                     </ul>
+                 </li>
+             {% else %}
+                 {{ _actions|raw }}
+             {% endif %}
+         </ul>
+     {% endif %}
+     {% if 'list' in app.request.pathInfo  %}
+         <ul class="nav navbar-nav navbar-left">
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" href="{{ admin.generateUrl('report')}}">
+                     <i class="fa fa-info-circle" aria-hidden="true"></i>
+                     {{ "Report View" | trans }}
+                 </a>
+             </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" href="{{ admin.generateUrl('detail')}}">
+                     <i class="fa fa-search" aria-hidden="true"></i>
+                     {{ "Search Battery" | trans }}
+                 </a>
+             </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('import')}}">
+                     <i class="fa fa-plus" aria-hidden="true"></i>
+                     {{ "Bulk Import" | trans }}
+                 </a>
+             </li>
+         </ul>
+     {% endif  %}
+ {% endblock sonata_admin_content_actions_wrappers %}

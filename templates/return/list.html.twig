@@ -1,0 +1,21 @@
+{% extends 'layout.html.twig' %}
+
+ {% block sonata_admin_content_actions_wrappers %}
+     {{ parent() }}
+     {% if 'list' in app.request.pathInfo  %}
+         <ul class="nav navbar-nav navbar-left">
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" href="{{ admin.generateUrl('bulkReturn') }}">
+                     <i class="fa fa-file" aria-hidden="true"></i>
+                     {{ "Add Bulk Return" | trans }}
+                 </a>
+             </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('return')}}">
+                     <i class="fa fa-plus" aria-hidden="true"></i>
+                     {{ "Add Return" | trans }}
+                 </a>
+             </li>
+         </ul>
+     {% endif  %}
+ {% endblock sonata_admin_content_actions_wrappers %}
