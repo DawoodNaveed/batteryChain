@@ -24,6 +24,7 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -317,20 +318,11 @@ class BatteryController extends CRUDController
         $formData = $request->get('formData');
         parse_str($formData, $filters);
         $data = null;
-        $batteries = $this->batteryService->getBatteriesByFilters($filters);
-        $templateListing = $this->renderView('report/report_content.html.twig', [
-            'batteries' => $batteries
-        ]);
-        $data = json_encode($templateListing);
-        $responsePagination =
-            new Response(
-                json_encode([
-                    'data' => $data
-                ]
-            ), 200);
-        $responsePagination->headers->set('Content-Type', 'application/json');
+        $batteries = $this->batteryService->getBatteriesArrayByFilters($filters);
 
-        return $responsePagination;
+        return new JsonResponse([
+            'data' => $batteries
+        ]);
     }
 
     /**

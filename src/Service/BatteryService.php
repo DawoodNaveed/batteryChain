@@ -396,6 +396,22 @@ class BatteryService
     }
 
     /**
+     * @param array $filters
+     * @param string|null $filename
+     * @return int|mixed|string
+     * @throws \Exception
+     */
+    public function getBatteriesArrayByFilters(array $filters, string &$filename = null)
+    {
+        // get only valid fields from the filters array and return it as selected fields
+        $validFilters = CustomHelper::getValidValuesByFilters($filters);
+        $dqlStatement = '';
+        $this->filterByMode($dqlStatement, $validFilters);
+        $this->filterByDates($dqlStatement, $validFilters, $filename);
+        return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
+    }
+
+    /**
      * @param string $dqlStatement
      * @param array $validFilters
      */
