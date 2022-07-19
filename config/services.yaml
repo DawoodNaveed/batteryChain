@@ -54,8 +54,9 @@ services:
         calls:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
             - [ setTokenStorage, [ '@security.token_storage' ] ]
+            - [ setTemplate, [ 'layout', 'recycler/list.html.twig' ] ]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: Recycler, group: Recycler }
+            - { name: sonata.admin, manager_type: orm, label: "Pickup Partner and Recycler", group: "Pickup Partner and Recycler" }
 
     admin.battery:
         class: App\Admin\BatteryAdmin
@@ -63,6 +64,7 @@ services:
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
             - [ setTransactionLogService, [ '@App\Service\TransactionLogService' ] ]
+            - [ setTemplate, [ 'layout', 'battery/list.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
 
@@ -80,6 +82,7 @@ services:
         arguments: [~, App\Entity\BatteryReturn, App\Controller\ReturnController]
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
+            - [ setTemplate, [ 'layout', 'return/list.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Returns, group: Return }
 
@@ -100,6 +103,7 @@ services:
         arguments: [~, App\Entity\Shipment, App\Controller\ShipmentController]
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
+            - [ setTemplate, [ 'layout', 'delivery/list.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Delivery, group: Delivery }
     # add more service definitions when explicit configuration is needed

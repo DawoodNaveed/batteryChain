@@ -253,10 +253,10 @@ class BatteryAdmin extends AbstractAdmin
             'icon' => 'fa fa-plus',
         ];
         $actions['detail'] = [
-            'label' => 'Detail View',
+            'label' => 'Search Battery',
             'translation_domain' => 'SonataAdminBundle',
             'url' => $this->generateUrl('detail'),
-            'icon' => 'fa fa-info-circle',
+            'icon' => 'fa fa-search',
         ];
         $actions['report'] = [
             'label' => 'Report View',
