@@ -110,8 +110,7 @@
         </div>
         <div class="report-btns">
             <div class="div-align-right">
-                <a class="mt-10 btn btn-green mr-5" href="{{ "#" }}"> {{ "Download" | trans }}</a>
-{#                <a class="mt-10 btn btn-light" href="{{ "#" }}"> {{ "Back" | trans }}</a>#}
+                <a class="mt-10 btn btn-green mr-5" id="download-report" target="_blank" href="{{ download }}"> {{ "Download" | trans }}</a>
             </div>
         </div>
     </div>
@@ -150,7 +149,9 @@
                 success: function(response) {
                     let newUrl = window.location.href.split('?',1).toString();
                     $('.report-content').html(JSON.parse(response.data));
-                    history.pushState(null,'',newUrl + '?' + formData);
+                    // history.pushState(null, '', newUrl + '?' + formData);
+                    $href = $("#download-report").attr('href').split('?', 1).toString();
+                    $("#download-report").attr("href", $href + '?' + formData);
                 }
             });
         }
