@@ -1,5 +1,20 @@
 {% extends 'layout.html.twig' %}
 
+{% block sonata_breadcrumb %}
+    <div class="hidden-xs">
+        <ol class="nav navbar-top-links breadcrumb">
+            <li>
+                <a href="/admin">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li class="active">
+                <span>{{ "Update Profile" }}</span>
+            </li>
+        </ol>
+    </div>
+{% endblock sonata_breadcrumb %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
