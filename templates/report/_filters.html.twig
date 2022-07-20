@@ -61,6 +61,31 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-4">
+                        <ul class="filters__checklists">
+                            <h4 class="mb-0">{{ 'Battery Type'|trans }}{{ ":" }}</h4>
+                            <li>
+                                <label>
+                                    <select name="type" class="type-filter">
+                                        <option value="-1" disabled>{{ 'Select Battery Type'|trans }}</option>
+                                        <option value="all" selected>{{ 'All types'|trans }}</option>
+                                        {% for type in types %}
+                                            <option
+                                                    {% if app.request.get('type') is defined and app.request.get('type') is not empty %}
+                                                        {% if app.request.get('type') == manufacturer.type %}
+                                                            selected
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    value="{{ type.type }}">{{ type.type }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-4">
                         <h4>{{ 'Nominal Voltage'|trans }}{{ ":" }}</h4>
                         {% set minValue = 0 %}
                         {% set maxValue = 1000 %}

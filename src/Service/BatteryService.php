@@ -393,6 +393,7 @@ class BatteryService
         $dqlStatement = '';
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
+        $this->filterByType($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
@@ -413,6 +414,7 @@ class BatteryService
         $dqlStatement = '';
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
+        $this->filterByType($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters);
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
@@ -446,6 +448,21 @@ class BatteryService
             }
 
             $dqlStatement .= "(b.status = '" . $validFilters['mode'] . "')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByType(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['type'])) {
+            if ($validFilters['type'] === 'all') {
+                return;
+            }
+
+            $dqlStatement .= " AND (bt.type = '" . $validFilters['type'] . "') ";
         }
     }
 
