@@ -382,14 +382,16 @@ class BatteryService
     /**
      * @param array $filters
      * @param string|null $filename
+     * @param null $manufacturer
      * @return int|mixed|string
      * @throws \Exception
      */
-    public function getBatteriesByFilters(array $filters, string &$filename = null)
+    public function getBatteriesByFilters(array $filters, string &$filename = null, $manufacturer = null)
     {
         // get only valid fields from the filters array and return it as selected fields
         $validFilters = CustomHelper::getValidValuesByFilters($filters);
         $dqlStatement = '';
+        $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
@@ -397,18 +399,33 @@ class BatteryService
 
     /**
      * @param array $filters
-     * @param string|null $filename
+     * @param Manufacturer|null $manufacturer
      * @return int|mixed|string
      * @throws \Exception
      */
-    public function getBatteriesArrayByFilters(array $filters, string &$filename = null)
+    public function getBatteriesArrayByFilters(array $filters, ?Manufacturer $manufacturer = null)
     {
         // get only valid fields from the filters array and return it as selected fields
         $validFilters = CustomHelper::getValidValuesByFilters($filters);
         $dqlStatement = '';
+        $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     * @param Manufacturer|null $manufacturer
+     */
+    private function filterByManufacturer(string &$dqlStatement, array $validFilters, ?Manufacturer $manufacturer = null)
+    {
+        if (isset($validFilters['manufacturer'])) {
+            $dqlStatement .= "(m.name = '" . $validFilters['manufacturer'] . "')";
+        } elseif (!empty($manufacturer)) {
+            $dqlStatement .= "(m.name = '" . $manufacturer->getName() . "')";
+        }
     }
 
     /**
@@ -418,6 +435,10 @@ class BatteryService
     private function filterByMode(string &$dqlStatement, array $validFilters)
     {
         if (isset($validFilters['mode']) && CustomHelper::validateReportMode($validFilters['mode'])) {
+            if (!empty($dqlStatement)) {
+                $dqlStatement .= "AND ";
+            }
+
             $dqlStatement .= "(b.status = '" . $validFilters['mode'] . "')";
         }
     }

@@ -76,6 +76,9 @@ class BatteryRepository extends ServiceEntityRepository
     public function getBatteriesByFilters(string $dqlStatement)
     {
         return $this->createQueryBuilder('b')
+            ->select('b as battery', 'bt.type')
+            ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
+            ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
             ->where($dqlStatement)
             ->getQuery()
             ->getResult();
@@ -89,6 +92,7 @@ class BatteryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('b')
             ->select('b as battery', 'bt.type')
+            ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
             ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
             ->where($dqlStatement)
             ->getQuery()

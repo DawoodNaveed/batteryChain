@@ -3,6 +3,30 @@
         <div class="filters__first">
             <div class="col-xs-12 col-md-9">
                 <div class="row">
+                    {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') %}
+                        <div class="col-sm-12 col-md-4">
+                            <ul class="filters__checklists">
+                                <h4 class="mb-0">{{ 'Manufacturer'|trans }}{{ ":" }}</h4>
+                                <li>
+                                    <label>
+                                        <select name="manufacturer" class="manufacturer-filter">
+                                            <option value="-1" disabled>{{ 'Select Manufacturer'|trans }}</option>
+                                            {% for manufacturer in manufacturers %}
+                                                <option
+                                                        {% if app.request.get('manufacturer') is defined and app.request.get('manufacturer') is not empty %}
+                                                            {% if app.request.get('manufacturer') == manufacturer.name %}
+                                                                selected
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        value="{{ manufacturer.name }}">{{ manufacturer.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
                     <div class="col-sm-12 col-md-4">
                         {% set modeArray = { 'all': 'All Batteries', 'registered': 'Registered Batteries', 'delivered': 'Delivered Batteries', 'returned': 'Returned Batteries', 'recycled': 'Recycled Batteries'} %}
                         <ul class="filters__checklists">
