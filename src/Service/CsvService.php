@@ -23,18 +23,18 @@ class CsvService
         fputcsv($f, $header);
         foreach ($array as $line) {
             $data = [
-                $line->getSerialNumber(),
-                $line->getBatteryType(),
-                $line->getCellType(),
-                $line->getModuleType(),
-                $line->getProductionDate()->format('Y-m-d'),
-                $line->getTrayNumber(),
-                $line->getNominalVoltage(),
-                $line->getNominalCapacity(),
-                $line->getNominalEnergy(),
-                $line->getAcidVolume(),
-                (empty($line->getCo2()) ? '' : $line->getCo2()),
-                $line->getStatus(),
+                (string) $line['battery']->getSerialNumber(),
+                $line['battery']->getBatteryType(),
+                $line['battery']->getCellType(),
+                $line['battery']->getModuleType(),
+                $line['battery']->getProductionDate()->format('Y-m-d'),
+                $line['battery']->getTrayNumber(),
+                $line['battery']->getNominalVoltage(),
+                $line['battery']->getNominalCapacity(),
+                $line['battery']->getNominalEnergy(),
+                $line['battery']->getAcidVolume(),
+                (empty($line['battery']->getCo2()) ? '' : $line['battery']->getCo2()),
+                $line['battery']->getStatus(),
             ];
             fputcsv($f, $data, $delimiter);
         }
