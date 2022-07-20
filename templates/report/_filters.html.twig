@@ -92,6 +92,18 @@
                                    value="{{ app.request.get('tray_number') }}" placeholder="{{ "Enter tray number" | trans }}">
                         </label>
                     </div>
+                    <div class="col-sm-12 col-md-4">
+                        <h4 class="mb-0">{{ 'Search Text'|trans }}{{ ":" }}
+                            <small>
+                                <i class="fa fa-info-circle" title="{{ "Will search Cell Type or Module Type of relevant batteries" }}"></i>
+                            </small>
+                        </h4>
+                        <label style="width: 100%;">
+                            <input type="text" class="search-text-filter form-control" name="search_text"
+                                   style="border-radius: 5px; width: 100%"
+                                   value="{{ app.request.get('search_text') }}" placeholder="{{ "Enter text..." | trans }}">
+                        </label>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-4">
@@ -140,7 +152,8 @@
                             <input id="nominalEnergyRange"
                                    type="text" name="nominal_energy_range" value=""
                                    data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"/>
+                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                   style="width: 100%;"/>
                         </label>
                     </div>
                 </div>

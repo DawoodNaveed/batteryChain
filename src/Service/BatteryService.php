@@ -399,6 +399,7 @@ class BatteryService
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
         $this->filterByTrayNumber($dqlStatement, $validFilters);
+        $this->filterBySearchText($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
     }
 
@@ -421,6 +422,7 @@ class BatteryService
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
         $this->filterByTrayNumber($dqlStatement, $validFilters);
+        $this->filterBySearchText($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
     }
 
@@ -461,6 +463,17 @@ class BatteryService
     {
         if (isset($validFilters['tray_number']) && !empty($validFilters['tray_number'])) {
             $dqlStatement .= " AND (b.trayNumber Like '%" . $validFilters['tray_number'] . "%')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterBySearchText(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['search_text']) && !empty($validFilters['search_text'])) {
+            $dqlStatement .= " AND (b.cellType Like '%" . $validFilters['search_text'] . "%' OR b.moduleType Like '%" . $validFilters['search_text'] . "%')";
         }
     }
 
