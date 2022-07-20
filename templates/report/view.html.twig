@@ -97,6 +97,9 @@
             background-image: linear-gradient(to bottom, #66CC80 0%, #66CC80 100%);
             background-repeat: repeat-x;
         }
+        .details--filters {
+            display: none;
+        }
         @media (max-width: 768px) {
             .icon-addon .fa {
                 top: 30px;
@@ -326,6 +329,19 @@
                 'tooltip_split': 'true',
                 'formatter': function (value) {
                     return value + ' KWh';
+                }
+            });
+            $('#review-filter-btn').click(function () {
+                if ($('.details--filters').css('display') == 'none') {
+                    $('.details--filters').css({'display': 'block'});
+                    $('#filter-btn-arrow').removeClass('fa-angle-down');
+                    $('#filter-btn-arrow').addClass('fa-angle-up');
+                    $('#filter-btn-span').text('Simple');
+                } else if ($('.details--filters').css('display') == 'block') {
+                    $('.details--filters').css({'display': 'none'});
+                    $('#filter-btn-arrow').removeClass('fa-angle-up');
+                    $('#filter-btn-arrow').addClass('fa-angle-down ');
+                    $('#filter-btn-span').text('Advanced');
                 }
             });
         });

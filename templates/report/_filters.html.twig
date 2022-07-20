@@ -60,109 +60,116 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12 col-md-4">
-                        <ul class="filters__checklists">
-                            <h4 class="mb-0">{{ 'Battery Type'|trans }}{{ ":" }}</h4>
-                            <li style="width: 100%;">
-                                <label style="width: 100%;">
-                                    <select name="type" class="type-filter">
-                                        <option value="-1" disabled>{{ 'Select Battery Type'|trans }}</option>
-                                        <option value="all" selected>{{ 'All types'|trans }}</option>
-                                        {% for type in types %}
-                                            <option
-                                                    {% if app.request.get('type') is defined and app.request.get('type') is not empty %}
-                                                        {% if app.request.get('type') == manufacturer.type %}
-                                                            selected
+                <div class="details--filters">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <ul class="filters__checklists">
+                                <h4 class="mb-0">{{ 'Battery Type'|trans }}{{ ":" }}</h4>
+                                <li style="width: 100%;">
+                                    <label style="width: 100%;">
+                                        <select name="type" class="type-filter">
+                                            <option value="-1" disabled>{{ 'Select Battery Type'|trans }}</option>
+                                            <option value="all" selected>{{ 'All types'|trans }}</option>
+                                            {% for type in types %}
+                                                <option
+                                                        {% if app.request.get('type') is defined and app.request.get('type') is not empty %}
+                                                            {% if app.request.get('type') == manufacturer.type %}
+                                                                selected
+                                                            {% endif %}
                                                         {% endif %}
-                                                    {% endif %}
-                                                    value="{{ type.type }}">{{ type.type }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </label>
-                            </li>
-                        </ul>
+                                                        value="{{ type.type }}">{{ type.type }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4 class="mb-0">{{ 'Tray number'|trans }}{{ ":" }}</h4>
+                            <label style="width: 100%;">
+                                <input type="text" class="tray-number-filter form-control" name="tray_number"
+                                       style="border-radius: 5px; width: 100%"
+                                       value="{{ app.request.get('tray_number') }}" placeholder="{{ "Enter tray number" | trans }}">
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4 class="mb-0">{{ 'Search Text'|trans }}{{ ":" }}
+                                <small>
+                                    <i class="fa fa-info-circle" title="{{ "Will search Cell Type or Module Type of relevant batteries" }}"></i>
+                                </small>
+                            </h4>
+                            <label style="width: 100%;">
+                                <input type="text" class="search-text-filter form-control" name="search_text"
+                                       style="border-radius: 5px; width: 100%"
+                                       value="{{ app.request.get('search_text') }}" placeholder="{{ "Enter text..." | trans }}">
+                            </label>
+                        </div>
                     </div>
-                    <div class="col-sm-12 col-md-4">
-                        <h4 class="mb-0">{{ 'Tray number'|trans }}{{ ":" }}</h4>
-                        <label style="width: 100%;">
-                            <input type="text" class="tray-number-filter form-control" name="tray_number"
-                                   style="border-radius: 5px; width: 100%"
-                                   value="{{ app.request.get('tray_number') }}" placeholder="{{ "Enter tray number" | trans }}">
-                        </label>
-                    </div>
-                    <div class="col-sm-12 col-md-4">
-                        <h4 class="mb-0">{{ 'Search Text'|trans }}{{ ":" }}
-                            <small>
-                                <i class="fa fa-info-circle" title="{{ "Will search Cell Type or Module Type of relevant batteries" }}"></i>
-                            </small>
-                        </h4>
-                        <label style="width: 100%;">
-                            <input type="text" class="search-text-filter form-control" name="search_text"
-                                   style="border-radius: 5px; width: 100%"
-                                   value="{{ app.request.get('search_text') }}" placeholder="{{ "Enter text..." | trans }}">
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 col-md-4">
-                        <h4>{{ 'Nominal Voltage'|trans }}{{ ":" }}</h4>
-                        {% set minValue = 0 %}
-                        {% set maxValue = 1000 %}
-                        {% if app.request.get('nominal_voltage_range') %}
-                            {% set nominalVoltageRange = app.request.get('nominal_voltage_range')|split(',') %}
-                            {% set minValue = nominalVoltageRange[0] %}
-                            {% set maxValue = nominalVoltageRange[1] %}
-                        {% endif %}
-                        <label for="nominalVoltageRange" style="width: 100%;">
-                            <input id="nominalVoltageRange" type="text" name="nominal_voltage_range" value=""
-                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
-                                   class="form-control"
-                                   style="width: 100%;"/>
-                        </label>
-                    </div>
-                    <div class="col-sm-12 col-md-4">
-                        <h4>{{ 'Nominal Capacity'|trans }}{{ ":" }}</h4>
-                        {% set minValue = 0 %}
-                        {% set maxValue = 1000 %}
-                        {% if app.request.get('nominal_capacity_range') %}
-                            {% set nominalCapacityRange = app.request.get('nominal_capacity_range')|split(',') %}
-                            {% set minValue = nominalCapacityRange[0] %}
-                            {% set maxValue = nominalCapacityRange[1] %}
-                        {% endif %}
-                        <label for="nominalCapacityRange" style="width: 100%;">
-                            <input id="nominalCapacityRange" type="text" name="nominal_capacity_range" value=""
-                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
-                                   style="width: 100%;"/>
-                        </label>
-                    </div>
-                    <div class="col-sm-12 col-md-4">
-                        <h4>{{ 'Nominal Energy' | trans }}{{ ":" }}</h4>
-                        {% set minValue = 0 %}
-                        {% set maxValue = 1000 %}
-                        {% if app.request.get('nominal_energy_range') %}
-                            {% set nominalEnergyRange = app.request.get('nominal_energy_range')|split(',') %}
-                            {% set minValue = nominalEnergyRange[0] %}
-                            {% set maxValue = nominalEnergyRange[1] %}
-                        {% endif %}
-                        <label for="nominalEnergyRange" style="width: 100%;">
-                            <input id="nominalEnergyRange"
-                                   type="text" name="nominal_energy_range" value=""
-                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
-                                   style="width: 100%;"/>
-                        </label>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Nominal Voltage'|trans }}{{ ":" }}</h4>
+                            {% set minValue = 0 %}
+                            {% set maxValue = 1000 %}
+                            {% if app.request.get('nominal_voltage_range') %}
+                                {% set nominalVoltageRange = app.request.get('nominal_voltage_range')|split(',') %}
+                                {% set minValue = nominalVoltageRange[0] %}
+                                {% set maxValue = nominalVoltageRange[1] %}
+                            {% endif %}
+                            <label for="nominalVoltageRange" style="width: 100%;">
+                                <input id="nominalVoltageRange" type="text" name="nominal_voltage_range" value=""
+                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       class="form-control"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Nominal Capacity'|trans }}{{ ":" }}</h4>
+                            {% set minValue = 0 %}
+                            {% set maxValue = 1000 %}
+                            {% if app.request.get('nominal_capacity_range') %}
+                                {% set nominalCapacityRange = app.request.get('nominal_capacity_range')|split(',') %}
+                                {% set minValue = nominalCapacityRange[0] %}
+                                {% set maxValue = nominalCapacityRange[1] %}
+                            {% endif %}
+                            <label for="nominalCapacityRange" style="width: 100%;">
+                                <input id="nominalCapacityRange" type="text" name="nominal_capacity_range" value=""
+                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Nominal Energy' | trans }}{{ ":" }}</h4>
+                            {% set minValue = 0 %}
+                            {% set maxValue = 1000 %}
+                            {% if app.request.get('nominal_energy_range') %}
+                                {% set nominalEnergyRange = app.request.get('nominal_energy_range')|split(',') %}
+                                {% set minValue = nominalEnergyRange[0] %}
+                                {% set maxValue = nominalEnergyRange[1] %}
+                            {% endif %}
+                            <label for="nominalEnergyRange" style="width: 100%;">
+                                <input id="nominalEnergyRange"
+                                       type="text" name="nominal_energy_range" value=""
+                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div> {#filters__first#}
     </form>
     <div class="clearfix"></div>
+    <div class="div-align-right mt-10">
+        <div class="filter-search pull-right mt-2 mb-1">
+            <a class="btn btn-green mr-5 get-report" id="report-btn" target="_blank"> {{ "Get Report" | trans }}</a>
+            <a id="review-filter-btn" class="btn btn-outline-green"><span id="filter-btn-span">Advanced</span> <i id="filter-btn-arrow" class="fa fa-angle-down"></i></a>
+        </div>
+    </div>
     <div class="div-align-right">
-        <a class="mt-10 btn btn-green mr-5 get-report" id="report-btn" target="_blank"> {{ "Get Report" | trans }}</a>
     </div>
 </div>
 <div class="clearfix"></div>
