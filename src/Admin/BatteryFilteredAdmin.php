@@ -64,20 +64,15 @@ class BatteryFilteredAdmin extends AbstractAdmin
                 'disabled' => $disabled
             ])
             ->add('cellType', TextType::class, [
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
             ->add('moduleType', TextType::class, [
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
-            ->add('trayNumber', TextType::class, [
-                'disabled' => $disabled
-            ])
+            ->add('trayNumber', TextType::class)
             ->add('productionDate', DateTimeType::class, [
                 'widget' => 'single_text',
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
             ->add('nominalVoltage', NumberType::class, [
                 'disabled' => $disabled
@@ -89,17 +84,14 @@ class BatteryFilteredAdmin extends AbstractAdmin
                 'disabled' => $disabled
             ])
             ->add('acidVolume', TextType::class, [
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
             ->add('co2', TextType::class, [
                 'label' => 'CO2',
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
             ->add('cycleLife', NumberType::class, [
-                'required' => false,
-                'disabled' => $disabled
+                'required' => false
             ])
             ->add('height', NumberType::class, [
                 'required' => false,
