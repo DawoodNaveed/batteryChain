@@ -381,7 +381,6 @@ class BatteryController extends CRUDController
     public function registerAction(Request $request): RedirectResponse
     {
         try {
-            $updateBulkImportField = false;
             $manufacturer = null;
             $ids = $request->get('ids');
             $failure = 0;
@@ -398,14 +397,11 @@ class BatteryController extends CRUDController
             foreach ($ids as $id) {
                 $battery = $this->batteryService->batteryRepository->find($id);
 
-                if ($battery->getIsBulkImport() == true) {
-                    $updateBulkImportField = true;
-                    $manufacturer = $battery->getManufacturer();
-                }
-
                 if (!empty($battery)
                     && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
+                    $battery->setStatus(CustomHelper::BATTERY_STATUS_REGISTERED);
+                    $battery->setIsBulkImport(false);
                     $this->transactionLogService->createTransactionLog(
                         $battery,
                         CustomHelper::BATTERY_STATUS_REGISTERED
@@ -413,10 +409,6 @@ class BatteryController extends CRUDController
                 } else {
                     $failure++;
                 }
-            }
-
-            if ($updateBulkImportField) {
-                $this->batteryService->updateBulkImportField($manufacturer);
             }
 
             if ($failure > 0) {
@@ -631,7 +623,7 @@ class BatteryController extends CRUDController
         if ($object->getStatus() !== CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
             $this->addFlash(
                 'sonata_flash_info',
-                $this->translator->trans('You cannot edit battery which are already registered!')
+                $this->translator->trans('You can edit only some information for a battery which is already registered!')
             );
         }
 
