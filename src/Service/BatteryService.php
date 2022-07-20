@@ -394,6 +394,9 @@ class BatteryService
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
+        $this->filterByNominalVoltage($dqlStatement, $validFilters);
+        $this->filterByNominalCapacity($dqlStatement, $validFilters);
+        $this->filterByNominalEnergy($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
     }
 
@@ -410,7 +413,10 @@ class BatteryService
         $dqlStatement = '';
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
-        $this->filterByDates($dqlStatement, $validFilters, $filename);
+        $this->filterByDates($dqlStatement, $validFilters);
+        $this->filterByNominalVoltage($dqlStatement, $validFilters);
+        $this->filterByNominalCapacity($dqlStatement, $validFilters);
+        $this->filterByNominalEnergy($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
     }
 
@@ -482,6 +488,48 @@ class BatteryService
             return $this->batteryRepository->updateBulkImportField($manufacturer);
         } catch (\Exception $exception) {
             $this->logger->error('[ERROR][UPDATE BATTERY FIELD]' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalCapacity(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_capacity_range'])) {
+            $ratings = explode(',', $validFilters['nominal_capacity_range']);
+            if (!empty($ratings[0]) && !empty($ratings[1])) {
+                $dqlStatement .= " AND (b.nominalCapacity BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalVoltage(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_voltage_range'])) {
+            $ratings = explode(',', $validFilters['nominal_voltage_range']);
+            if (!empty($ratings[0]) && !empty($ratings[1])) {
+                $dqlStatement .= " AND (b.nominalVoltage BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalEnergy(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_energy_range'])) {
+            $ratings = explode(',', $validFilters['nominal_energy_range']);
+            if (!empty($ratings[0]) && !empty($ratings[1])) {
+                $dqlStatement .= " AND (b.nominalEnergy BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
         }
     }
 }
