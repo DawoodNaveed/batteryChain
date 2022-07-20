@@ -542,7 +542,8 @@ class BatteryService
     {
         if (isset($validFilters['nominal_capacity_range'])) {
             $ratings = explode(',', $validFilters['nominal_capacity_range']);
-            if (!empty($ratings[0]) && !empty($ratings[1])) {
+
+            if (!empty($ratings[1])) {
                 $dqlStatement .= " AND (b.nominalCapacity BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
@@ -556,7 +557,8 @@ class BatteryService
     {
         if (isset($validFilters['nominal_voltage_range'])) {
             $ratings = explode(',', $validFilters['nominal_voltage_range']);
-            if (!empty($ratings[0]) && !empty($ratings[1])) {
+
+            if (!empty($ratings[1]) ) {
                 $dqlStatement .= " AND (b.nominalVoltage BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
@@ -570,7 +572,8 @@ class BatteryService
     {
         if (isset($validFilters['nominal_energy_range'])) {
             $ratings = explode(',', $validFilters['nominal_energy_range']);
-            if (!empty($ratings[0]) && !empty($ratings[1])) {
+
+            if (!empty($ratings[1])) {
                 $dqlStatement .= " AND (b.nominalEnergy BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
