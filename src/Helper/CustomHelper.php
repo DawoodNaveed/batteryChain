@@ -79,9 +79,11 @@ class CustomHelper
     ];
 
     const REPORT_MODE = [
+        'all',
         self::BATTERY_STATUS_REGISTERED,
         self::BATTERY_STATUS_DELIVERED,
-        self::BATTERY_STATUS_RETURNED
+        self::BATTERY_STATUS_RETURNED,
+        self::BATTERY_STATUS_RECYCLED
     ];
 
     const IS_VERIFIED = 1;
@@ -121,6 +123,10 @@ class CustomHelper
      */
     public static function validateReportMode($mode): bool
     {
+        if ($mode === 'all') {
+            return false;
+        }
+
         if (in_array($mode, self::REPORT_MODE)) {
             return true;
         }
