@@ -67,10 +67,10 @@
             background-color: #fff;
         }
         .report-content {
-            height: 300px;
+            position: relative;
+            height: 400px;
             overflow-y: scroll;
             padding: 20px 20px 20px 20px;
-            margin-bottom: 35px;
             border: 1px solid #eae1e1;
             border-radius: 1px;
             background-color: #fff;
@@ -82,6 +82,11 @@
         }
         .close-validation-message {
             float: right;
+        }
+        .report-btns {
+            position: absolute;
+            right: 2rem;
+            bottom: 2rem;
         }
         @media (max-width: 768px) {
             .icon-addon .fa {
@@ -100,22 +105,22 @@
 {% endblock %}
 
 {% block sonata_admin_content %}
-    <div class="container">
+    <div class="container-fluid">
         <div class="white-box-round">
             <div class="filter-wraper" id="filters_domain">
                 <div id="validation-errors" class="alert alert-danger" style="display: none">
                     <span></span>
                     <i class="fa fa-close close-validation-message"></i>
                 </div>
-                    {% include 'report/_filters.html.twig' %}
+                    {% include 'report/_filters.html.twig' with manufacturers %}
             </div>
         </div>
         <div class="report-content">
-            <table id="example" class="display" style="width:100%"></table>
-        </div>
-        <div class="report-btns">
-            <div class="div-align-right">
-                <a class="mt-10 btn btn-green mr-5" id="download-report" target="_blank" href="{{ download }}"> {{ "Download" | trans }}</a>
+            <table id="report-response" class="display" style="width:100%"></table>
+            <div class="report-btns">
+                <div class="div-align-right">
+                    <a class="mt-10 btn btn-green mr-5" style="display: none" id="download-report" target="_blank" href="{{ download }}"> {{ "Download" | trans }}</a>
+                </div>
             </div>
         </div>
     </div>
@@ -152,8 +157,13 @@
                 },
                 success: function(response) {
                     let newUrl = window.location.href.split('?',1).toString();
+                    if (response.status == true) {
+                        $('#download-report').show();
+                    } else {
+                        $('#download-report').hide();
+                    }
                     // $('.report-content').html(JSON.parse(response.data));
-                    $('#example').DataTable({
+                    $('#report-response').DataTable({
                         searching: false,
                         data: response.data,
                         columns: [
@@ -279,14 +289,14 @@
             $('#report-btn').addClass('disabled');
             $('.get-report').on('click', function () {
                 if (validateForm()) {
-                    if ( $.fn.DataTable.isDataTable('#example') ) {
-                        $('#example').DataTable().destroy();
+                    if ( $.fn.DataTable.isDataTable('#report-response') ) {
+                        $('#report-response').DataTable().destroy();
                     }
-                    $('#example tbody').empty();
+                    $('#report-response tbody').empty();
                     getReport();
                 }
             });
-            $('#period, .mode-filter').on('change', function() {
+            $('.mode-filter').on('change', function() {
                 $('#report-btn').removeClass('disabled');
             });
         });

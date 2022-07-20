@@ -302,7 +302,8 @@ class BatteryController extends CRUDController
     {
         return $this->render(
             'report/view.html.twig', [
-                'download' => $this->admin->generateUrl('downloadReport')
+                'download' => $this->admin->generateUrl('downloadReport'),
+                'manufacturers' => $this->manufacturerService->manufacturerRepository->findAll()
             ]
         );
     }
@@ -314,14 +315,26 @@ class BatteryController extends CRUDController
      */
     public function getReportAction(Request $request): Response
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $manufacturer = null;
+        // In-Case of Manufacturer
+        if ((!in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) &&
+                !in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $this->getUser()->getRoles(), true)
+        ) {
+            $manufacturer = $user->getManufacturer();
+        }
+
         $filters = [];
         $formData = $request->get('formData');
         parse_str($formData, $filters);
         $data = null;
-        $batteries = $this->batteryService->getBatteriesArrayByFilters($filters);
+        $batteries = $this->batteryService->getBatteriesArrayByFilters($filters, $manufacturer);
 
         return new JsonResponse([
-            'data' => $batteries
+            'data' => $batteries,
+            'status' => count($batteries) > 0
         ]);
     }
 
@@ -333,11 +346,30 @@ class BatteryController extends CRUDController
     public function downloadReportAction(Request $request): Response
     {
         $filters = $request->query->all();
-        $filename = 'Battery Report' . ' | ' .
-            $this->getUser()->getManufacturer()->getName() . ' | ' .
-            ucwords($filters['mode']) . ' Batteries' . ' | ';
+
+        if (empty($filters)) {
+            return new RedirectResponse($this->admin->generateUrl('report'));
+        }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $manufacturer = null;
+        $filename = 'Battery Report' . ' | ';
+
+        // In-Case of Manufacturer
+        if ((!in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $this->getUser()->getRoles(), true)
+        ) {
+            $filename .= $user->getManufacturer()->getName() . ' | ';
+            $manufacturer = $user->getManufacturer();
+        } else {
+            $filename .= $filters['manufacturer'] . ' | ';
+        }
+
+        $filename .= ucwords($filters['mode']) . ' Batteries' . ' | ';
         $data = null;
-        $batteries = $this->batteryService->getBatteriesByFilters($filters, $filename);
+        $batteries = $this->batteryService->getBatteriesByFilters($filters, $filename, $manufacturer);
         $this->csvService->arrayToCSVDownload($batteries, $filename . '.csv');
         exit();
     }
