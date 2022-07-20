@@ -7,8 +7,8 @@
                         <div class="col-sm-12 col-md-4">
                             <ul class="filters__checklists">
                                 <h4 class="mb-0">{{ 'Manufacturer'|trans }}{{ ":" }}</h4>
-                                <li>
-                                    <label>
+                                <li style="width: 100%;">
+                                    <label style="width: 100%;">
                                         <select name="manufacturer" class="manufacturer-filter">
                                             <option value="-1" disabled>{{ 'Select Manufacturer'|trans }}</option>
                                             {% for manufacturer in manufacturers %}
@@ -31,8 +31,8 @@
                         {% set modeArray = { 'all': 'All Batteries', 'registered': 'Registered Batteries', 'delivered': 'Delivered Batteries', 'returned': 'Returned Batteries', 'recycled': 'Recycled Batteries'} %}
                         <ul class="filters__checklists">
                             <h4 class="mb-0">{{ 'Report Mode'|trans }}{{ ":" }}</h4>
-                            <li>
-                                <label>
+                            <li style="width: 100%;">
+                                <label style="width: 100%;">
                                     <select name="mode" class="mode-filter">
                                         <option value="-1" disabled selected>{{ 'Select Report Mode'|trans }}</option>
                                         {% for key, value in modeArray %}
@@ -54,7 +54,8 @@
                         <h4>{{ 'Period'|trans }}{{ ":" }}</h4>
                         <div class="icon-addon addon-sm">
                             <input readonly type="text" class="form-control" id="period" name="period"
-                                   value="{{ app.request.get('period') }}" placeholder="{{ "Select range"|trans }}">
+                                   value="{{ app.request.get('period') }}" placeholder="{{ "Select range"|trans }}"
+                                   style="border-radius: 5px; width: 100%">
                             <label for="period" class="fa fa-calendar" rel="tooltip" title="period"></label>
                         </div>
                     </div>
@@ -63,8 +64,8 @@
                     <div class="col-sm-12 col-md-4">
                         <ul class="filters__checklists">
                             <h4 class="mb-0">{{ 'Battery Type'|trans }}{{ ":" }}</h4>
-                            <li>
-                                <label>
+                            <li style="width: 100%;">
+                                <label style="width: 100%;">
                                     <select name="type" class="type-filter">
                                         <option value="-1" disabled>{{ 'Select Battery Type'|trans }}</option>
                                         <option value="all" selected>{{ 'All types'|trans }}</option>
@@ -83,6 +84,14 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="col-sm-12 col-md-4">
+                        <h4 class="mb-0">{{ 'Tray number'|trans }}{{ ":" }}</h4>
+                        <label style="width: 100%;">
+                            <input type="text" class="tray-number-filter form-control" name="tray_number"
+                                   style="border-radius: 5px; width: 100%"
+                                   value="{{ app.request.get('tray_number') }}" placeholder="{{ "Enter tray number" | trans }}">
+                        </label>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-4">
@@ -94,9 +103,13 @@
                             {% set minValue = nominalVoltageRange[0] %}
                             {% set maxValue = nominalVoltageRange[1] %}
                         {% endif %}
-                        <input id="nominalVoltageRange" type="text" name="nominal_voltage_range" value=""
-                               data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                               data-slider-value="[{{ minValue }}, {{ maxValue }}]"/>
+                        <label for="nominalVoltageRange" style="width: 100%;">
+                            <input id="nominalVoltageRange" type="text" name="nominal_voltage_range" value=""
+                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                   class="form-control"
+                                   style="width: 100%;"/>
+                        </label>
                     </div>
                     <div class="col-sm-12 col-md-4">
                         <h4>{{ 'Nominal Capacity'|trans }}{{ ":" }}</h4>
@@ -107,9 +120,12 @@
                             {% set minValue = nominalCapacityRange[0] %}
                             {% set maxValue = nominalCapacityRange[1] %}
                         {% endif %}
-                        <input id="nominalCapacityRange" type="text" name="nominal_capacity_range" value=""
-                               data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                               data-slider-value="[{{ minValue }}, {{ maxValue }}]"/>
+                        <label for="nominalCapacityRange" style="width: 100%;">
+                            <input id="nominalCapacityRange" type="text" name="nominal_capacity_range" value=""
+                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                   style="width: 100%;"/>
+                        </label>
                     </div>
                     <div class="col-sm-12 col-md-4">
                         <h4>{{ 'Nominal Energy' | trans }}{{ ":" }}</h4>
@@ -120,9 +136,12 @@
                             {% set minValue = nominalEnergyRange[0] %}
                             {% set maxValue = nominalEnergyRange[1] %}
                         {% endif %}
-                        <input id="nominalEnergyRange" type="text" name="nominal_energy_range" value=""
-                               data-slider-min="0" data-slider-max="1000" data-slider-step="100"
-                               data-slider-value="[{{ minValue }}, {{ maxValue }}]"/>
+                        <label for="nominalEnergyRange" style="width: 100%;">
+                            <input id="nominalEnergyRange"
+                                   type="text" name="nominal_energy_range" value=""
+                                   data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                   data-slider-value="[{{ minValue }}, {{ maxValue }}]"/>
+                        </label>
                     </div>
                 </div>
             </div>

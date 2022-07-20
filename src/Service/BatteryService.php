@@ -398,6 +398,7 @@ class BatteryService
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
+        $this->filterByTrayNumber($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
     }
 
@@ -419,6 +420,7 @@ class BatteryService
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
+        $this->filterByTrayNumber($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
     }
 
@@ -448,6 +450,17 @@ class BatteryService
             }
 
             $dqlStatement .= "(b.status = '" . $validFilters['mode'] . "')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByTrayNumber(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['tray_number']) && !empty($validFilters['tray_number'])) {
+            $dqlStatement .= " AND (b.trayNumber Like '%" . $validFilters['tray_number'] . "%')";
         }
     }
 
