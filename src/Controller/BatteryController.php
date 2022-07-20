@@ -11,6 +11,7 @@ use App\Form\BulkImportBatteryFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
+use App\Service\CsvService;
 use App\Service\ManufacturerService;
 use App\Service\PdfService;
 use App\Service\TransactionLogService;
@@ -23,6 +24,7 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +50,7 @@ use Twig\Error\SyntaxError;
  * @property Environment twig
  * @property PdfService pdfService
  * @property TransactionLogService transactionLogService
+ * @property CsvService csvService
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -64,6 +67,7 @@ class BatteryController extends CRUDController
      * @param Environment $twig
      * @param PdfService $pdfService
      * @param TransactionLogService $transactionLogService
+     * @param CsvService $csvService
      */
     public function __construct(
         string $kernelProjectDir,
@@ -75,7 +79,8 @@ class BatteryController extends CRUDController
         BatteryTypeService $batteryTypeService,
         Environment $twig,
         PdfService $pdfService,
-        TransactionLogService $transactionLogService
+        TransactionLogService $transactionLogService,
+        CsvService $csvService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -87,6 +92,7 @@ class BatteryController extends CRUDController
         $this->pdfService = $pdfService;
         $this->transactionLogService = $transactionLogService;
         $this->kernelProjectDir = $kernelProjectDir;
+        $this->csvService = $csvService;
     }
 
     /**
@@ -295,7 +301,9 @@ class BatteryController extends CRUDController
     public function reportAction(): Response
     {
         return $this->render(
-            'report/view.html.twig', []
+            'report/view.html.twig', [
+                'download' => $this->admin->generateUrl('downloadReport')
+            ]
         );
     }
 
@@ -310,20 +318,28 @@ class BatteryController extends CRUDController
         $formData = $request->get('formData');
         parse_str($formData, $filters);
         $data = null;
-        $batteries = $this->batteryService->getBatteriesByFilters($filters);
-        $templateListing = $this->renderView('report/report_content.html.twig', [
-            'batteries' => $batteries
-        ]);
-        $data = json_encode($templateListing);
-        $responsePagination =
-            new Response(
-                json_encode([
-                    'data' => $data
-                ]
-            ), 200);
-        $responsePagination->headers->set('Content-Type', 'application/json');
+        $batteries = $this->batteryService->getBatteriesArrayByFilters($filters);
 
-        return $responsePagination;
+        return new JsonResponse([
+            'data' => $batteries
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function downloadReportAction(Request $request): Response
+    {
+        $filters = $request->query->all();
+        $filename = 'Battery Report' . ' | ' .
+            $this->getUser()->getManufacturer()->getName() . ' | ' .
+            ucwords($filters['mode']) . ' Batteries' . ' | ';
+        $data = null;
+        $batteries = $this->batteryService->getBatteriesByFilters($filters, $filename);
+        $this->csvService->arrayToCSVDownload($batteries, $filename . '.csv');
+        exit();
     }
 
     /**
@@ -365,7 +381,6 @@ class BatteryController extends CRUDController
     public function registerAction(Request $request): RedirectResponse
     {
         try {
-            $updateBulkImportField = false;
             $manufacturer = null;
             $ids = $request->get('ids');
             $failure = 0;
@@ -382,14 +397,11 @@ class BatteryController extends CRUDController
             foreach ($ids as $id) {
                 $battery = $this->batteryService->batteryRepository->find($id);
 
-                if ($battery->getIsBulkImport() == true) {
-                    $updateBulkImportField = true;
-                    $manufacturer = $battery->getManufacturer();
-                }
-
                 if (!empty($battery)
                     && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
+                    $battery->setStatus(CustomHelper::BATTERY_STATUS_REGISTERED);
+                    $battery->setIsBulkImport(false);
                     $this->transactionLogService->createTransactionLog(
                         $battery,
                         CustomHelper::BATTERY_STATUS_REGISTERED
@@ -397,10 +409,6 @@ class BatteryController extends CRUDController
                 } else {
                     $failure++;
                 }
-            }
-
-            if ($updateBulkImportField) {
-                $this->batteryService->updateBulkImportField($manufacturer);
             }
 
             if ($failure > 0) {
@@ -615,7 +623,7 @@ class BatteryController extends CRUDController
         if ($object->getStatus() !== CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
             $this->addFlash(
                 'sonata_flash_info',
-                $this->translator->trans('You cannot edit battery which are already registered!')
+                $this->translator->trans('You can edit only some information for a battery which is already registered!')
             );
         }
 

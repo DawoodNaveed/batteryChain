@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Battery;
 use App\Entity\TransactionLog;
 use App\Helper\CustomHelper;
 use Psr\Log\LoggerInterface;
@@ -128,11 +129,20 @@ class BlockchainService
     {
         if (!is_null($log)) {
             $url = $this->blockchainUrl . self::BATTERY_URL;
+            /** @var Battery $battery */
+            $battery = $log->getBattery();
 
             $postFields = [
-                'serial_number' => $log->getBattery()->getSerialNumber(),
+                'serial_number' => $battery->getSerialNumber(),
                 'meta_data' => [
-                    'type' => $log->getTransactionType()
+                    'type_id' => $battery->getBatteryType()->getId(),
+                    'kwh' => $battery->getNominalEnergy(),
+                    'weight' => $battery->getMass(),
+                    'height' => $battery->getHeight(),
+                    'length' => $battery->getLength(),
+                    'width' => $battery->getWidth(),
+                    'manufacturer_name' => $battery->getManufacturer()->getName(),
+                    'state' => $log->getTransactionType(),
                 ],
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];

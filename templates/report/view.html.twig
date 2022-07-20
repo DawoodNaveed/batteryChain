@@ -17,6 +17,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
     <style>
@@ -91,8 +93,10 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js"></script>
 {% endblock %}
 
 {% block sonata_admin_content %}
@@ -107,11 +111,11 @@
             </div>
         </div>
         <div class="report-content">
+            <table id="example" class="display" style="width:100%"></table>
         </div>
         <div class="report-btns">
             <div class="div-align-right">
-                <a class="mt-10 btn btn-green mr-5" href="{{ "#" }}"> {{ "Download" | trans }}</a>
-{#                <a class="mt-10 btn btn-light" href="{{ "#" }}"> {{ "Back" | trans }}</a>#}
+                <a class="mt-10 btn btn-green mr-5" id="download-report" target="_blank" href="{{ download }}"> {{ "Download" | trans }}</a>
             </div>
         </div>
     </div>
@@ -138,8 +142,7 @@
             return true;
         }
 
-        function getReport()
-        {
+        function getReport() {
             var formData = $("#reportFiltersForm").serialize();
             $.ajax({
                 url : '/admin/app/battery/getReport',
@@ -149,13 +152,122 @@
                 },
                 success: function(response) {
                     let newUrl = window.location.href.split('?',1).toString();
-                    $('.report-content').html(JSON.parse(response.data));
-                    history.pushState(null,'',newUrl + '?' + formData);
+                    // $('.report-content').html(JSON.parse(response.data));
+                    $('#example').DataTable({
+                        searching: false,
+                        data: response.data,
+                        columns: [
+                            {
+                                "title": "Serial Number",
+                                "data": "battery.serialNumber"
+                            },
+                            {
+                                "title": "Type",
+                                "data": "type"
+                            },
+                            {
+                                "title": "Cell Type",
+                                "data": "battery.cellType"
+                            },
+                            {
+                                "title": "Module Type",
+                                "data": "battery.moduleType"
+                            },
+                            {
+                                "title": "Production Date",
+                                "data": "battery.productionDate.date", render: $.fn.dataTable.render.moment( 'YYYY-MM-DD' )
+                            },
+                            {
+                                "title": "Tray Number",
+                                "data": "battery.trayNumber"
+                            },
+                            {
+                                "title": "Voltage",
+                                "data": "battery.nominalVoltage"
+                            },
+                            {
+                                "title": "Capacity",
+                                "data": "battery.nominalCapacity"},
+                            {
+                                "title": "Energey",
+                                "data": "battery.nominalEnergy"},
+                            {
+                                "title": "Acid Volume",
+                                "data": "battery.acidVolume"
+                            },
+                            {
+                                "title": "Co2",
+                                "data": "battery.co2"
+                            },
+                            {
+                                "title": "Status",
+                                "data": "battery.status"
+                            },
+                        ]
+                    });
+                    // history.pushState(null, '', newUrl + '?' + formData);
+                    $href = $("#download-report").attr('href').split('?', 1).toString();
+                    $("#download-report").attr("href", $href + '?' + formData);
                 }
             });
         }
 
         $(document).ready(function(){
+            // UMD
+            (function( factory ) {
+                "use strict";
+                if ( typeof define === 'function' && define.amd ) {
+                    // AMD
+                    define( ['jquery'], function ( $ ) {
+                        return factory( $, window, document );
+                    } );
+                }
+                else if ( typeof exports === 'object' ) {
+                    // CommonJS
+                    module.exports = function (root, $) {
+                        if ( ! root ) {
+                            root = window;
+                        }
+
+                        if ( ! $ ) {
+                            $ = typeof window !== 'undefined' ?
+                                require('jquery') :
+                                require('jquery')( root );
+                        }
+
+                        return factory( $, root, root.document );
+                    };
+                }
+                else {
+                    // Browser
+                    factory( jQuery, window, document );
+                }
+            }
+            (function( $, window, document ) {
+                $.fn.dataTable.render.moment = function ( from, to, locale ) {
+                    // Argument shifting
+                    if ( arguments.length === 1 ) {
+                        locale = 'en';
+                        to = from;
+                        from = 'YYYY-MM-DD';
+                    }
+                    else if ( arguments.length === 2 ) {
+                        locale = 'en';
+                    }
+
+                    return function ( d, type, row ) {
+                        if (! d) {
+                            return type === 'sort' || type === 'type' ? 0 : d;
+                        }
+
+                        var m = window.moment( d );
+
+                        // Order and type get a number value from Moment, everything else
+                        // sees the rendered value
+                        return m.format( type === 'sort' || type === 'type' ? 'x' : to );
+                    };
+                };
+            }));
             setTimeout(function() {
                 $('#validation-errors').fadeOut('slow');
             }, 20000);
@@ -167,6 +279,10 @@
             $('#report-btn').addClass('disabled');
             $('.get-report').on('click', function () {
                 if (validateForm()) {
+                    if ( $.fn.DataTable.isDataTable('#example') ) {
+                        $('#example').DataTable().destroy();
+                    }
+                    $('#example tbody').empty();
                     getReport();
                 }
             });

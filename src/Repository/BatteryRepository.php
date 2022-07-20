@@ -7,6 +7,7 @@ use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -78,6 +79,20 @@ class BatteryRepository extends ServiceEntityRepository
             ->where($dqlStatement)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @return int|mixed|string
+     */
+    public function getBatteriesArrayByFilters(string $dqlStatement)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b as battery', 'bt.type')
+            ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
+            ->where($dqlStatement)
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
