@@ -274,7 +274,7 @@ class BatteryService
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
-                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) may not exist or registered!'];
                         continue;
                     }
 
@@ -348,7 +348,7 @@ class BatteryService
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
-                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery may not exist or registered!'];
                         continue;
                     }
 
