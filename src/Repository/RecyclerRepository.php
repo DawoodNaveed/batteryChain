@@ -42,6 +42,20 @@ class RecyclerRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param Manufacturer $manufacturer
+     * @return Recycler[]|null
+     */
+    public function getRecyclersByManufacturer(Manufacturer $manufacturer)
+    {
+        return $this->createQueryBuilder('recycler')
+            ->join('recycler.manufacturers', 'manufacturers')
+            ->where('manufacturers = :manufacturer')
+            ->setParameter('manufacturer', $manufacturer)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * @param Recycler|null $recycler
      * @param array $data
      * @param Manufacturer|null $manufacturer

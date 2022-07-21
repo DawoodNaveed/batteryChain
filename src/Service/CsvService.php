@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Recycler;
+
 /**
  * Class CsvService
  * @package App\Service
@@ -35,6 +37,32 @@ class CsvService
                 $line['battery']->getAcidVolume(),
                 (empty($line['battery']->getCo2()) ? '' : $line['battery']->getCo2()),
                 $line['battery']->getStatus(),
+            ];
+            fputcsv($f, $data, $delimiter);
+        }
+    }
+
+    /**
+     * @param Recycler[] $recyclers
+     * @param string $filename
+     * @param string $delimiter
+     */
+    public function downloadRecyclersCsv($recyclers, $filename = "export.csv", $delimiter = ",")
+    {
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        $f = fopen('php://output', 'w');
+        $header = ['Name', 'Email', 'Address', 'City', 'Country', 'Contact'];
+        fputcsv($f, $header);
+        /** @var Recycler $recycler */
+        foreach ($recyclers as $recycler) {
+            $data = [
+                $recycler->getName(),
+                $recycler->getEmail(),
+                $recycler->getAddress(),
+                $recycler->getCity(),
+                $recycler->getCountry()->getName(),
+                (string) $recycler->getContact(),
             ];
             fputcsv($f, $data, $delimiter);
         }

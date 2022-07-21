@@ -3,6 +3,16 @@
  {% block sonata_admin_content_actions_wrappers %}
      {{ parent() }}
      {% if 'list' in app.request.pathInfo  %}
+         {% if is_granted('ROLE_MANUFACTURER') and not is_granted('ROLE_SUPER_ADMIN') and not is_granted('ROLE_ADMIN') %}
+             <ul class="nav navbar-nav navbar-left">
+                 <li class="dropdown sonata-actions">
+                     <a class="btn btn-link btn-flat" style="padding-left: 0" target="_blank" href="{{ admin.generateUrl('downloadRecyclers')}}">
+                         <i class="fa fa-file-download" aria-hidden="true"></i>
+                         {{ "Download" | trans }}
+                     </a>
+                 </li>
+             </ul>
+         {% endif %}
          <ul class="nav navbar-nav navbar-left">
              <li class="dropdown sonata-actions">
                  <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('bulkUpdate')}}">
