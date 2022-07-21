@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/css/bootstrap-slider.css">
 
     <style>
         .container {
@@ -68,8 +69,7 @@
         }
         .report-content {
             position: relative;
-            height: 400px;
-            overflow-y: scroll;
+            height: max-content;
             padding: 20px 20px 20px 20px;
             border: 1px solid #eae1e1;
             border-radius: 1px;
@@ -84,9 +84,21 @@
             float: right;
         }
         .report-btns {
-            position: absolute;
             right: 2rem;
             bottom: 2rem;
+        }
+        .slider-handle {
+            background-image: linear-gradient(to bottom, #55bc5e 0%, #55bc5e 100%) !important;
+            background-color: #d4edda !important;
+        }
+        .slider-selection {
+            background-image: -webkit-linear-gradient(top, #66CC80 0%, #66CC80 100%);
+            background-image: -o-linear-gradient(top, #66CC80 0%, #66CC80 100%);
+            background-image: linear-gradient(to bottom, #66CC80 0%, #66CC80 100%);
+            background-repeat: repeat-x;
+        }
+        .details--filters {
+            display: none;
         }
         @media (max-width: 768px) {
             .icon-addon .fa {
@@ -102,6 +114,7 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.2/bootstrap-slider.js"></script>
 {% endblock %}
 
 {% block sonata_admin_content %}
@@ -115,7 +128,7 @@
                     {% include 'report/_filters.html.twig' with manufacturers %}
             </div>
         </div>
-        <div class="report-content">
+        <div class="report-content" style="display: none">
             <table id="report-response" class="display" style="width:100%"></table>
             <div class="report-btns">
                 <div class="div-align-right">
@@ -162,6 +175,7 @@
                     } else {
                         $('#download-report').hide();
                     }
+                    $('.report-content').show();
                     // $('.report-content').html(JSON.parse(response.data));
                     $('#report-response').DataTable({
                         searching: false,
@@ -298,6 +312,37 @@
             });
             $('.mode-filter').on('change', function() {
                 $('#report-btn').removeClass('disabled');
+            });
+            $("#nominalVoltageRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' V';
+                }
+            });
+            $("#nominalCapacityRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' Ah';
+                }
+            });
+            $("#nominalEnergyRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' KWh';
+                }
+            });
+            $('#review-filter-btn').click(function () {
+                if ($('.details--filters').css('display') == 'none') {
+                    $('.details--filters').css({'display': 'block'});
+                    $('#filter-btn-arrow').removeClass('fa-angle-down');
+                    $('#filter-btn-arrow').addClass('fa-angle-up');
+                    $('#filter-btn-span').text('Simple');
+                } else if ($('.details--filters').css('display') == 'block') {
+                    $('.details--filters').css({'display': 'none'});
+                    $('#filter-btn-arrow').removeClass('fa-angle-up');
+                    $('#filter-btn-arrow').addClass('fa-angle-down ');
+                    $('#filter-btn-span').text('Advanced');
+                }
             });
         });
     </script>

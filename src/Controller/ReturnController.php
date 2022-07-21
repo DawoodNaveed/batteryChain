@@ -115,7 +115,7 @@ class ReturnController extends CRUDController
             );
 
             if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
-                $this->addFlash('sonata_flash_error', 'Battery does not exist!');
+                $this->addFlash('sonata_flash_error', 'Battery may not exist or registered!');
                 return new RedirectResponse($this->admin->generateUrl('return'));
             }
 
