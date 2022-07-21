@@ -303,7 +303,8 @@ class BatteryController extends CRUDController
         return $this->render(
             'report/view.html.twig', [
                 'download' => $this->admin->generateUrl('downloadReport'),
-                'manufacturers' => $this->manufacturerService->manufacturerRepository->findAll()
+                'manufacturers' => $this->manufacturerService->manufacturerRepository->findAll(),
+                'types' => $this->batteryTypeService->batteryTypeRepository->findAll()
             ]
         );
     }

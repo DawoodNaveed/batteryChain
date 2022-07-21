@@ -274,7 +274,7 @@ class BatteryService
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
-                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) may not exist or registered!'];
                         continue;
                     }
 
@@ -348,7 +348,7 @@ class BatteryService
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
-                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) does not exist!'];
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery may not exist or registered!'];
                         continue;
                     }
 
@@ -393,7 +393,13 @@ class BatteryService
         $dqlStatement = '';
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
+        $this->filterByType($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
+        $this->filterByNominalVoltage($dqlStatement, $validFilters);
+        $this->filterByNominalCapacity($dqlStatement, $validFilters);
+        $this->filterByNominalEnergy($dqlStatement, $validFilters);
+        $this->filterByTrayNumber($dqlStatement, $validFilters);
+        $this->filterBySearchText($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
     }
 
@@ -410,7 +416,13 @@ class BatteryService
         $dqlStatement = '';
         $this->filterByManufacturer($dqlStatement, $validFilters, $manufacturer);
         $this->filterByMode($dqlStatement, $validFilters);
-        $this->filterByDates($dqlStatement, $validFilters, $filename);
+        $this->filterByType($dqlStatement, $validFilters);
+        $this->filterByDates($dqlStatement, $validFilters);
+        $this->filterByNominalVoltage($dqlStatement, $validFilters);
+        $this->filterByNominalCapacity($dqlStatement, $validFilters);
+        $this->filterByNominalEnergy($dqlStatement, $validFilters);
+        $this->filterByTrayNumber($dqlStatement, $validFilters);
+        $this->filterBySearchText($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
     }
 
@@ -440,6 +452,43 @@ class BatteryService
             }
 
             $dqlStatement .= "(b.status = '" . $validFilters['mode'] . "')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByTrayNumber(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['tray_number']) && !empty($validFilters['tray_number'])) {
+            $dqlStatement .= " AND (b.trayNumber Like '%" . $validFilters['tray_number'] . "%')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterBySearchText(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['search_text']) && !empty($validFilters['search_text'])) {
+            $dqlStatement .= " AND (b.cellType Like '%" . $validFilters['search_text'] . "%' OR b.moduleType Like '%" . $validFilters['search_text'] . "%')";
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByType(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['type'])) {
+            if ($validFilters['type'] === 'all') {
+                return;
+            }
+
+            $dqlStatement .= " AND (bt.type = '" . $validFilters['type'] . "') ";
         }
     }
 
@@ -482,6 +531,51 @@ class BatteryService
             return $this->batteryRepository->updateBulkImportField($manufacturer);
         } catch (\Exception $exception) {
             $this->logger->error('[ERROR][UPDATE BATTERY FIELD]' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalCapacity(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_capacity_range'])) {
+            $ratings = explode(',', $validFilters['nominal_capacity_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.nominalCapacity BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalVoltage(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_voltage_range'])) {
+            $ratings = explode(',', $validFilters['nominal_voltage_range']);
+
+            if (!empty($ratings[1]) ) {
+                $dqlStatement .= " AND (b.nominalVoltage BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByNominalEnergy(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['nominal_energy_range'])) {
+            $ratings = explode(',', $validFilters['nominal_energy_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.nominalEnergy BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
         }
     }
 }
