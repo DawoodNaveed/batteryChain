@@ -28,15 +28,17 @@ class AdminFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $user = $manager->getRepository('App:User')->findBy(['email' => 'admin@battery-chain.com']);
+        $user = $manager->getRepository('App:User')->findBy(['email' => 'admin@battery-chain.info']);
 
         if (empty($user)) {
             $user = new User();
-            $user->setFirstName('Batter');
+            $user->setFirstName('Battery');
             $user->setLastName('Chain');
-            $user->setEmail('admin@battery-chain.com');
+            $user->setEmail('admin@battery-chain.info');
             $user->setIsVerified(true);
-            $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, 'coeus123@'));
+            $user->setCreated(new \DateTime('now'));
+            $user->setUpdated(new \DateTime('now'));
+            $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, '9b8BY3paVQaC94J@'));
             $user->setRoles([
                 'ROLE_SUPER_ADMIN'
             ]);
