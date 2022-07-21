@@ -110,7 +110,7 @@
                         <div class="col-sm-12 col-md-4">
                             <h4>{{ 'Nominal Voltage'|trans }}{{ ":" }}</h4>
                             {% set minValue = 0 %}
-                            {% set maxValue = 1000 %}
+                            {% set maxValue = 300 %}
                             {% if app.request.get('nominal_voltage_range') %}
                                 {% set nominalVoltageRange = app.request.get('nominal_voltage_range')|split(',') %}
                                 {% set minValue = nominalVoltageRange[0] %}
@@ -118,7 +118,7 @@
                             {% endif %}
                             <label for="nominalVoltageRange" style="width: 100%;">
                                 <input id="nominalVoltageRange" type="text" name="nominal_voltage_range" value=""
-                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-min="0" data-slider-max="300" data-slider-step="50"
                                        data-slider-value="[{{ minValue }}, {{ maxValue }}]"
                                        class="form-control"
                                        style="width: 100%;"/>
@@ -127,7 +127,7 @@
                         <div class="col-sm-12 col-md-4">
                             <h4>{{ 'Nominal Capacity'|trans }}{{ ":" }}</h4>
                             {% set minValue = 0 %}
-                            {% set maxValue = 1000 %}
+                            {% set maxValue = 300 %}
                             {% if app.request.get('nominal_capacity_range') %}
                                 {% set nominalCapacityRange = app.request.get('nominal_capacity_range')|split(',') %}
                                 {% set minValue = nominalCapacityRange[0] %}
@@ -135,7 +135,7 @@
                             {% endif %}
                             <label for="nominalCapacityRange" style="width: 100%;">
                                 <input id="nominalCapacityRange" type="text" name="nominal_capacity_range" value=""
-                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-min="0" data-slider-max="300" data-slider-step="50"
                                        data-slider-value="[{{ minValue }}, {{ maxValue }}]"
                                        style="width: 100%;"/>
                             </label>
@@ -143,7 +143,7 @@
                         <div class="col-sm-12 col-md-4">
                             <h4>{{ 'Nominal Energy' | trans }}{{ ":" }}</h4>
                             {% set minValue = 0 %}
-                            {% set maxValue = 1000 %}
+                            {% set maxValue = 300 %}
                             {% if app.request.get('nominal_energy_range') %}
                                 {% set nominalEnergyRange = app.request.get('nominal_energy_range')|split(',') %}
                                 {% set minValue = nominalEnergyRange[0] %}
@@ -152,7 +152,7 @@
                             <label for="nominalEnergyRange" style="width: 100%;">
                                 <input id="nominalEnergyRange"
                                        type="text" name="nominal_energy_range" value=""
-                                       data-slider-min="0" data-slider-max="1000" data-slider-step="100"
+                                       data-slider-min="0" data-slider-max="300" data-slider-step="50"
                                        data-slider-value="[{{ minValue }}, {{ maxValue }}]"
                                        style="width: 100%;"/>
                             </label>
