@@ -6,7 +6,9 @@ git clone git@github.com:4artechnologies-ag/battery-chain-web.git
 
 cd battery-chain-web
 
-Add and Update required parameters in /.env from Jenkins Job
+touch .env
+copy parameters from .env.copy into .env and update values
+You can get values from Jenkins Job
 
 cd deploy
 
