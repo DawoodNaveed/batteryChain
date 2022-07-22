@@ -80,22 +80,22 @@ class BatteryAdmin extends AbstractAdmin
                 'disabled' => $disabled
             ])
             ->add('acidVolume', TextType::class, [
-                'required' => false
+                'required' => true
             ])
             ->add('co2', TextType::class, [
                 'label' => 'CO2',
-                'required' => false
+                'required' => true
             ])
             ->add('height', NumberType::class, [
-                'required' => false,
+                'required' => true,
                 'disabled' => $disabled
             ])
             ->add('width', NumberType::class, [
-                'required' => false,
+                'required' => true,
                 'disabled' => $disabled
             ])
             ->add('length', NumberType::class, [
-                'required' => false,
+                'required' => true,
                 'disabled' => $disabled
             ])
             ->add('mass', NumberType::class, [
