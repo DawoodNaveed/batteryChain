@@ -129,12 +129,11 @@ class BatteryService
                 $nominalVoltage = (float) $row['nominal_voltage'];
                 $nominalCapacity = (float) $row['nominal_capacity'];
                 $nominalEnergy = (float) $row['nominal_energy'];
-                $acidVolume = (string) $row['acid_volume'] ?? null;
-                $co2 = ((string) $row['CO2']) ?? null;
-                $cycleLife = (float) $row['cycle_life'] ?? null;
-                $height = ((float) $row['height']) ?? null;
-                $width = ((float) $row['width']) ?? null;
-                $length = ((float) $row['length']) ?? null;
+                $acidVolume = (float) $row['acid_volume'] ?? 0;
+                $co2 = ((float) $row['CO2']) ?? 0;
+                $height = ((float) $row['height']) ?? 0;
+                $width = ((float) $row['width']) ?? 0;
+                $length = ((float) $row['length']) ?? 0;
                 $mass = (float) $row['mass'];
                 $status = CustomHelper::BATTERY_STATUS_PRE_REGISTERED;
 
@@ -142,7 +141,7 @@ class BatteryService
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
-                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $cycleLife
+                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
@@ -400,6 +399,11 @@ class BatteryService
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
         $this->filterByTrayNumber($dqlStatement, $validFilters);
         $this->filterBySearchText($dqlStatement, $validFilters);
+        $this->filterByWidth($dqlStatement, $validFilters);
+        $this->filterByHeight($dqlStatement, $validFilters);
+        $this->filterByLength($dqlStatement, $validFilters);
+        $this->filterByCo2($dqlStatement, $validFilters);
+        $this->filterByAcidVolume($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesByFilters($dqlStatement);
     }
 
@@ -423,6 +427,11 @@ class BatteryService
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
         $this->filterByTrayNumber($dqlStatement, $validFilters);
         $this->filterBySearchText($dqlStatement, $validFilters);
+        $this->filterByWidth($dqlStatement, $validFilters);
+        $this->filterByHeight($dqlStatement, $validFilters);
+        $this->filterByLength($dqlStatement, $validFilters);
+        $this->filterByCo2($dqlStatement, $validFilters);
+        $this->filterByAcidVolume($dqlStatement, $validFilters);
         return $this->batteryRepository->getBatteriesArrayByFilters($dqlStatement);
     }
 
@@ -509,7 +518,7 @@ class BatteryService
                 $dqlStatement .= "AND ";
             }
 
-            $dqlStatement .= "(b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
+            $dqlStatement .= "(b.productionDate BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
 
             if (!empty($filename)) {
                 $filename .= $startDate . ' - ' . (new \DateTime($dates[1]))->format('Y-m-d');
@@ -575,6 +584,81 @@ class BatteryService
 
             if (!empty($ratings[1])) {
                 $dqlStatement .= " AND (b.nominalEnergy BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByCo2(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['co2_range'])) {
+            $ratings = explode(',', $validFilters['co2_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.co2 BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByAcidVolume(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['acid_volume_range'])) {
+            $ratings = explode(',', $validFilters['acid_volume_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.acidVolume BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByWidth(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['width_range'])) {
+            $ratings = explode(',', $validFilters['width_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.width BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByHeight(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['height_range'])) {
+            $ratings = explode(',', $validFilters['height_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.height BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     */
+    private function filterByLength(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['length_range'])) {
+            $ratings = explode(',', $validFilters['length_range']);
+
+            if (!empty($ratings[1])) {
+                $dqlStatement .= " AND (b.length BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
     }

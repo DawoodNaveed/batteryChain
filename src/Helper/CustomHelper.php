@@ -34,7 +34,6 @@ class CustomHelper
         'nominal_energy',
         'acid_volume',
         'CO2',
-        'cycle_life',
         'height',
         'width',
         'length',

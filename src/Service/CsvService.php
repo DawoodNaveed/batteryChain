@@ -35,8 +35,8 @@ class CsvService
                 $line['battery']->getNominalCapacity(),
                 $line['battery']->getNominalEnergy(),
                 $line['battery']->getAcidVolume(),
-                (empty($line['battery']->getCo2()) ? '' : $line['battery']->getCo2()),
-                $line['battery']->getStatus(),
+                $line['battery']->getCo2(),
+                ucwords($line['battery']->getStatus()),
             ];
             fputcsv($f, $data, $delimiter);
         }
