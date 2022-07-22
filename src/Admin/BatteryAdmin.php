@@ -71,36 +71,45 @@ class BatteryAdmin extends AbstractAdmin
                 'required' => false
             ])
             ->add('nominalVoltage', NumberType::class, [
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('nominalCapacity', NumberType::class, [
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('nominalEnergy', NumberType::class, [
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('acidVolume', TextType::class, [
-                'required' => true
+            ->add('acidVolume', NumberType::class, [
+                'required' => true,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('co2', TextType::class, [
+            ->add('co2', NumberType::class, [
                 'label' => 'CO2',
-                'required' => true
+                'required' => true,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('height', NumberType::class, [
                 'required' => true,
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('width', NumberType::class, [
                 'required' => true,
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('length', NumberType::class, [
                 'required' => true,
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('mass', NumberType::class, [
                 'label' => 'Weight',
-                'disabled' => $disabled
+                'disabled' => $disabled,
+                'invalid_message' => "This value '{{ value }}' should be of type number."
             ]);
 
         if ($battery->getId() === null) {
