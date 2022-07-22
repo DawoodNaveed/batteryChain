@@ -207,25 +207,53 @@
                             },
                             {
                                 "title": "Voltage",
-                                "data": "battery.nominalVoltage"
+                                "data": "battery.nominalVoltage",
+                                render: function ( data, type, row ) {
+                                    return data + ' V';
+                                }
                             },
                             {
                                 "title": "Capacity",
-                                "data": "battery.nominalCapacity"},
+                                "data": "battery.nominalCapacity",
+                                render: function ( data, type, row ) {
+                                    return data + ' Ah';
+                                }
+                            },
                             {
                                 "title": "Energey",
-                                "data": "battery.nominalEnergy"},
+                                "data": "battery.nominalEnergy",
+                                render: function ( data, type, row ) {
+                                    return data + ' kWh';
+                                }
+                            },
                             {
                                 "title": "Acid Volume",
-                                "data": "battery.acidVolume"
+                                "data": "battery.acidVolume",
+                                render: function ( data, type, row ) {
+                                    if (data != 0) {
+                                        return data + ' l';
+                                    }
+
+                                    return data;
+                                }
                             },
                             {
                                 "title": "Co2",
-                                "data": "battery.co2"
+                                "data": "battery.co2",
+                                render: function ( data, type, row ) {
+                                    if (data != 0) {
+                                        return data + ' kg';
+                                    }
+
+                                    return data;
+                                }
                             },
                             {
                                 "title": "Status",
-                                "data": "battery.status"
+                                "data": "battery.status",
+                                render: function ( data, type, row ) {
+                                    return data.charAt(0).toUpperCase() + data.slice(1);
+                                }
                             },
                         ]
                     });
