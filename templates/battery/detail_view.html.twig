@@ -50,6 +50,20 @@
         .w-10 {
             width: 10%;
         }
+        .mb-3 {
+            margin-bottom: 2rem;
+        }
+        .status-div span {
+            font-weight: bold !important;
+            font-size: larger;
+        }
+        .status-div small {
+            font-weight: bold !important;
+        }
+        .status-content {
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
 {% endblock %}
 
@@ -79,16 +93,6 @@
                     </div>
                     <div class="col-md-8">
                         {{ battery.manufacturer.name }}
-                    </div>
-                </div>
-                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
-                    <div class="col-md-4 p-0">
-                        <span class="heading">
-                            {{ "Status" | trans }}
-                        </span>
-                    </div>
-                    <div class="col-md-8">
-                        {{ battery.status | capitalize }}
                     </div>
                 </div>
                <div class="col-md-12 p-0 row-border-bottom p-tb-5">
@@ -178,7 +182,7 @@
                     </span>
                     </div>
                     <div class="col-md-8">
-                        {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                        {% if battery.acidVolume != 0 and battery.acidVolume is not null  %}
                             {{ battery.acidVolume ~ ' l' }}
                         {% else %}
                             {{ battery.acidVolume }}
@@ -193,7 +197,11 @@
                     </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.co2 }}
+                        {% if battery.co2 != 0 and battery.co2 is not null  %}
+                            {{ battery.co2 ~ ' kg' }}
+                        {% else %}
+                            {{ battery.co2 }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
@@ -238,7 +246,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col-md-12 p-0 p-tb-5">
+                <div class="col-md-12 p-0 row-border-bottom p-tb-5 mb-3">
                     <div class="col-md-4 p-0">
                         <span class="heading">
                             {{ "Weight" | trans }}
@@ -247,6 +255,26 @@
                     <div class="col-md-8">
                         {{ battery.mass ~ ' kg' }}
                     </div>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3 pti-0">
+                <div class="status-div p-0">
+                    <div class="heading status-content">
+                        <span>
+                            {{ "Status" | trans }}
+                        </span>
+                        <span class="float-right">
+                            {{ battery.status | capitalize | trans }}
+                        </span>
+                    </div>
+                    {% if detail is not null %}
+                        <div class="status-info">
+                            <small>
+                                <i class="fa fa-info-circle"></i>
+                                {{ detail }}
+                            </small>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
