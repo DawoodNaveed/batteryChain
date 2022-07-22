@@ -51,7 +51,11 @@
                         </ul>
                     </div>
                     <div class="col-sm-12 col-md-4">
-                        <h4>{{ 'Period'|trans }}{{ ":" }}</h4>
+                        <h4>{{ 'Period'|trans }}{{ ":" }}
+                            <small>
+                                <i class="fa fa-info-circle" title="{{ "Production Date" }}"></i>
+                            </small>
+                        </h4>
                         <div class="icon-addon addon-sm">
                             <input readonly type="text" class="form-control" id="period" name="period"
                                    value="{{ app.request.get('period') }}" placeholder="{{ "Select range"|trans }}"

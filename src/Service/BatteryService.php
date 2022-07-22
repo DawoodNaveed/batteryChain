@@ -518,7 +518,7 @@ class BatteryService
                 $dqlStatement .= "AND ";
             }
 
-            $dqlStatement .= "(b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
+            $dqlStatement .= "(b.productionDate BETWEEN '" . $startDate . "' AND '" . $endDate . "')";
 
             if (!empty($filename)) {
                 $filename .= $startDate . ' - ' . (new \DateTime($dates[1]))->format('Y-m-d');
