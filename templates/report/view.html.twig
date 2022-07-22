@@ -100,6 +100,10 @@
         .details--filters {
             display: none;
         }
+        #download-report:hover, #download-report-pdf:hover {
+            color: #55bc5e;
+            font-weight: bold;
+        }
         @media (max-width: 768px) {
             .icon-addon .fa {
                 top: 30px;
@@ -131,8 +135,22 @@
         <div class="report-content" style="display: none">
             <table id="report-response" class="display" style="width:100%"></table>
             <div class="report-btns">
-                <div class="div-align-right">
-                    <a class="mt-10 btn btn-green mr-5" style="display: none" id="download-report" target="_blank" href="{{ download }}"> {{ "Download" | trans }}</a>
+                <div class="div-align-right"  id="download-report-div">
+                    <div class="dropup mt-10">
+                        <button class="btn btn-outline-green dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ "Download" | trans }}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2">
+                            <li>
+                                <a id="download-report" target="_blank" href="{{ download }}"> {{ "CSV" | trans }}</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a id="download-report-pdf" target="_blank" href="{{ downloadAsPdf }}"> {{ "PDF" | trans }}</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,9 +189,9 @@
                 success: function(response) {
                     let newUrl = window.location.href.split('?',1).toString();
                     if (response.status == true) {
-                        $('#download-report').show();
+                        $('#download-report-div').show();
                     } else {
-                        $('#download-report').hide();
+                        $('#download-report-div').hide();
                     }
                     $('.report-content').show();
                     // $('.report-content').html(JSON.parse(response.data));
@@ -260,6 +278,8 @@
                     // history.pushState(null, '', newUrl + '?' + formData);
                     $href = $("#download-report").attr('href').split('?', 1).toString();
                     $("#download-report").attr("href", $href + '?' + formData);
+                    $href = $("#download-report-pdf").attr('href').split('?', 1).toString();
+                    $("#download-report-pdf").attr("href", $href + '?' + formData);
                 }
             });
         }
