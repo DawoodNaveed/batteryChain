@@ -10,6 +10,7 @@ use App\Form\AvailableRecyclerFormType;
 use App\Form\BulkUpdateRecyclerFormType;
 use App\Service\BatteryService;
 use App\Service\CountryService;
+use App\Service\CsvService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\UserService;
@@ -34,6 +35,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property UserService $userService
  * @property BatteryService batteryService
  * @property TranslatorInterface translator
+ * @property CsvService csvService
  */
 class RecyclerController extends CRUDController
 {
@@ -47,6 +49,7 @@ class RecyclerController extends CRUDController
      * @param UserService $userService
      * @param BatteryService $batteryService
      * @param TranslatorInterface $translator
+     * @param CsvService $csvService
      */
     public function __construct(
         CountryService $countryService,
@@ -56,7 +59,8 @@ class RecyclerController extends CRUDController
         ManufacturerService $manufacturerService,
         UserService $userService,
         BatteryService $batteryService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        CsvService $csvService
     ) {
         $this->countryService = $countryService;
         $this->recyclerService = $recyclerService;
@@ -66,6 +70,7 @@ class RecyclerController extends CRUDController
         $this->userService = $userService;
         $this->batteryService = $batteryService;
         $this->translator = $translator;
+        $this->csvService = $csvService;
     }
 
     /**
@@ -200,6 +205,26 @@ class RecyclerController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function downloadRecyclersAction(): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        if ($user->getManufacturer()) {
+            $filename = 'Recyclers' . ' | ' . $user->getManufacturer()->getName() . '.csv';
+            $recyclers = $this->recyclerService
+                ->recyclerRepository
+                ->getRecyclersByManufacturer($user->getManufacturer());
+            $this->csvService->downloadRecyclersCsv($recyclers, $filename);
+            exit();
+        }
+
+        return $this->redirectToList();
     }
 
 //Will remove it in future

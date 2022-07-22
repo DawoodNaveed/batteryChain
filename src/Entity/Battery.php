@@ -121,8 +121,8 @@ class Battery extends AbstractEntity
     private $deletedAt;
 
     /**
-     * @var string|null
-     * @ORM\Column(name="co2", type="string", nullable=true)
+     * @var double|null
+     * @ORM\Column(name="co2", type="float", nullable=true, options={"default"=0})
      */
     private $co2;
 
@@ -145,8 +145,8 @@ class Battery extends AbstractEntity
     private $moduleType;
 
     /**
-     * @var string|null
-     * @ORM\Column(name="acid_volume", type="string", nullable=true)
+     * @var double|null
+     * @ORM\Column(name="acid_volume", type="float", nullable=true, options={"default"=0})
      */
     private $acidVolume;
 
@@ -483,17 +483,17 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return float|null
      */
-    public function getCo2(): ?string
+    public function getCo2(): ?float
     {
         return $this->co2;
     }
 
     /**
-     * @param string|null $co2
+     * @param float|null $co2
      */
-    public function setCo2(?string $co2): void
+    public function setCo2(?float $co2): void
     {
         $this->co2 = $co2;
     }
@@ -547,17 +547,17 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return float|null
      */
-    public function getAcidVolume(): ?string
+    public function getAcidVolume(): ?float
     {
         return $this->acidVolume;
     }
 
     /**
-     * @param string|null $acidVolume
+     * @param float|null $acidVolume
      */
-    public function setAcidVolume(?string $acidVolume): void
+    public function setAcidVolume(?float $acidVolume): void
     {
         $this->acidVolume = $acidVolume;
     }
