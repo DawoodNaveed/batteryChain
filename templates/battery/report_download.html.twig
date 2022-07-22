@@ -20,6 +20,7 @@
             margin: 0;
             padding-top: 10px;
         }
+        header { position: fixed; top: -110px; left: 0px; right: 0px; }
         table, th, td {
             border: 1px solid black;
             border-collapse: collapse;
@@ -70,22 +71,25 @@
             margin-top: 24px;
             width: 100%;
         }
+        @page { margin-top: 140px; }
         .page_break { page-break-after: always; }
         .page_break:last-child { page-break-after: never; }
     </style>
 </head>
 <body>
-<div class="py-5 text-center">
-    <div style="display: inline-block">
-        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">
+<header>
+    <div class="py-5 text-center">
+        <div style="display: inline-block">
+            <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">
+        </div>
+        <div style="display: inline-block">
+            <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
+            <h1 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h1>
+        </div>
     </div>
-    <div style="display: inline-block">
-        <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
-        <h1 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h1>
-    </div>
-</div>
-<h1 class="title">{{ documentTitle }}</h1>
-<br>
+    <h1 class="title">{{ documentTitle }}</h1>
+    <br>
+</header>
 <footer>
     <hr>
     <div class="row-div">
