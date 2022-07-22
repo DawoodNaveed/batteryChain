@@ -53,7 +53,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="nominal_voltage", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $nominalVoltage;
@@ -62,7 +62,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="nominal_capacity", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $nominalCapacity;
@@ -71,7 +71,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="nominal_energy", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $nominalEnergy;
@@ -86,7 +86,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="height", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $height;
@@ -95,7 +95,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="width", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $width;
@@ -104,7 +104,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="length", type="float", options={"unsigned"=true}, nullable="true")
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $length;
@@ -113,7 +113,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="mass", type="float", options={"unsigned"=true}, nullable="true",)
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $mass;
@@ -146,7 +146,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="co2", type="float", nullable=true, options={"default"=0})
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $co2;
@@ -173,7 +173,7 @@ class Battery extends AbstractEntity
      * @var double|null
      * @ORM\Column(name="acid_volume", type="float", nullable=true, options={"default"=0})
      * @Assert\Type(
-     *     type="integer"
+     *     type="double"
      * )
      */
     private $acidVolume;

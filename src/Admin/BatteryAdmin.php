@@ -70,43 +70,44 @@ class BatteryAdmin extends AbstractAdmin
                 'widget' => 'single_text',
                 'required' => false
             ])
-            ->add('nominalVoltage', NumberType::class, [
+            ->add('nominalVoltage', null, [
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('nominalCapacity', NumberType::class, [
+            ->add('nominalCapacity', null, [
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('nominalEnergy', NumberType::class, [
+            ->add('nominalEnergy', null, [
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('acidVolume', NumberType::class, [
+            ->add('acidVolume', null, [
                 'required' => true,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('co2', NumberType::class, [
+            ->add('co2', null, [
                 'label' => 'CO2',
                 'required' => true,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('height', NumberType::class, [
+            ->add('height', null, [
                 'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('width', NumberType::class, [
+            ->add('width', null, [
                 'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('length', NumberType::class, [
+            ->add('length', null, [
                 'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
-            ->add('mass', NumberType::class, [
+            ->add('mass', null, [
+                'required' => true,
                 'label' => 'Weight',
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
