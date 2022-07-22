@@ -275,7 +275,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <span class="float-right">
-                                        {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                                        {% if battery.acidVolume != 0 and battery.acidVolume is not null  %}
                                             {{ battery.acidVolume ~ ' l' }}
                                         {% else %}
                                             {{ battery.acidVolume }}
@@ -292,7 +292,11 @@
                                 </div>
                                 <div class="col-md-8">
                                     <span class="float-right">
-                                        {{ battery.co2 }}
+                                        {% if battery.co2 != 0 and battery.co2 is not null  %}
+                                            {{ battery.co2 ~ ' kg' }}
+                                        {% else %}
+                                            {{ battery.co2 }}
+                                        {% endif %}
                                     </span>
                                 </div>
                             </div>
@@ -359,12 +363,6 @@
                         </div>
                     </div>
                     <div class="card-body ps-5 pe-5 pb-2 pti-0">
-                        {% set statusArray = {
-                            'registered': 'A manufactured battery was registered in the BatteryChain but not (yet) delivered or processed.',
-                            'delivered': 'A delivered battery is either in an intermediate station or at the end customer.',
-                            'returned': 'This battery has been registered for a pickup service or its on his way to a recycler.',
-                            'recycled': 'The life cycle of the battery ended with recycling or disposal.',
-                        } %}
                         <div class="status-div p-0">
                             <div class="status-content">
                                 <span>
@@ -374,12 +372,14 @@
                                     {{ battery.status | capitalize | trans }}
                                 </span>
                             </div>
-                            <div class="status-info">
-                                <small>
-                                    <i class="fa fa-info-circle"></i>
-                                    {{ statusArray[battery.status] | trans }}
-                                 </small>
-                            </div>
+                            {% if detail is not null %}
+                                <div class="status-info">
+                                    <small>
+                                        <i class="fa fa-info-circle"></i>
+                                        {{ detail }}
+                                    </small>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">

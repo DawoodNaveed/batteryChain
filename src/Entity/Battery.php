@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Battery
@@ -51,18 +52,27 @@ class Battery extends AbstractEntity
     /**
      * @var double|null
      * @ORM\Column(name="nominal_voltage", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $nominalVoltage;
 
     /**
      * @var double|null
      * @ORM\Column(name="nominal_capacity", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $nominalCapacity;
 
     /**
      * @var double|null
      * @ORM\Column(name="nominal_energy", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $nominalEnergy;
 
@@ -75,24 +85,36 @@ class Battery extends AbstractEntity
     /**
      * @var double|null
      * @ORM\Column(name="height", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $height;
 
     /**
      * @var double|null
      * @ORM\Column(name="width", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $width;
 
     /**
      * @var double|null
      * @ORM\Column(name="length", type="float", options={"unsigned"=true}, nullable="true")
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $length;
 
     /**
      * @var double|null
      * @ORM\Column(name="mass", type="float", options={"unsigned"=true}, nullable="true",)
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $mass;
 
@@ -123,6 +145,9 @@ class Battery extends AbstractEntity
     /**
      * @var double|null
      * @ORM\Column(name="co2", type="float", nullable=true, options={"default"=0})
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $co2;
 
@@ -147,6 +172,9 @@ class Battery extends AbstractEntity
     /**
      * @var double|null
      * @ORM\Column(name="acid_volume", type="float", nullable=true, options={"default"=0})
+     * @Assert\Type(
+     *     type="double"
+     * )
      */
     private $acidVolume;
 

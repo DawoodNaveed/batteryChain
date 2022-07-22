@@ -115,7 +115,7 @@
                     </span>
                     </div>
                     <div class="col-md-8">
-                        {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                        {% if battery.acidVolume != 0 and battery.acidVolume is not null  %}
                             {{ battery.acidVolume ~ ' l' }}
                         {% else %}
                             {{ battery.acidVolume }}
@@ -130,7 +130,11 @@
                     </span>
                     </div>
                     <div class="col-md-8">
-                        {{ battery.co2 }}
+                        {% if battery.co2 != 0 and battery.co2 is not null  %}
+                            {{ battery.co2 ~ ' kg' }}
+                        {% else %}
+                            {{ battery.co2 }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">

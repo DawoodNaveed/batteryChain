@@ -73,7 +73,10 @@ class BatteryController extends AbstractController
 
         return $this->render(
             'public_templates/detail_view.html.twig', [
-                'battery' => $battery
+                'battery' => $battery,
+                'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    : null
             ]
         );
     }
