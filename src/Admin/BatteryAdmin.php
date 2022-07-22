@@ -86,9 +86,6 @@ class BatteryAdmin extends AbstractAdmin
                 'label' => 'CO2',
                 'required' => false
             ])
-            ->add('cycleLife', NumberType::class, [
-                'required' => false
-            ])
             ->add('height', NumberType::class, [
                 'required' => false,
                 'disabled' => $disabled

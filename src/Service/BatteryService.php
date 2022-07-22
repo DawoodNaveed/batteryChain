@@ -131,7 +131,6 @@ class BatteryService
                 $nominalEnergy = (float) $row['nominal_energy'];
                 $acidVolume = (string) $row['acid_volume'] ?? null;
                 $co2 = ((string) $row['CO2']) ?? null;
-                $cycleLife = (float) $row['cycle_life'] ?? null;
                 $height = ((float) $row['height']) ?? null;
                 $width = ((float) $row['width']) ?? null;
                 $length = ((float) $row['length']) ?? null;
@@ -142,7 +141,7 @@ class BatteryService
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
-                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $cycleLife
+                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
 
