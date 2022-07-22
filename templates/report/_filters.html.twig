@@ -158,6 +158,94 @@
                             </label>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Width'|trans }}{{ ":" }}</h4>
+                            {% set minValue = 10 %}
+                            {% set maxValue = 500 %}
+                            {% if app.request.get('width_range') %}
+                                {% set widthRange = app.request.get('width_range')|split(',') %}
+                                {% set minValue = widthRange[0] %}
+                                {% set maxValue = widthRange[1] %}
+                            {% endif %}
+                            <label for="widthRange" style="width: 100%;">
+                                <input id="widthRange" type="text" name="width_range" value=""
+                                       data-slider-min="10" data-slider-max="500" data-slider-step="10"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       class="form-control"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Height'|trans }}{{ ":" }}</h4>
+                            {% set minValue = 10 %}
+                            {% set maxValue = 500 %}
+                            {% if app.request.get('height_range') %}
+                                {% set heightRange = app.request.get('height_range')|split(',') %}
+                                {% set minValue = heightRange[0] %}
+                                {% set maxValue = heightRange[1] %}
+                            {% endif %}
+                            <label for="heightRange" style="width: 100%;">
+                                <input id="heightRange" type="text" name="height_range" value=""
+                                       data-slider-min="10" data-slider-max="500" data-slider-step="10"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Length' | trans }}{{ ":" }}</h4>
+                            {% set minValue = 10 %}
+                            {% set maxValue = 500 %}
+                            {% if app.request.get('length_range') %}
+                                {% set lengthRange = app.request.get('length_range')|split(',') %}
+                                {% set minValue = lengthRange[0] %}
+                                {% set maxValue = lengthRange[1] %}
+                            {% endif %}
+                            <label for="lengthRange" style="width: 100%;">
+                                <input id="lengthRange"
+                                       type="text" name="length_range" value=""
+                                       data-slider-min="10" data-slider-max="500" data-slider-step="10"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ "CO" | trans }}<sub>{{ "2" }}</sub>
+                                {{ "Footprint" | trans }}{{ ":" }}</h4>
+                            {% set minValue = 0 %}
+                            {% set maxValue = 500 %}
+                            {% if app.request.get('co2_range') %}
+                                {% set cO2Range = app.request.get('co2_range')|split(',') %}
+                                {% set minValue = cO2Range[0] %}
+                                {% set maxValue = cO2Range[1] %}
+                            {% endif %}
+                            <label for="cO2Range" style="width: 100%;">
+                                <input id="cO2Range" type="text" name="co2_range" value=""
+                                       data-slider-min="0" data-slider-max="500" data-slider-step="50"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       class="form-control"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                        <div class="col-sm-12 col-md-4">
+                            <h4>{{ 'Acid Volume'|trans }}{{ ":" }}</h4>
+                            {% set minValue = 0 %}
+                            {% set maxValue = 500 %}
+                            {% if app.request.get('acid_volume_range') %}
+                                {% set acidVolumeRange = app.request.get('acid_volume_range')|split(',') %}
+                                {% set minValue = acidVolumeRange[0] %}
+                                {% set maxValue = acidVolumeRange[1] %}
+                            {% endif %}
+                            <label for="acidVolumeRange" style="width: 100%;">
+                                <input id="acidVolumeRange" type="text" name="acid_volume_range" value=""
+                                       data-slider-min="0" data-slider-max="500" data-slider-step="50"
+                                       data-slider-value="[{{ minValue }}, {{ maxValue }}]"
+                                       style="width: 100%;"/>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div> {#filters__first#}
