@@ -169,7 +169,7 @@
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Acid Volume" | trans }}</span>
             <span class="heading-title-hash">
-                {% if battery.acidVolume != '' and battery.acidVolume is not null  %}
+                {% if battery.acidVolume != 0 and battery.acidVolume is not null  %}
                     {{ battery.acidVolume ~ ' l' }}
                 {% else %}
                     {{ battery.acidVolume }}
@@ -182,7 +182,11 @@
                 {{ " - Footprint" }}
             </span>
             <span class="heading-title-hash">
-                {{ battery.co2 }}
+                {% if battery.co2 != 0 and battery.co2 is not null  %}
+                    {{ battery.co2 ~ ' kg' }}
+                {% else %}
+                    {{ battery.co2 }}
+                {% endif %}
             </span>
         </div>
         <div class="row-border-bottom row-div">

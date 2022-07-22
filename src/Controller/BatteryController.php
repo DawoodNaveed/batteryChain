@@ -212,7 +212,10 @@ class BatteryController extends CRUDController
                     'path' => $this->admin->generateUrl('detail'),
                     'downloadPath' => $this->admin->generateUrl('download', [
                         'serialNumber' => $battery->getSerialNumber()
-                    ])
+                    ]),
+                    'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                        ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                        : null
                 ]
             );
         }
