@@ -119,6 +119,7 @@ class RecyclerAdmin extends AbstractAdmin
         $collection->add('attach');
         $collection->add('getRecycler');
         $collection->add('bulkUpdate');
+        $collection->add('downloadRecyclers');
     }
 
     protected function configureBatchActions(array $actions): array

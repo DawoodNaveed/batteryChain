@@ -331,6 +331,36 @@
                     return value + ' KWh';
                 }
             });
+            $("#widthRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' cm';
+                }
+            });
+            $("#heightRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' cm';
+                }
+            });
+            $("#lengthRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' cm';
+                }
+            });
+            $("#cO2Range").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' kg';
+                }
+            });
+            $("#acidVolumeRange").bootstrapSlider({
+                'tooltip_split': 'true',
+                'formatter': function (value) {
+                    return value + ' l';
+                }
+            });
             $('#review-filter-btn').click(function () {
                 if ($('.details--filters').css('display') == 'none') {
                     $('.details--filters').css({'display': 'block'});
