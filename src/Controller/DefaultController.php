@@ -143,6 +143,11 @@ class DefaultController extends AbstractController
      */
     public function scanQrAction(): Response
     {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
         return $this->render(
             'public_templates/scan1.html.twig'
         );
@@ -155,9 +160,13 @@ class DefaultController extends AbstractController
      */
     public function scanQrExtraAction(): Response
     {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
         return $this->render(
             'public_templates/scan.html.twig'
         );
-
     }
 }

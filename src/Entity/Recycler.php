@@ -64,6 +64,12 @@ class Recycler extends AbstractEntity
     protected $status = true;
 
     /**
+     * @var boolean
+     * @ORM\Column(name="is_fallback", type="boolean", options={"default"=false})
+     */
+    protected $isFallback = false;
+
+    /**
      * Many Recyclers have Many Manufacturers.
      * @ManyToMany(targetEntity="App\Entity\Manufacturer", mappedBy="recyclers")
      */
@@ -167,6 +173,22 @@ class Recycler extends AbstractEntity
     public function setStatus(bool $status): void
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFallback(): bool
+    {
+        return $this->isFallback;
+    }
+
+    /**
+     * @param bool $isFallback
+     */
+    public function setIsFallback(bool $isFallback): void
+    {
+        $this->isFallback = $isFallback;
     }
 
     /**

@@ -10,18 +10,22 @@ use App\Service\CountryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\TransactionLogService;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class BatteryController
  * @package App\Controller\PublicController
+ * @property UserService userService
+ * @property UrlGeneratorInterface urlGenerator
  * @property Security security
  * @property EntityManagerInterface entityManager
  * @property ManufacturerService manufacturerService
@@ -35,6 +39,8 @@ class BatteryController extends AbstractController
 {
     /**
      * BatteryController constructor.
+     * @param UserService $userService
+     * @param UrlGeneratorInterface $urlGenerator
      * @param EntityManagerInterface $entityManager
      * @param BatteryService $batteryService
      * @param RecyclerService $recyclerService
@@ -42,12 +48,16 @@ class BatteryController extends AbstractController
      * @param TransactionLogService $transactionLogService
      */
     public function __construct(
+        UserService $userService,
+        UrlGeneratorInterface $urlGenerator,
         EntityManagerInterface $entityManager,
         BatteryService $batteryService,
         RecyclerService $recyclerService,
         TranslatorInterface $translator,
         TransactionLogService $transactionLogService
     ) {
+        $this->userService = $userService;
+        $this->urlGenerator = $urlGenerator;
         $this->entityManager = $entityManager;
         $this->batteryService = $batteryService;
         $this->recyclerService = $recyclerService;
@@ -62,9 +72,45 @@ class BatteryController extends AbstractController
      */
     public function getBatteryDetails(Request $request): Response
     {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
         /** @var Battery|null $battery */
         $battery = $this->batteryService
             ->fetchBatteryBySerialNumber($request->get('search'));
+
+        if (empty($battery)) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse('/');
+        }
+
+        return $this->render(
+            'public_templates/detail_view.html.twig', [
+                'battery' => $battery,
+                'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    : null
+            ]
+        );
+    }
+
+    /**
+     * @Route(path="battery/detail/{id}", name="battery_detail_id")
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
+    public function getBatteryDetailsById(Request $request, $id): Response
+    {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService->fetchBatteryBySerialNumber($id);
 
         if (empty($battery)) {
             $this->addFlash('danger', 'Kindly provide valid url query!');
@@ -89,6 +135,11 @@ class BatteryController extends AbstractController
      */
     public function reportBatteryReturnAction(Request $request, $slug): Response
     {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
         /** @var Battery|null $battery */
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
 

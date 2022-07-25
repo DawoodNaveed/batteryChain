@@ -696,7 +696,7 @@ class BatteryController extends CRUDController
         if ($object->getStatus() !== CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
             $this->addFlash(
                 'sonata_flash_info',
-                $this->translator->trans('You can edit only some information for a battery which is already registered!')
+                $this->translator->trans('You cannot edit any information for a battery which is already registered!')
             );
         }
 

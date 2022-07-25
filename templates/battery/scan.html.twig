@@ -32,6 +32,15 @@
             -webkit-transform:rotateY(180deg); /* Safari and Chrome */
             -moz-transform:rotateY(180deg); /* Firefox */
         }
+        .detected {
+            margin-right: 0.3rem;
+            border-radius: 15px;
+            color: #212529;
+            background-color: #fff;
+            border-color: #55bc5e;
+            outline: 0;
+            box-shadow: 0 0 0 .25rem #d4edda;
+        }
         @media (max-width: 900px) {
             video#preview {
                 width: 100% !important;
@@ -59,10 +68,10 @@
                 <hr>
                 <div class="mb-3 text-center">
 
-                    <form class="card p-2" action="{{ path }}">
+                    <form class="card p-2" action="{{ path }}" autocomplete="off">
                         <div class="row">
                             <div class="col-md-10" style="padding-right: 0">
-                                <input style="border-radius: 2px" type="text" name="search" id="search" class="form-control" placeholder="Go to detail page">
+                                <input style="border-radius: 2px" type="text" name="search" id="search" class="form-control" placeholder="{{ "Detected ID" | trans }}">
                             </div>
                             <div class="col-md-2" style="padding-left: 0">
                                 <button type="submit" id="btn-search" class="btn btn-green btn-block">{{ "Search" | trans }}</button>
@@ -114,6 +123,7 @@
                             $('#btn-search').prop('disabled', false);
                             console.log(result.getText())
                             $('#search').val(result.text);
+                            $('#search').addClass('detected');
                         }
                         if (err && !(err instanceof ZXing.NotFoundException)) {
                             console.error(err)

@@ -12,18 +12,22 @@ use App\Service\CountryService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\TransactionLogService;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class ReturnController
  * @package App\Controller\PublicController
+ * @property UserService userService
+ * @property UrlGeneratorInterface urlGenerator
  * @property Security security
  * @property EntityManagerInterface entityManager
  * @property ManufacturerService manufacturerService
@@ -38,6 +42,8 @@ class ReturnController extends AbstractController
 {
     /**
      * RecyclerController constructor.
+     * @param UserService $userService
+     * @param UrlGeneratorInterface $urlGenerator
      * @param Security $security
      * @param EntityManagerInterface $entityManager
      * @param ManufacturerService $manufacturerService
@@ -49,6 +55,8 @@ class ReturnController extends AbstractController
      * @param TransactionLogService $transactionLogService
      */
     public function __construct(
+        UserService $userService,
+        UrlGeneratorInterface $urlGenerator,
         Security $security,
         EntityManagerInterface $entityManager,
         ManufacturerService $manufacturerService,
@@ -59,6 +67,8 @@ class ReturnController extends AbstractController
         BatteryReturnService $returnService,
         TransactionLogService $transactionLogService
     ) {
+        $this->userService = $userService;
+        $this->urlGenerator = $urlGenerator;
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->manufacturerService = $manufacturerService;
@@ -79,6 +89,11 @@ class ReturnController extends AbstractController
      */
     public function returnAction(Request $request, $slug): Response
     {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
         /** @var Battery|null $battery */
         $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
 

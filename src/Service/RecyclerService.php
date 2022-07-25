@@ -252,7 +252,7 @@ class RecyclerService
     public function fetchFallbackRecyclersByCountry(Country $country)
     {
         try {
-            return $this->recyclerRepository->fetchFallbackRecyclers($country);
+            return $this->recyclerRepository->fetchFallbackRecyclersByCountry($country);
         } catch (\Exception $exception) {
             $this->logger->error('[Fetch Fallback Recycler] ' . $exception->getMessage());
         }
