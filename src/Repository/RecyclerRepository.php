@@ -161,7 +161,7 @@ class RecyclerRepository extends ServiceEntityRepository
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    public function fetchFallbackRecyclers(Country $country): array
+    public function fetchFallbackRecyclersByCountry(Country $country): array
     {
         $query = 'SELECT r.* from recycler r left outer join manufacturers_recyclers ' .
             'ON (r.id = manufacturers_recyclers.recycler_id) ' .
@@ -170,5 +170,21 @@ class RecyclerRepository extends ServiceEntityRepository
         $stmt->executeQuery();
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     */
+    public function fetchFallbackRecyclers()
+    {
+        $query = 'SELECT r.name, r.address, r.contact, r.email, r.city, c.name as country_name from recycler r left outer join manufacturers_recyclers ' .
+            'ON (r.id = manufacturers_recyclers.recycler_id) join country c ON r.country_id = c.id ' .
+            'WHERE manufacturers_recyclers.manufacturer_id is null and r.deleted_at is null';
+        $stmt = $this->getEntityManager()->getConnection()->prepare($query);
+        $stmt->executeQuery();
+
+        return $stmt->executeQuery()->fetchAllAssociative();
     }
 }

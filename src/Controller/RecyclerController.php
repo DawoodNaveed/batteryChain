@@ -208,18 +208,34 @@ class RecyclerController extends CRUDController
     }
 
     /**
+     * @param Request $request
      * @return RedirectResponse
      */
-    public function downloadRecyclersAction(): RedirectResponse
+    public function downloadRecyclersAction(Request $request): RedirectResponse
     {
         /** @var User $user */
         $user = $this->security->getUser();
 
         if ($user->getManufacturer()) {
-            $filename = 'Recyclers' . ' | ' . $user->getManufacturer()->getName() . '.csv';
+            $filename = 'Recyclers|' . $user->getManufacturer()->getName() . '.csv';
             $recyclers = $this->recyclerService
                 ->recyclerRepository
                 ->getRecyclersByManufacturer($user->getManufacturer());
+            $this->csvService->downloadRecyclersCsv($recyclers, $filename);
+            exit();
+        } else {
+            if ($request->get('fallback') === '1') {
+                $filename = 'Recyclers' . '|FallBack.csv';
+                $recyclers = $this->recyclerService
+                    ->recyclerRepository
+                    ->fetchFallbackRecyclers();
+                $this->csvService->downloadFallbackRecyclersCsv($recyclers, $filename);
+                exit();
+            }
+            $filename = 'Recyclers' . '|All.csv';
+            $recyclers = $this->recyclerService
+                ->recyclerRepository
+                ->findAll();
             $this->csvService->downloadRecyclersCsv($recyclers, $filename);
             exit();
         }
