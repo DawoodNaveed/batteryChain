@@ -13,6 +13,27 @@
                  </li>
              </ul>
          {% endif %}
+         {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') %}
+             <ul class="nav navbar-nav navbar-left">
+                 <li class="dropdown sonata-actions">
+                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'Download Pickup Partners'|trans({}, 'SonataAdminBundle') }} <b class="caret"></b></a>
+                     <ul class="dropdown-menu text-left" role="menu">
+                         <li class="dropdown sonata-actions" style="float: left !important; padding: 0 7px">
+                             <a class="btn btn-link btn-flat left" style="padding-left: 0" target="_blank" href="{{ admin.generateUrl('downloadRecyclers', {'fallback': false})}}">
+                                 <i class="fa fa-file-download" aria-hidden="true"></i>
+                                 {{ "Download All" | trans }}
+                             </a>
+                         </li>
+                         <li class="dropdown sonata-actions" style="float: left !important; padding: 0 7px">
+                             <a class="btn btn-link btn-flat" style="padding-left: 0" target="_blank" href="{{ admin.generateUrl('downloadRecyclers', {'fallback': true})}}">
+                                 <i class="fa fa-file-download" aria-hidden="true"></i>
+                                 {{ "Download Fallback" | trans }}
+                             </a>
+                         </li>
+                     </ul>
+                 </li>
+             </ul>
+         {% endif %}
          <ul class="nav navbar-nav navbar-left">
              <li class="dropdown sonata-actions">
                  <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('bulkUpdate')}}">

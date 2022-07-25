@@ -67,4 +67,30 @@ class CsvService
             fputcsv($f, $data, $delimiter);
         }
     }
+
+    /**
+     * @param array $recyclers
+     * @param string $filename
+     * @param string $delimiter
+     */
+    public function downloadFallbackRecyclersCsv(array $recyclers, string $filename = "export.csv", string $delimiter = ",")
+    {
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        $f = fopen('php://output', 'w');
+        $header = ['Name', 'Email', 'Address', 'City', 'Country', 'Contact'];
+        fputcsv($f, $header);
+        /** @var Recycler $recycler */
+        foreach ($recyclers as $recycler) {
+            $data = [
+                $recycler['name'],
+                $recycler['email'],
+                $recycler['address'],
+                $recycler['city'],
+                $recycler['country_name'],
+                (string) $recycler['contact'],
+            ];
+            fputcsv($f, $data, $delimiter);
+        }
+    }
 }
