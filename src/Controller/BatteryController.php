@@ -308,6 +308,7 @@ class BatteryController extends CRUDController
         return $this->render(
             'report/view.html.twig', [
                 'download' => $this->admin->generateUrl('downloadReport'),
+                'downloadAsPdf' => $this->admin->generateUrl('downloadReportAsPdf'),
                 'manufacturers' => $this->manufacturerService->manufacturerRepository->findAll(),
                 'types' => $this->batteryTypeService->batteryTypeRepository->findAll()
             ]
@@ -377,6 +378,41 @@ class BatteryController extends CRUDController
         $data = null;
         $batteries = $this->batteryService->getBatteriesByFilters($filters, $filename, $manufacturer);
         $this->csvService->arrayToCSVDownload($batteries, $filename . '.csv');
+        exit();
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function downloadReportAsPdfAction(Request $request): Response
+    {
+        $filters = $request->query->all();
+
+        if (empty($filters)) {
+            return new RedirectResponse($this->admin->generateUrl('report'));
+        }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $manufacturer = null;
+        $filename = 'Battery Report' . ' | ';
+
+        // In-Case of Manufacturer
+        if ((!in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $this->getUser()->getRoles(), true)
+        ) {
+            $filename .= $user->getManufacturer()->getName() . ' | ';
+            $manufacturer = $user->getManufacturer();
+        } else {
+            $filename .= $filters['manufacturer'] . ' | ';
+        }
+
+        $filename .= ucwords($filters['mode']) . ' Batteries' . ' | ';
+        $batteries = $this->batteryService->getBatteriesByFilters($filters, $filename, $manufacturer);
+        $this->pdfService->createBatteriesReportPdf($batteries, $filename);
         exit();
     }
 
