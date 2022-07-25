@@ -8,8 +8,8 @@
     "require": {
         "php": ">=7.2.5",
         "ext-ctype": "*",
-        "ext-iconv": "*",
         "ext-curl": "*",
+        "ext-iconv": "*",
         "ext-json": "*",
         "ext-pdo": "*",
         "doctrine/common": "^3.3",
@@ -30,6 +30,7 @@
         "symfony/form": "5.4.*",
         "symfony/framework-bundle": "5.4.*",
         "symfony/mailer": "5.4.*",
+        "symfony/maker-bundle": "^1.43",
         "symfony/monolog-bundle": "^3.8",
         "symfony/proxy-manager-bridge": "5.4.*",
         "symfony/runtime": "5.4.*",
@@ -45,7 +46,6 @@
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.43",
         "symfony/stopwatch": "5.4.*"
     },
     "config": {
