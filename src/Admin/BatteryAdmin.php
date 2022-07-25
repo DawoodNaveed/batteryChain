@@ -266,6 +266,7 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('download');
         $collection->add('report');
         $collection->add('downloadReport');
+        $collection->add('downloadReportAsPdf');
         $collection->add('getReport');
         $collection->add('scanQr');
         $collection->add('getScanResult');

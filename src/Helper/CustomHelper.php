@@ -102,6 +102,8 @@ class CustomHelper
     public const TRANSACTION_HASH = 'transaction_hash';
     public const DATA = 'data';
 
+    public const LOGO_URL = 'https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png';
+
     /**
      * @param array $filters
      * @return array

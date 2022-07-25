@@ -72,4 +72,33 @@ class PdfService
     {
         return self::PREFIX_BASE64 . base64_encode(file_get_contents($reference));
     }
+
+    /**
+     * @param $batteries
+     * @param string $filename
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function createBatteriesReportPdf($batteries, string $filename)
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('isRemoteEnabled', true);
+        $poweredByLogo = $this->getEncodedImage(CustomHelper::LOGO_URL);
+        /* get barcode images base64 encoding */
+        $domPdf = new Dompdf($pdfOptions);
+        $html = $this->twig->render('battery/report_download.html.twig', [
+            'batteries' => $batteries,
+            'documentTitle' => $filename,
+            'createdDate' => date('d.m.Y'),
+            'poweredByLogo' => $poweredByLogo
+        ]);
+
+        $domPdf->loadHtml($html);
+        $domPdf->setPaper('A4', 'landscape');
+        $domPdf->render();
+        $domPdf->stream($filename, [
+            "Attachment" => true
+        ]);
+    }
 }
