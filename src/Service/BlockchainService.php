@@ -137,12 +137,20 @@ class BlockchainService
                 'meta_data' => [
                     'type_id' => $battery->getBatteryType()->getId(),
                     'kwh' => $battery->getNominalEnergy(),
+                    'voltage' => $battery->getNominalVoltage(),
+                    'capacity' => $battery->getNominalCapacity(),
                     'weight' => $battery->getMass(),
                     'height' => $battery->getHeight(),
                     'length' => $battery->getLength(),
                     'width' => $battery->getWidth(),
                     'manufacturer_name' => $battery->getManufacturer()->getName(),
                     'state' => $log->getTransactionType(),
+                    'cell_type' => $battery->getCellType(),
+                    'module_type' => $battery->getModuleType(),
+                    'co2' => $battery->getCo2(),
+                    'acid_volume' => $battery->getAcidVolume(),
+                    'production_date' => $battery->getProductionDate()->format('Y-m-d H:i:s'),
+                    'tray_number' => $battery->getTrayNumber()
                 ],
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];

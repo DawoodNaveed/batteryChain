@@ -60,15 +60,20 @@ class BatteryAdmin extends AbstractAdmin
                 'disabled' => $disabled
             ])
             ->add('cellType', TextType::class, [
-                'required' => false
+                'required' => false,
+                'disabled' => $disabled
             ])
             ->add('moduleType', TextType::class, [
-                'required' => false
+                'required' => false,
+                'disabled' => $disabled
             ])
-            ->add('trayNumber', TextType::class)
+            ->add('trayNumber', TextType::class, [
+                'disabled' => $disabled
+            ])
             ->add('productionDate', DateTimeType::class, [
                 'widget' => 'single_text',
-                'required' => false
+                'required' => false,
+                'disabled' => $disabled
             ])
             ->add('nominalVoltage', null, [
                 'disabled' => $disabled,
@@ -84,12 +89,14 @@ class BatteryAdmin extends AbstractAdmin
             ])
             ->add('acidVolume', null, [
                 'required' => true,
-                'invalid_message' => "This value '{{ value }}' should be of type number."
+                'invalid_message' => "This value '{{ value }}' should be of type number.",
+                'disabled' => $disabled
             ])
             ->add('co2', null, [
                 'label' => 'CO2',
                 'required' => true,
-                'invalid_message' => "This value '{{ value }}' should be of type number."
+                'invalid_message' => "This value '{{ value }}' should be of type number.",
+                'disabled' => $disabled
             ])
             ->add('height', null, [
                 'required' => true,
