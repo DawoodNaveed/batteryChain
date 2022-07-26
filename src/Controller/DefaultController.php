@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Battery;
 use App\Form\BatteryDetailFormType;
 use App\Service\BatteryService;
+use App\Service\EncryptionService;
 use App\Service\PdfService;
 use App\Service\ReCaptchaService;
 use App\Service\UserService;
@@ -28,6 +29,7 @@ use Twig\Error\SyntaxError;
  * @property ReCaptchaService reCaptchaService
  * @property Environment twig
  * @property PdfService pdfService
+ * @property EncryptionService encryptionService
  */
 class DefaultController extends AbstractController
 {
@@ -39,6 +41,7 @@ class DefaultController extends AbstractController
      * @param ReCaptchaService $reCaptchaService
      * @param Environment $twig
      * @param PdfService $pdfService
+     * @param EncryptionService $encryptionService
      */
     public function __construct(
         UserService $userService,
@@ -46,7 +49,8 @@ class DefaultController extends AbstractController
         BatteryService $batteryService,
         ReCaptchaService $reCaptchaService,
         Environment $twig,
-        PdfService $pdfService
+        PdfService $pdfService,
+        EncryptionService $encryptionService
     ) {
         $this->userService = $userService;
         $this->urlGenerator = $urlGenerator;
@@ -54,6 +58,7 @@ class DefaultController extends AbstractController
         $this->reCaptchaService = $reCaptchaService;
         $this->twig = $twig;
         $this->pdfService = $pdfService;
+        $this->encryptionService = $encryptionService;
     }
     /**
      * @param Request $request
@@ -84,17 +89,8 @@ class DefaultController extends AbstractController
                 return new RedirectResponse('/');
             }
 
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService
-                ->fetchBatteryBySerialNumber($serialNumber);
-
-            if (empty($battery)) {
-                $this->addFlash('danger', 'Battery does not exist!');
-                return new RedirectResponse('/');
-            }
-
             return new RedirectResponse($this->generateUrl('battery_detail', [
-                'search' => $battery->getSerialNumber()
+                'search' => $this->encryptionService->encryptString($serialNumber)
             ]));
         }
 
@@ -118,11 +114,19 @@ class DefaultController extends AbstractController
      */
     public function downloadAction(Request $request, $slug): RedirectResponse
     {
-        $serialNumber = $slug;
-
-        if (empty($serialNumber)) {
+        if (empty($slug)) {
             $this->addFlash('danger', 'Kindly Insert Valid Battery Serial Number!');
             return new RedirectResponse('/');
+        }
+
+        $serialNumber = $this->encryptionService
+            ->validateAndFetchSerialNumber(
+                $this->encryptionService->decryptString($slug)
+            );
+
+        if ($serialNumber === false) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse($this->generateUrl('homepage'));
         }
 
         /** @var Battery|null $battery */

@@ -74,10 +74,10 @@
                         </small>
                     </div>
                     <div class="mb-3 text-center">
-                        <form class="card p-2" action="{{ path('battery_detail') }}" autocomplete="off">
+                        <form class="card p-2" action="{{ path('battery_qr_result') }}" method="post" autocomplete="off">
                             <div class="input-group">
                                 <pre><code id="result"></code></pre>
-                                <input type="text" name="search" id="search" class="form-control" placeholder="{{ "Detected ID" | trans }}">
+                                <input type="text" name="search" id="search" readonly class="form-control" placeholder="{{ "Detected ID" | trans }}">
                                 <div class="input-group-append">
                                     <button type="submit" id="btn-search" class="btn btn-secondary" style="background-color: #55bc5e; border-color: #55bc5e">{{ "Search" | trans }}</button>
                                     <a type="button" id="btn-go-to" class="btn btn-secondary" style="background-color: #55bc5e; border-color: #55bc5e; display: none">{{ "Go To" | trans }}</a>
