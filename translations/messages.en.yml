@@ -78,3 +78,8 @@ Cancel: "Cancel"
 Please contact the institution list below regarding the disposal or recycling of your battery: "Please contact the institution list below regarding the disposal or recycling of your battery"
 Address: "Address"
 Phone Number: "Phone Number"
+
+#Backend Admin Panel
+#Battery Admin
+flash_create_error_exist: "Manufacturer already has battery with similar serial number '%name%'."
+flash_create_info_exist: "Some Manufacturer already has battery with similar serial number '%exist%'. So, serial number would be '%name%'"

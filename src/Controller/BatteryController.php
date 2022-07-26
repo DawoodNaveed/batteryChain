@@ -742,4 +742,161 @@ class BatteryController extends CRUDController
 
         return $this->redirectToList();
     }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws ModelManagerThrowable
+     * @throws \ReflectionException
+     */
+    public function createAction(Request $request): Response
+    {
+        $this->assertObjectExists($request);
+
+        $this->admin->checkAccess('create');
+
+        // the key used to lookup the template
+        $templateKey = 'edit';
+
+        $class = new \ReflectionClass($this->admin->hasActiveSubClass() ? $this->admin->getActiveSubClass() : $this->admin->getClass());
+
+        if ($class->isAbstract()) {
+            return $this->renderWithExtraParams(
+                '@SonataAdmin/CRUD/select_subclass.html.twig',
+                [
+                    'action' => 'create',
+                ]
+            );
+        }
+
+        $newObject = $this->admin->getNewInstance();
+
+        $preResponse = $this->preCreate($request, $newObject);
+        if (null !== $preResponse) {
+            return $preResponse;
+        }
+
+        $this->admin->setSubject($newObject);
+
+        $form = $this->admin->getForm();
+
+        $form->setData($newObject);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $isFormValid = $form->isValid();
+
+            // persist if the form was valid and if in preview mode the preview was approved
+            if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
+                /** @phpstan-var T $submittedObject */
+                $submittedObject = $form->getData();
+                $this->admin->setSubject($submittedObject);
+                $this->admin->checkAccess('create', $submittedObject);
+                try {
+                    /** @var User $user */
+                    $user = $this->getUser();
+                    $manufacturer = $submittedObject->getManufacturer() ?? $user->getManufacturer();
+                    // If same manufacturer has battery with similar serial number
+                    $battery = $this->batteryService->batteryRepository->findOneBy([
+                        'serialNumber' => $submittedObject->getSerialNumber(),
+                        'manufacturer' => $manufacturer
+                    ]);
+
+                    if (!empty($battery)) {
+                        $this->addFlash(
+                            'sonata_flash_error',
+                            $this->trans(
+                                'flash_create_error_exist',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                                'messages'
+                            )
+                        );
+                    } else {
+                        // If any other manufacturer has battery with similar serial number
+                        $battery = $this->batteryService->batteryRepository->findOneBy([
+                            'serialNumber' => $submittedObject->getSerialNumber()
+                        ]);
+
+                        if (!empty($battery)) {
+                            $submittedObject->setSerialNumber(
+                                $submittedObject->getSerialNumber() . '-' . time()
+                            );
+                            $this->addFlash(
+                                'sonata_flash_info',
+                                $this->trans(
+                                    'flash_create_info_exist',
+                                    [
+                                        '%exist%' => $battery->getSerialNumber(),
+                                        '%name%' => $this->escapeHtml($this->admin->toString($newObject))
+                                    ],
+                                    'messages'
+                                )
+                            );
+                        }
+
+                        $newObject = $this->admin->create($submittedObject);
+
+                        if ($this->isXmlHttpRequest($request)) {
+                            return $this->handleXmlHttpRequestSuccessResponse($request, $newObject);
+                        }
+
+                        $this->addFlash(
+                            'sonata_flash_success',
+                            $this->trans(
+                                'flash_create_success',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                                'SonataAdminBundle'
+                            )
+                        );
+
+                        // redirect to edit mode
+                        return $this->redirectTo($request, $newObject);
+                    }
+                } catch (ModelManagerException $e) {
+                    // NEXT_MAJOR: Remove this catch.
+                    $this->handleModelManagerException($e);
+
+                    $isFormValid = false;
+                } catch (ModelManagerThrowable $e) {
+                    $errorMessage = $this->handleModelManagerThrowable($e);
+
+                    $isFormValid = false;
+                }
+
+            }
+
+            // show an error message if the form failed validation
+            if (!$isFormValid) {
+                if ($this->isXmlHttpRequest($request) && null !== ($response = $this->handleXmlHttpRequestErrorResponse($request, $form))) {
+                    return $response;
+                }
+
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $errorMessage ?? $this->trans(
+                        'flash_create_error',
+                        ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                        'SonataAdminBundle'
+                    )
+                );
+            } elseif ($this->isPreviewRequested($request)) {
+                // pick the preview template if the form was valid and preview was requested
+                $templateKey = 'preview';
+                $this->admin->getShow();
+            }
+        }
+
+        $formView = $form->createView();
+        // set the theme for the current Admin Form
+        $this->setFormTheme($formView, $this->admin->getFormTheme());
+
+        $template = $this->admin->getTemplateRegistry()->getTemplate($templateKey);
+
+        return $this->renderWithExtraParams($template, [
+            'action' => 'create',
+            'form' => $formView,
+            'object' => $newObject,
+            'objectId' => null,
+        ]);
+    }
 }
