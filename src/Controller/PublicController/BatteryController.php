@@ -7,11 +7,14 @@ use App\Form\ReportBatteryReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\CountryService;
+use App\Service\EncryptionService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\TransactionLogService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +37,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property TranslatorInterface translator
  * @property CountryService countryService
  * @property TransactionLogService transactionLogService
+ * @property EncryptionService encryptionService
  */
 class BatteryController extends AbstractController
 {
@@ -46,6 +50,7 @@ class BatteryController extends AbstractController
      * @param RecyclerService $recyclerService
      * @param TranslatorInterface $translator
      * @param TransactionLogService $transactionLogService
+     * @param EncryptionService $encryptionService
      */
     public function __construct(
         UserService $userService,
@@ -54,7 +59,8 @@ class BatteryController extends AbstractController
         BatteryService $batteryService,
         RecyclerService $recyclerService,
         TranslatorInterface $translator,
-        TransactionLogService $transactionLogService
+        TransactionLogService $transactionLogService,
+        EncryptionService $encryptionService
     ) {
         $this->userService = $userService;
         $this->urlGenerator = $urlGenerator;
@@ -63,6 +69,7 @@ class BatteryController extends AbstractController
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
         $this->transactionLogService = $transactionLogService;
+        $this->encryptionService = $encryptionService;
     }
 
     /**
@@ -77,23 +84,33 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->urlGenerator->generate('home'));
         }
 
-        /** @var Battery|null $battery */
-        $battery = $this->batteryService
-            ->fetchBatteryBySerialNumber($request->get('search'));
+        $decryptedNumber = $this->encryptionService->validateAndFetchSerialNumber(
+            $this->encryptionService->decryptString($request->get('search'))
+        );
 
-        if (empty($battery)) {
-            $this->addFlash('danger', 'Kindly provide valid url query!');
-            return new RedirectResponse('/');
+        if ($decryptedNumber !== false) {
+            /** @var Battery|null $battery */
+            $battery = $this->batteryService
+                ->fetchBatteryBySerialNumber($decryptedNumber);
+
+            if (empty($battery)) {
+                $this->addFlash('danger', 'Kindly provide valid url query!');
+                return new RedirectResponse('/');
+            }
+
+            return $this->render(
+                'public_templates/detail_view.html.twig', [
+                    'battery' => $battery,
+                    'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                        ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                        : null,
+                    'slug' => $request->get('search')
+                ]
+            );
         }
 
-        return $this->render(
-            'public_templates/detail_view.html.twig', [
-                'battery' => $battery,
-                'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                    ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                    : null
-            ]
-        );
+        $this->addFlash('danger', 'Kindly provide valid url query!');
+        return new RedirectResponse($this->generateUrl('homepage'));
     }
 
     /**
@@ -109,22 +126,9 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->urlGenerator->generate('home'));
         }
 
-        /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($id);
-
-        if (empty($battery)) {
-            $this->addFlash('danger', 'Kindly provide valid url query!');
-            return new RedirectResponse('/');
-        }
-
-        return $this->render(
-            'public_templates/detail_view.html.twig', [
-                'battery' => $battery,
-                'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                    ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                    : null
-            ]
-        );
+        return new RedirectResponse($this->generateUrl('battery_detail', [
+            'search' => $this->encryptionService->encryptString($id)
+        ]));
     }
 
     /**
@@ -132,6 +136,8 @@ class BatteryController extends AbstractController
      * @param Request $request
      * @param $slug
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function reportBatteryReturnAction(Request $request, $slug): Response
     {
@@ -140,30 +146,64 @@ class BatteryController extends AbstractController
             return new RedirectResponse($this->urlGenerator->generate('home'));
         }
 
-        /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
+        $decryptedNumber = $this->encryptionService->validateAndFetchSerialNumber(
+            $this->encryptionService->decryptString($slug)
+        );
 
-        if (empty($battery)) {
-            $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
-            return new RedirectResponse($this->generateUrl('homepage'));
-        }
+        if ($decryptedNumber !== false) {
+            /** @var Battery|null $battery */
+            $battery = $this->batteryService
+                ->fetchBatteryBySerialNumber($decryptedNumber);
 
-        if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RECYCLED]) ||
-            ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RECYCLED))) {
-            $this->addFlash('danger', $this->translator->trans('Battery is already recycled!'));
+            if (empty($battery)) {
+                $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
+                return new RedirectResponse($this->generateUrl('homepage'));
+            }
+
+            if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                    CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RECYCLED]) ||
+                ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RECYCLED))) {
+                $this->addFlash('danger', $this->translator->trans('Battery is already recycled!'));
+                return new RedirectResponse($this->generateUrl('battery_detail', [
+                    'search' => $slug
+                ]));
+            }
+
+            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RECYCLED);
+            $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
+            $this->entityManager->flush();
+            $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
+
             return new RedirectResponse($this->generateUrl('battery_detail', [
                 'search' => $slug
             ]));
         }
 
-        $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RECYCLED);
-        $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
-        $this->entityManager->flush();
-        $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
+        $this->addFlash('danger', 'Kindly provide valid url query!');
+        return new RedirectResponse($this->generateUrl('homepage'));
+    }
 
-        return new RedirectResponse($this->generateUrl('battery_detail', [
-            'search' => $battery->getSerialNumber()
-        ]));
+    /**
+     * @Route(path="battery/qr/result", name="battery_qr_result")
+     * @param Request $request
+     * @return Response
+     */
+    public function getBatteryDetailsByScan(Request $request): Response
+    {
+        /** If Logged In - redirect to Dashboard */
+        if ($this->userService->isAuthenticated()) {
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        }
+
+        if (empty($request->get('search'))) {
+            $this->addFlash('danger', 'Kindly provide serial number');
+            return new RedirectResponse($this->generateUrl('scan_qr'));
+        }
+
+        return new RedirectResponse(
+            $this->generateUrl('battery_detail', [
+                'search' => $this->encryptionService->encryptString($request->get('search'))
+            ])
+        );
     }
 }

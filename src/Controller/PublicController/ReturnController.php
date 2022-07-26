@@ -9,11 +9,15 @@ use App\Helper\CustomHelper;
 use App\Service\BatteryReturnService;
 use App\Service\BatteryService;
 use App\Service\CountryService;
+use App\Service\EncryptionService;
 use App\Service\ManufacturerService;
 use App\Service\RecyclerService;
 use App\Service\TransactionLogService;
 use App\Service\UserService;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +41,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property CountryService countryService
  * @property BatteryReturnService returnService
  * @property TransactionLogService transactionLogService
+ * @property EncryptionService encryptionService
  */
 class ReturnController extends AbstractController
 {
@@ -53,6 +58,7 @@ class ReturnController extends AbstractController
      * @param TranslatorInterface $translator
      * @param BatteryReturnService $returnService
      * @param TransactionLogService $transactionLogService
+     * @param EncryptionService $encryptionService
      */
     public function __construct(
         UserService $userService,
@@ -65,7 +71,8 @@ class ReturnController extends AbstractController
         CountryService $countryService,
         TranslatorInterface $translator,
         BatteryReturnService $returnService,
-        TransactionLogService $transactionLogService
+        TransactionLogService $transactionLogService,
+        EncryptionService $encryptionService
     ) {
         $this->userService = $userService;
         $this->urlGenerator = $urlGenerator;
@@ -78,6 +85,7 @@ class ReturnController extends AbstractController
         $this->countryService = $countryService;
         $this->returnService = $returnService;
         $this->transactionLogService = $transactionLogService;
+        $this->encryptionService = $encryptionService;
     }
 
     /**
@@ -85,7 +93,9 @@ class ReturnController extends AbstractController
      * @param Request $request
      * @param $slug
      * @return Response
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws Exception
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function returnAction(Request $request, $slug): Response
     {
@@ -94,8 +104,23 @@ class ReturnController extends AbstractController
             return new RedirectResponse($this->urlGenerator->generate('home'));
         }
 
+        $decryptedNumber = $this->encryptionService->validateAndFetchSerialNumber(
+            $this->encryptionService->decryptString($slug)
+        );
+
+        if ($decryptedNumber === false) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse($this->generateUrl('homepage'));
+        }
+
         /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($slug);
+        $battery = $this->batteryService
+            ->fetchBatteryBySerialNumber($decryptedNumber);
+
+        if (empty($battery)) {
+            $this->addFlash('danger', 'Kindly provide valid url query!');
+            return new RedirectResponse('/');
+        }
 
         if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
                 CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) ||
@@ -107,12 +132,6 @@ class ReturnController extends AbstractController
         }
 
         $isFallback = false;
-
-        if (empty($battery)) {
-            $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));
-            return new RedirectResponse($this->generateUrl('homepage'));
-        }
-
         $country = $this->countryService->getCountryByName('Switzerland');
         $recyclers = $this->recyclerService->fetchManufacturerRecyclersByCountry(
             $battery->getManufacturer(),
@@ -196,13 +215,13 @@ class ReturnController extends AbstractController
                     $battery,
                     $formData,
                     $this->generateUrl('battery_detail', [
-                        'search' => $battery->getSerialNumber()
+                        'search' => $slug
                     ], 0)
                 );
             $this->addFlash('success', 'Return Added Successfully!');
 
             return new RedirectResponse($this->generateUrl('battery_detail', [
-                'search' => $battery->getSerialNumber()
+                'search' => $slug
             ]));
         }
 
@@ -210,7 +229,7 @@ class ReturnController extends AbstractController
             'public_templates/battery_return/add_battery_return.html.twig',
             array(
                 'form' => $form->createView(),
-                'serialNumber' => $slug,
+                'serialNumber' => $battery->getSerialNumber(),
                 'recycler' => (!empty($recyclers[0]) && $isFallback === true) ? $recyclers[0] : null,
                 'fallBack' => $isFallback
             )
