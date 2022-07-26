@@ -16,7 +16,6 @@ use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
@@ -76,14 +75,17 @@ class BatteryAdmin extends AbstractAdmin
                 'disabled' => $disabled
             ])
             ->add('nominalVoltage', null, [
+                'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('nominalCapacity', null, [
+                'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
             ->add('nominalEnergy', null, [
+                'required' => true,
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
             ])
