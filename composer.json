@@ -12,6 +12,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-pdo": "*",
+        "ext-openssl": "*",
         "doctrine/common": "^3.3",
         "doctrine/doctrine-bundle": "^2.6",
         "doctrine/doctrine-fixtures-bundle": "^3.4",

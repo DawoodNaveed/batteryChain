@@ -134,7 +134,7 @@
                                 </h2>
                             </div>
                             <a class="btn-outline-dark mr-5 btn-download"
-                               href="{{ path('download', {"slug": battery.serialNumber}) }}"
+                               href="{{ path('download', {"slug": slug}) }}"
                                target="_blank">
                                 <i class="far fa-file-pdf fa-3x"></i>
                             </a>
@@ -385,9 +385,9 @@
                     <div class="p-3 card-body ps-5 pe-5 pb-5 pti-0">
                         <div class="row-div">
                             {% if battery.status == 'registered' or battery.status == 'delivered' %}
-                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('add_return', {"slug": battery.serialNumber}) }}"> {{ "Pickup Battery" | trans }}</a>
+                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('add_return', {"slug": slug}) }}"> {{ "Pickup Battery" | trans }}</a>
                             {% elseif battery.status == 'returned' %}
-                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('report_battery_return', {"slug": battery.serialNumber}) }}"> {{ "Report as recycled/Disposed" | trans }}</a>
+                                <a class="mt-10 btn btn-success btn-green mr-5" href="{{ path('report_battery_return', {"slug": slug}) }}"> {{ "Report as recycled/Disposed" | trans }}</a>
                             {% endif %}
                             <a class="mt-10 btn btn-light btn-outline-green" href="{{ path('homepage') }}"> {{ "Back" | trans }}</a>
                         </div>
