@@ -73,21 +73,33 @@ class RecyclerService
      */
     public function toChoiceArray($recyclers, $fetchFullObject = false): ?array
     {
-        $result = null;
+        $result = [];
 
         foreach ($recyclers as $recycler) {
             if ($recycler instanceof Recycler) {
+                $key = $recycler->getName();
+
+                if (key_exists($key, $result)) {
+                    $key = $recycler->getName() . ' | ' . $recycler->getEmail();
+                }
+
                 if ($fetchFullObject) {
-                    $result[$recycler->getName()] = $recycler;
+                    $result[$key] = $recycler;
                 } else {
-                    $result[$recycler->getName()] = $recycler->getId();
+                    $result[$key] = $recycler->getId();
                 }
             } else {
+                $key = $recycler->name;
+
+                if (key_exists($key, $result)) {
+                    $key = $recycler->name . ' | ' . $recycler->email;
+                }
+
                 // for fallback - we got PHP Objects rather than Recycler Objects
                 if ($fetchFullObject) {
-                    $result[$recycler->name] = $recycler;
+                    $result[$key] = $recycler;
                 } else {
-                    $result[$recycler->name] = $recycler->id;
+                    $result[$key] = $recycler->id;
                 }
             }
         }
