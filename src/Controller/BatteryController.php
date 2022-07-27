@@ -798,13 +798,15 @@ class BatteryController extends CRUDController
                     /** @var User $user */
                     $user = $this->getUser();
                     $manufacturer = $submittedObject->getManufacturer() ?? $user->getManufacturer();
-                    // If same manufacturer has battery with similar serial number
+                    // Battery with similar serial number
                     $battery = $this->batteryService->batteryRepository->findOneBy([
-                        'serialNumber' => $submittedObject->getSerialNumber(),
-                        'manufacturer' => $manufacturer
+                        'serialNumber' => $submittedObject->getSerialNumber()
                     ]);
 
-                    if (!empty($battery)) {
+                    // If battery exists and manufacturer matches then do not create new Battery
+                    if (!empty($battery) &&
+                        $battery->getManufacturer()->getId() === $manufacturer->getId()
+                    ) {
                         $this->addFlash(
                             'sonata_flash_error',
                             $this->trans(
@@ -814,11 +816,7 @@ class BatteryController extends CRUDController
                             )
                         );
                     } else {
-                        // If any other manufacturer has battery with similar serial number
-                        $battery = $this->batteryService->batteryRepository->findOneBy([
-                            'serialNumber' => $submittedObject->getSerialNumber()
-                        ]);
-
+                        // If battery exists and manufacturer does not matches then create new Battery after appending postfix
                         if (!empty($battery)) {
                             $submittedObject->setSerialNumber(
                                 $submittedObject->getSerialNumber() . '-' . time()
