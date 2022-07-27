@@ -128,17 +128,17 @@ class BatteryController extends CRUDController
             $file = $request->files->all();
 
             if (!empty($file) && isset($file['bulk_import_battery_form']['csv'])) {
+                $isAdmin = true;
                 /** @var UploadedFile $file */
                 $file = $file['bulk_import_battery_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
                     if (empty($manufacturer)) {
-                        $manufacturerId = $this->userService->getManufacturerId($user);
-                    } else {
-                        $manufacturerId = $manufacturer->getId();
+                        $isAdmin = false;
+                        $manufacturer = $user->getManufacturer();
                     }
 
-                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturerId, $user->getId());
+                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturer->getId(), $user->getId());
 
                     if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
@@ -174,11 +174,23 @@ class BatteryController extends CRUDController
                             }
                         }
                     }
+
+                    if ($isAdmin) {
+                        return $this->redirectToRoute('battery-intermediate_battery_list', [
+                            'filter' => [
+                                'manufacturer__name' => [
+                                    'value' => $manufacturer->getName()
+                                ]
+                            ]
+                        ]);
+                    } else {
+                        return $this->redirectToRoute('battery-intermediate_battery_list');
+                    }
                 } else {
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
 
-                return $this->redirectToRoute('battery-intermediate_battery_list');
+                return $this->redirectToRoute('admin_app_battery_list');
             }
         }
 
