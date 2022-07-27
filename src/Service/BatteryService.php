@@ -338,10 +338,10 @@ class BatteryService
     /**
      * @param UploadedFile $file
      * @param User $user
-     * @param Recycler $recycler
+     * @param Recycler|null $recycler
      * @return array|null
      */
-    public function extractCsvAndAddReturns(UploadedFile $file, User $user, Recycler $recycler): ?array
+    public function extractCsvAndAddReturns(UploadedFile $file, User $user, ?Recycler $recycler): ?array
     {
         try {
             $error = [];

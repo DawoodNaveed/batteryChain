@@ -81,6 +81,9 @@ class ReturnController extends CRUDController
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
             $manufacturer = $user->getManufacturer();
+            $recyclers = array_merge([
+                $manufacturer->getName() => $manufacturer
+            ], $recyclers);
         } else {
             $recyclers = $this->recyclerService->getAllRecyclers();
             $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
@@ -142,7 +145,7 @@ class ReturnController extends CRUDController
             $return->setCountry($formData['information']['country']);
             $return->setReturnDate(new \DateTime('now'));
             $return->setReturnFrom($user);
-            $return->setReturnTo($recycler);
+            $return->setReturnTo($recycler instanceof Recycler ? $recycler : null);
             $return->setBattery($battery);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setCurrentPossessor($user);
@@ -183,6 +186,9 @@ class ReturnController extends CRUDController
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers());
+            $recyclers = array_merge([
+                $user->getManufacturer()->getName() => $user->getManufacturer()
+            ], $recyclers);
         } else {
             $recyclers = $this->recyclerService->getAllRecyclers();
             $recyclers = $this->recyclerService->toChoiceArray($recyclers);
@@ -215,9 +221,14 @@ class ReturnController extends CRUDController
                 $this->addFlash('sonata_flash_error', 'Kindly provide Recycler!');
                 return new RedirectResponse($this->admin->generateUrl('bulkReturn'));
             } else {
-                $recycler = $this->recyclerService->recyclerRepository->findOneBy([
-                    'id' => $recycler
-                ]);
+                // if battery return to manufacturer
+                if ($recycler instanceof Manufacturer) {
+                    $recycler = null;
+                } else {
+                    $recycler = $this->recyclerService->recyclerRepository->findOneBy([
+                        'id' => $recycler
+                    ]);
+                }
             }
 
             $file = $request->files->all();

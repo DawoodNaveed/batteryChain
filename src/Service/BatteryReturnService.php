@@ -31,10 +31,10 @@ class BatteryReturnService
     /**
      * @param User $user
      * @param Battery $battery
-     * @param Recycler $recycler
+     * @param Recycler|null $recycler
      * @return BatteryReturn
      */
-    public function createReturn(User $user, Battery $battery, Recycler $recycler): BatteryReturn
+    public function createReturn(User $user, Battery $battery, ?Recycler $recycler): BatteryReturn
     {
         try {
             return $this->returnRepository->createReturn($user, $battery, $recycler);

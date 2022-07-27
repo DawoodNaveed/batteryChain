@@ -29,12 +29,12 @@ class BatteryReturnRepository extends ServiceEntityRepository
     /**
      * @param User $user
      * @param Battery $battery
-     * @param Recycler $recycler
+     * @param Recycler|null $recycler
      * @return BatteryReturn
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createReturn(User $user, Battery $battery, Recycler $recycler): BatteryReturn
+    public function createReturn(User $user, Battery $battery, ?Recycler $recycler): BatteryReturn
     {
         $shipment = new BatteryReturn();
         $shipment->setUpdated(new \DateTime('now'));
