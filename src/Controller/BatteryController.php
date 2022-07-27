@@ -143,20 +143,35 @@ class BatteryController extends CRUDController
                     if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
                     } else {
-                        $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
+                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
+                            if ($createBattery['failure'] !== 0) {
+                                $this->addFlash(
+                                    'error',
+                                    $this->translator->trans(
+                                        'service.error.battery_import_status',
+                                        [
+                                            '%failure_batteries%' => $createBattery['failure'],
+                                            '%total_batteries%' => $createBattery['total']
+                                        ]
+                                    )
+                                );
 
-                        if (isset($createBattery['total']) && isset($createBattery['failure'])
-                        && $createBattery['failure'] !== 0) {
-                            $this->addFlash(
-                                'warning',
-                                $this->translator->trans(
-                                    'service.success.battery_import_status',
-                                    [
-                                        '%failure_batteries%' => $createBattery['failure'],
-                                        '%total_batteries%' => $createBattery['total']
-                                    ]
-                                )
-                            );
+                            }
+
+                            if ($createBattery['total'] !== $createBattery['failure']) {
+                                $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
+                            }
+
+                            if (isset($createBattery['info']) && !empty($createBattery['info'])) {
+                                $this->addFlash(
+                                    'sonata_flash_info',
+                                    $this->translator->trans('service.info.flash_bulk_create_info_exist',
+                                        [
+                                            '%count%' => count($createBattery['info'])
+                                        ]
+                                    )
+                                );
+                            }
                         }
                     }
                 } else {
@@ -696,6 +711,11 @@ class BatteryController extends CRUDController
         return $this->$finalAction($query, $forwardedRequest);
     }
 
+    /**
+     * @param Request $request
+     * @param object $object
+     * @return Response|null
+     */
     protected function preEdit(Request $request, object $object): ?Response
     {
         if ($object->getStatus() !== CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
