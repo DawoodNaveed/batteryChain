@@ -83,3 +83,4 @@ Phone Number: "Phone Number"
 #Battery Admin
 flash_create_error_exist: "Manufacturer already has battery with similar serial number '%name%'."
 flash_create_info_exist: "Some Manufacturer already has battery with similar serial number '%exist%'. So, serial number would be '%name%'"
+flash_edit_error_exist: "Battery with similar serial number '%name%' exists."
