@@ -518,7 +518,12 @@ class BatteryController extends CRUDController
                 }
             }
 
-            if ($failure > 0) {
+            if ($failure === count($ids)) {
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $this->translator->trans('Failure! All Selected Batteries are already registered or in queue to be registered soon!')
+                );
+            } else if ($failure > 0) {
                 $this->addFlash(
                     'sonata_flash_info',
                     $this->translator->trans('service.error.bulk_register_batteries', [
@@ -527,10 +532,14 @@ class BatteryController extends CRUDController
                 );
             }
 
-            $this->addFlash(
-                'sonata_flash_success',
-                $this->translator->trans('Success! Request to Register Battery is submitted! Batteries will be registered soon!')
-            );
+            if ($failure !== count($ids)) {
+                $this->addFlash(
+                    'sonata_flash_success',
+                    $this->translator->trans('Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!', [
+                        '%count%' => count($ids) - $failure
+                    ])
+                );
+            }
 
             return new RedirectResponse($this->admin->generateUrl('list', [
                 'filter' => $this->admin->getFilterParameters()
@@ -755,7 +764,7 @@ class BatteryController extends CRUDController
         try {
             $modelManager->batchDelete($this->admin->getClass(), $query);
             $this->addFlash(
-                'sonata_flash_success',
+                'sonata_flash_info',
                 $this->trans('Only Pre-Registered selected items have been successfully deleted.', [], 'SonataAdminBundle')
             );
         } catch (ModelManagerException $e) {
