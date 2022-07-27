@@ -98,7 +98,12 @@ class BatteryService
             }
 
             $rowCount = 1;
-            $failureCount = 0;
+            $errors = [
+                'no_serial_number' => 0,
+                'same_serial_number' => 0
+            ];
+            $info = [];
+            $totalFailures = 0;
             $values = '';
 
             //Disable SoftDelete Filter to Check is Exist
@@ -115,12 +120,36 @@ class BatteryService
                     $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
                 }
 
-                if (!empty($this->isExist((string) $row['serial_number']))) {
-                    $failureCount++;
+                if (empty((string) $row['serial_number'])) {
+                    $errors['no_serial_number']++;
+                    $totalFailures++;
+                    continue;
+                }
+                // Battery with similar serial number
+                $battery = $this->batteryRepository->findOneBy([
+                    'serialNumber' => (string) $row['serial_number']
+                ]);
+
+                // If battery exists and manufacturer matches then do not create new Battery
+                if (!empty($battery) &&
+                    $battery->getManufacturer()->getId() === $manufacturerId
+                ) {
+                    $errors['same_serial_number']++;
+                    $totalFailures++;
                     continue;
                 }
 
-                $serialNumber = (string) $row['serial_number'];
+                // If battery exists and manufacturer does not matches then create new Battery after appending postfix
+                if (!empty($battery)) {
+                    $serialNumber = (string) $row['serial_number'] . '-' . time();
+                    $info[] = [
+                        'serial_number' => (string) $row['serial_number'],
+                        'new_serial_number' => $serialNumber
+                    ];
+                } else {
+                    $serialNumber = (string) $row['serial_number'];
+                }
+
                 $batteryType = (string) $row['battery_type'];
                 $cellType = (string) $row['cell_type'] ?? null;
                 $moduleType = (string) $row['module_type'] ?? null;
@@ -164,9 +193,11 @@ class BatteryService
 
         //Enable SoftDelete Filter
         $this->batteryRepository->enableFilter('softdeleteable');
+
         return array_merge($error, [
-            'total' => ($rowCount - 1) + $failureCount,
-            'failure' => $failureCount
+            'total' => ($rowCount - 1) + $totalFailures,
+            'failure' => $totalFailures,
+            'info' => $info
         ]);
     }
 
