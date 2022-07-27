@@ -22,6 +22,7 @@ use Doctrine\Inflector\InflectorFactory;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
+use Sonata\AdminBundle\Exception\LockException;
 use Sonata\AdminBundle\Exception\ModelManagerException;
 use Sonata\AdminBundle\Exception\ModelManagerThrowable;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -33,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -126,42 +128,70 @@ class BatteryController extends CRUDController
             $file = $request->files->all();
 
             if (!empty($file) && isset($file['bulk_import_battery_form']['csv'])) {
+                $isAdmin = true;
                 /** @var UploadedFile $file */
                 $file = $file['bulk_import_battery_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
                     if (empty($manufacturer)) {
-                        $manufacturerId = $this->userService->getManufacturerId($user);
-                    } else {
-                        $manufacturerId = $manufacturer->getId();
+                        $isAdmin = false;
+                        $manufacturer = $user->getManufacturer();
                     }
 
-                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturerId, $user->getId());
+                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturer->getId(), $user->getId());
 
                     if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
+                        return $this->redirectToRoute('admin_app_battery_import');
                     } else {
-                        $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
+                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
+                            if ($createBattery['failure'] !== 0) {
+                                $this->addFlash(
+                                    'error',
+                                    $this->translator->trans(
+                                        'service.error.battery_import_status',
+                                        [
+                                            '%failure_batteries%' => $createBattery['failure'],
+                                            '%total_batteries%' => $createBattery['total']
+                                        ]
+                                    )
+                                );
 
-                        if (isset($createBattery['total']) && isset($createBattery['failure'])
-                        && $createBattery['failure'] !== 0) {
-                            $this->addFlash(
-                                'warning',
-                                $this->translator->trans(
-                                    'service.success.battery_import_status',
-                                    [
-                                        '%failure_batteries%' => $createBattery['failure'],
-                                        '%total_batteries%' => $createBattery['total']
-                                    ]
-                                )
-                            );
+                            }
+
+                            if ($createBattery['total'] !== $createBattery['failure']) {
+                                $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
+                            }
+
+                            if (isset($createBattery['info']) && !empty($createBattery['info'])) {
+                                $this->addFlash(
+                                    'sonata_flash_info',
+                                    $this->translator->trans('service.info.flash_bulk_create_info_exist',
+                                        [
+                                            '%count%' => count($createBattery['info'])
+                                        ]
+                                    )
+                                );
+                            }
                         }
+                    }
+
+                    if ($isAdmin) {
+                        return $this->redirectToRoute('battery-intermediate_battery_list', [
+                            'filter' => [
+                                'manufacturer__name' => [
+                                    'value' => $manufacturer->getName()
+                                ]
+                            ]
+                        ]);
+                    } else {
+                        return $this->redirectToRoute('battery-intermediate_battery_list');
                     }
                 } else {
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
 
-                return $this->redirectToRoute('battery-intermediate_battery_list');
+                return $this->redirectToRoute('admin_app_battery_import');
             }
         }
 
@@ -694,6 +724,11 @@ class BatteryController extends CRUDController
         return $this->$finalAction($query, $forwardedRequest);
     }
 
+    /**
+     * @param Request $request
+     * @param object $object
+     * @return Response|null
+     */
     protected function preEdit(Request $request, object $object): ?Response
     {
         if ($object->getStatus() !== CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
@@ -741,5 +776,287 @@ class BatteryController extends CRUDController
         }
 
         return $this->redirectToList();
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws ModelManagerThrowable
+     * @throws \ReflectionException
+     */
+    public function createAction(Request $request): Response
+    {
+        $this->assertObjectExists($request);
+
+        $this->admin->checkAccess('create');
+
+        // the key used to lookup the template
+        $templateKey = 'edit';
+
+        $class = new \ReflectionClass($this->admin->hasActiveSubClass() ? $this->admin->getActiveSubClass() : $this->admin->getClass());
+
+        if ($class->isAbstract()) {
+            return $this->renderWithExtraParams(
+                '@SonataAdmin/CRUD/select_subclass.html.twig',
+                [
+                    'action' => 'create',
+                ]
+            );
+        }
+
+        $newObject = $this->admin->getNewInstance();
+
+        $preResponse = $this->preCreate($request, $newObject);
+        if (null !== $preResponse) {
+            return $preResponse;
+        }
+
+        $this->admin->setSubject($newObject);
+
+        $form = $this->admin->getForm();
+
+        $form->setData($newObject);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $isFormValid = $form->isValid();
+
+            // persist if the form was valid and if in preview mode the preview was approved
+            if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
+                /** @phpstan-var T $submittedObject */
+                $submittedObject = $form->getData();
+                $this->admin->setSubject($submittedObject);
+                $this->admin->checkAccess('create', $submittedObject);
+                try {
+                    /** @var User $user */
+                    $user = $this->getUser();
+                    $manufacturer = $submittedObject->getManufacturer() ?? $user->getManufacturer();
+                    // Battery with similar serial number
+                    $battery = $this->batteryService->batteryRepository->findOneBy([
+                        'serialNumber' => $submittedObject->getSerialNumber()
+                    ]);
+
+                    // If battery exists and manufacturer matches then do not create new Battery
+                    if (!empty($battery) &&
+                        $battery->getManufacturer()->getId() === $manufacturer->getId()
+                    ) {
+                        $this->addFlash(
+                            'sonata_flash_error',
+                            $this->trans(
+                                'flash_create_error_exist',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                                'messages'
+                            )
+                        );
+                    } else {
+                        // If battery exists and manufacturer does not matches then create new Battery after appending postfix
+                        if (!empty($battery)) {
+                            $submittedObject->setSerialNumber(
+                                $submittedObject->getSerialNumber() . '-' . time()
+                            );
+                            $this->addFlash(
+                                'sonata_flash_info',
+                                $this->trans(
+                                    'flash_create_info_exist',
+                                    [
+                                        '%exist%' => $battery->getSerialNumber(),
+                                        '%name%' => $this->escapeHtml($this->admin->toString($newObject))
+                                    ],
+                                    'messages'
+                                )
+                            );
+                        }
+
+                        $newObject = $this->admin->create($submittedObject);
+
+                        if ($this->isXmlHttpRequest($request)) {
+                            return $this->handleXmlHttpRequestSuccessResponse($request, $newObject);
+                        }
+
+                        $this->addFlash(
+                            'sonata_flash_success',
+                            $this->trans(
+                                'flash_create_success',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                                'SonataAdminBundle'
+                            )
+                        );
+
+                        // redirect to edit mode
+                        return $this->redirectTo($request, $newObject);
+                    }
+                } catch (ModelManagerException $e) {
+                    // NEXT_MAJOR: Remove this catch.
+                    $this->handleModelManagerException($e);
+
+                    $isFormValid = false;
+                } catch (ModelManagerThrowable $e) {
+                    $errorMessage = $this->handleModelManagerThrowable($e);
+
+                    $isFormValid = false;
+                }
+
+            }
+
+            // show an error message if the form failed validation
+            if (!$isFormValid) {
+                if ($this->isXmlHttpRequest($request) && null !== ($response = $this->handleXmlHttpRequestErrorResponse($request, $form))) {
+                    return $response;
+                }
+
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $errorMessage ?? $this->trans(
+                        'flash_create_error',
+                        ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                        'SonataAdminBundle'
+                    )
+                );
+            } elseif ($this->isPreviewRequested($request)) {
+                // pick the preview template if the form was valid and preview was requested
+                $templateKey = 'preview';
+                $this->admin->getShow();
+            }
+        }
+
+        $formView = $form->createView();
+        // set the theme for the current Admin Form
+        $this->setFormTheme($formView, $this->admin->getFormTheme());
+
+        $template = $this->admin->getTemplateRegistry()->getTemplate($templateKey);
+
+        return $this->renderWithExtraParams($template, [
+            'action' => 'create',
+            'form' => $formView,
+            'object' => $newObject,
+            'objectId' => null,
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws ModelManagerThrowable
+     */
+    public function editAction(Request $request): Response
+    {
+        // the key used to lookup the template
+        $templateKey = 'edit';
+
+        $existingObject = $this->assertObjectExists($request, true);
+        \assert(null !== $existingObject);
+
+        $this->checkParentChildAssociation($request, $existingObject);
+
+        $this->admin->checkAccess('edit', $existingObject);
+
+        $preResponse = $this->preEdit($request, $existingObject);
+        if (null !== $preResponse) {
+            return $preResponse;
+        }
+
+        $this->admin->setSubject($existingObject);
+        $objectId = $this->admin->getNormalizedIdentifier($existingObject);
+        \assert(null !== $objectId);
+
+        $form = $this->admin->getForm();
+
+        $form->setData($existingObject);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $isFormValid = $form->isValid();
+
+            // persist if the form was valid and if in preview mode the preview was approved
+            if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
+                /** @phpstan-var T $submittedObject */
+                $submittedObject = $form->getData();
+                $this->admin->setSubject($submittedObject);
+
+                try {
+                    // If any manufacturer has battery with similar serial number
+                    $battery = $this->batteryService->batteryRepository->findOneBy([
+                        'serialNumber' => $submittedObject->getSerialNumber()
+                    ]);
+
+                    if (!empty($battery) && $battery->getId() !== $submittedObject->getId()) {
+                        $this->addFlash(
+                            'sonata_flash_error',
+                            $this->trans(
+                                'flash_edit_error_exist',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($submittedObject))],
+                                'messages'
+                            )
+                        );
+                    } else {
+                        $existingObject = $this->admin->update($submittedObject);
+
+                        if ($this->isXmlHttpRequest($request)) {
+                            return $this->handleXmlHttpRequestSuccessResponse($request, $existingObject);
+                        }
+
+                        $this->addFlash(
+                            'sonata_flash_success',
+                            $this->trans(
+                                'flash_edit_success',
+                                ['%name%' => $this->escapeHtml($this->admin->toString($existingObject))],
+                                'SonataAdminBundle'
+                            )
+                        );
+
+                        // redirect to edit mode
+                        return $this->redirectTo($request, $existingObject);
+                    }
+                } catch (ModelManagerException $e) {
+                    // NEXT_MAJOR: Remove this catch.
+                    $this->handleModelManagerException($e);
+
+                    $isFormValid = false;
+                } catch (ModelManagerThrowable $e) {
+                    $errorMessage = $this->handleModelManagerThrowable($e);
+
+                    $isFormValid = false;
+                } catch (LockException $e) {
+                    $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', [
+                        '%name%' => $this->escapeHtml($this->admin->toString($existingObject)),
+                        '%link_start%' => sprintf('<a href="%s">', $this->admin->generateObjectUrl('edit', $existingObject)),
+                        '%link_end%' => '</a>',
+                    ], 'SonataAdminBundle'));
+                }
+            }
+
+            // show an error message if the form failed validation
+            if (!$isFormValid) {
+                if ($this->isXmlHttpRequest($request) && null !== ($response = $this->handleXmlHttpRequestErrorResponse($request, $form))) {
+                    return $response;
+                }
+
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $errorMessage ?? $this->trans(
+                        'flash_edit_error',
+                        ['%name%' => $this->escapeHtml($this->admin->toString($existingObject))],
+                        'SonataAdminBundle'
+                    )
+                );
+            } elseif ($this->isPreviewRequested($request)) {
+                // enable the preview template if the form was valid and preview was requested
+                $templateKey = 'preview';
+                $this->admin->getShow();
+            }
+        }
+
+        $formView = $form->createView();
+        // set the theme for the current Admin Form
+        $this->setFormTheme($formView, $this->admin->getFormTheme());
+
+        $template = $this->admin->getTemplateRegistry()->getTemplate($templateKey);
+
+        return $this->renderWithExtraParams($template, [
+            'action' => 'edit',
+            'form' => $formView,
+            'object' => $existingObject,
+            'objectId' => $objectId,
+        ]);
     }
 }

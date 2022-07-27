@@ -17,7 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package App\Entity
  * @ORM\Entity(repositoryClass="App\Repository\BatteryRepository")
  * @ORM\Table(name="battery")
- * @UniqueEntity(fields={"serialNumber"}, message="There is already a Battery with this Serial Number")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Battery extends AbstractEntity

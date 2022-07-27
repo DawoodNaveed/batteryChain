@@ -3,10 +3,11 @@ service.error.file_size_exceeds: 'Error! File size exceeded.'
 service.error.something_went_wrong: 'Error! Something went wrong.'
 service.error.invalid_csv_headers: 'Error! Please upload valid csv with valid headers.'
 service.success.battery_added_successfully: 'Batteries Added Successfully!'
-service.success.battery_import_status: '%failure_batteries% Batteries are failed to add due to same serial number, out of Total: %total_batteries% Batteries'
+service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Batteries'
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
 service.error.bulk_register_batteries: '%failure_batteries% batteries are already registered or in queue to be registered!'
+service.info.flash_bulk_create_info_exist: "Some Manufacturer already has battery with similar serial numbers. So, we update serial number for '%count%' battery(s)."
 en: "English"
 de: "German"
 #Home-page Translations
@@ -78,3 +79,9 @@ Cancel: "Cancel"
 Please contact the institution list below regarding the disposal or recycling of your battery: "Please contact the institution list below regarding the disposal or recycling of your battery"
 Address: "Address"
 Phone Number: "Phone Number"
+
+#Backend Admin Panel
+#Battery Admin
+flash_create_error_exist: "Manufacturer already has battery with similar serial number '%name%'."
+flash_create_info_exist: "Some Manufacturer already has battery with similar serial number '%exist%'. So, serial number would be '%name%'"
+flash_edit_error_exist: "Battery with similar serial number '%name%' exists."
