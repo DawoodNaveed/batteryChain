@@ -87,3 +87,5 @@ flash_create_info_exist: "Some Manufacturer already has battery with similar ser
 flash_edit_error_exist: "Battery with similar serial number '%name%' exists."
 
 Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!: 'Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!'
+Alert! %count% selected items are already registered so you cannot delete them.: 'Alert! %count% selected items are already registered so you cannot delete them.'
+Success! Only %count% pre-registered selected battery(s) have been successfully deleted.: 'Success! Only %count% pre-registered selected battery(s) have been successfully deleted.'
