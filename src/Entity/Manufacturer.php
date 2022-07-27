@@ -280,4 +280,12 @@ class Manufacturer extends AbstractEntity
     {
         $this->deletedAt = $deletedAt;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->name;
+    }
 }

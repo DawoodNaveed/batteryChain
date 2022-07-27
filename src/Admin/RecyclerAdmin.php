@@ -32,7 +32,9 @@ class RecyclerAdmin extends AbstractAdmin
         $form->add('name', TextType::class);
 
         $form->add('email', EmailType::class)
-            ->add('contact', TextType::class)
+            ->add('contact', TextType::class, [
+                'label' => 'Phone Number'
+            ])
             ->add('address', TextType::class)
             ->add('city', TextType::class)
             ->add('country', ModelType::class, [
@@ -81,7 +83,9 @@ class RecyclerAdmin extends AbstractAdmin
             ])
             ->add('address')
             ->add('city')
-            ->add('contact');
+            ->add('contact', TextType::class, [
+                'label' => 'Phone Number'
+            ]);
     }
 
     /**

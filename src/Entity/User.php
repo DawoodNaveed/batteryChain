@@ -512,4 +512,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->deletedAt = $deletedAt;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->getFullName();
+    }
 }

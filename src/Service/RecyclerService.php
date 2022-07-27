@@ -173,7 +173,7 @@ class RecyclerService
 
                 $name = (string) $row['name'];
                 $email = (string) $row['email'];
-                $contact = (string) $row['contact'];
+                $contact = (string) $row['phone_number'];
                 $address = (string) $row['address'];
                 $city = (string) $row['city'];
                 $newEmail = (string) $row['updated_email'];

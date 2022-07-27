@@ -44,7 +44,7 @@ class CustomHelper
     const RECYCLER_CSV_HEADERS = [
         'email',
         'name',
-        'contact',
+        'phone_number',
         'address',
         'city',
         'updated_email'
