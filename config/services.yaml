@@ -58,6 +58,7 @@ services:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
             - [ setTokenStorage, [ '@security.token_storage' ] ]
             - [ setTemplate, [ 'layout', 'recycler/list.html.twig' ] ]
+            - [ setManufacturerService, [ '@App\Service\ManufacturerService' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: "Pickup Partner and Recycler", group: "Pickup Partner and Recycler" }
 
