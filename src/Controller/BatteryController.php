@@ -142,6 +142,7 @@ class BatteryController extends CRUDController
 
                     if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
+                        return $this->redirectToRoute('admin_app_battery_import');
                     } else {
                         if (isset($createBattery['total']) && isset($createBattery['failure'])) {
                             if ($createBattery['failure'] !== 0) {
@@ -190,7 +191,7 @@ class BatteryController extends CRUDController
                     $this->addFlash('error', $this->translator->trans($validCsv['message']));
                 }
 
-                return $this->redirectToRoute('admin_app_battery_list');
+                return $this->redirectToRoute('admin_app_battery_import');
             }
         }
 
