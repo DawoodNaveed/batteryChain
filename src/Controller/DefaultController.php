@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Battery;
 use App\Form\BatteryDetailFormType;
+use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\EncryptionService;
 use App\Service\PdfService;
 use App\Service\ReCaptchaService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -171,6 +173,32 @@ class DefaultController extends AbstractController
 
         return $this->render(
             'public_templates/scan.html.twig'
+        );
+    }
+
+    /**
+     * @Route(name="ip_header", path="api/header/ip", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function getIpFromServerObject(): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'data' => CustomHelper::get_ip_address()
+            ]
+        );
+    }
+
+    /**
+     * @Route(name="ip_api", path="api/ip", methods={"GET"})
+     * @return JsonResponse
+     */
+    public function getIpFromAPI(): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'data' => CustomHelper::sendCurlRequestToGetIp(Request::METHOD_GET, ['Content-Type: application/json'])
+            ]
         );
     }
 }
