@@ -186,6 +186,13 @@
                             $("#return_public_form_cancel").text('Back');
                             $('#return_public_form_submit').hide();
                             $('#return_public_form_dataPolicy').parent().hide();
+                        } else if (data.fall_back == 1 && data.details === null) {
+                            $('#return_public_form_dataPolicy').parent().hide();
+                            $('#return_public_form_submit').hide();
+                            $("#return_public_form_cancel").text('Back');
+                            $('#return_public_form_fallback').val(1);
+                            $('#return_public_form_information').parent().parent().hide();
+                            $('.fallback-div').hide();
                         } else {
                             $('#return_public_form_dataPolicy').parent().show();
                             $('#return_public_form_submit').show();
@@ -195,7 +202,7 @@
                             $('.fallback-div').hide();
                         }
                         options = data.recyclers; // Or whatever source information you're working with
-                        if (options === null) {
+                        if (options.length === 0) {
                             $('#return_public_form_submit').attr('disabled', true);
                             $('#return_public_form_information').parent().parent().hide();
                             var newOption = new Option('No Pickup Partner Found', "none" , false, true);

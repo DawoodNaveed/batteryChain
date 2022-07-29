@@ -195,4 +195,72 @@ class CustomHelper
             'message' => $message
         ]));
     }
+
+    /**
+     * @return string|null
+     */
+    public static function get_ip_address(): ?string
+    {
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true){
+                foreach (explode(',', $_SERVER[$key]) as $ip){
+                    $ip = trim($ip); // just to be safe
+
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 || FILTER_FLAG_IPV6 || FILTER_FLAG_NO_PRIV_RANGE || FILTER_FLAG_NO_RES_RANGE) !== false){
+                        return $ip;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $ip_address
+     * @return mixed
+     */
+    public static function get_ip_details($ip_address)
+    {
+        //function to find country, city and country code from IP.
+
+        //verify the IP.
+        ip2long($ip_address)== -1 || ip2long($ip_address) === false ? trigger_error("Invalid IP", E_USER_ERROR) : "";
+
+        //get the JSON result from hostip.info
+        $result = file_get_contents("http://api.hostip.info/get_json.php?ip=".$ip_address);
+
+        $result = json_decode($result, 1);
+
+        //return the array containing city, country and country code
+        return $result;
+    }
+
+    /**
+     * @param $requestType
+     * @param array $httpHeader
+     * @return array|bool|string
+     */
+    public static function sendCurlRequestToGetIp(
+        $requestType,
+        $httpHeader = array()
+    ) {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.ipify.org?format=json');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $requestType);
+
+            if (!empty($httpHeader)) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+            }
+
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            return json_decode($response);
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
 }
