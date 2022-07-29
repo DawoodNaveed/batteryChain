@@ -132,14 +132,20 @@ class ReturnController extends AbstractController
         }
 
         $isFallback = false;
-        $response = CustomHelper::sendCurlRequestToGetIp(Request::METHOD_GET, ['Content-Type: application/json']);
+        $response = CustomHelper::get_ip_address();
 
-        if (!empty($response->ip)) {
-            $details = CustomHelper::get_ip_details($response->ip);
+        if (empty($response)) {
+            $response = CustomHelper::sendCurlRequestToGetIp(Request::METHOD_GET, ['Content-Type: application/json']);
 
-            if (!empty($details) && $details['country_code'] !== 'xx' && $details['country_code'] !== 'XX') {
-                $country = $this->countryService->getCountryByCode($details['country_code']);
+            if (!empty($response->ip)) {
+                $response = $response->ip;
             }
+        }
+
+        $details = CustomHelper::get_ip_details($response);
+
+        if (!empty($details) && $details['country_code'] !== 'xx' && $details['country_code'] !== 'XX') {
+            $country = $this->countryService->getCountryByCode($details['country_code']);
         }
 
         if (empty($country)) {

@@ -201,4 +201,20 @@ class DefaultController extends AbstractController
             ]
         );
     }
+
+    /**
+     * @Route(name="ip_api", path="api/ip/detail", methods={"GET"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getIpDetail(Request $request): JsonResponse
+    {
+        $ip = $request->query->get('ip', '115.186.47.254');
+
+        return new JsonResponse(
+            [
+                'data' => CustomHelper::get_ip_details($ip)
+            ]
+        );
+    }
 }
