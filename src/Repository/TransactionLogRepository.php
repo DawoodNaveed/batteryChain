@@ -60,6 +60,7 @@ class TransactionLogRepository extends ServiceEntityRepository
                 if ($status === CustomHelper::STATUS_COMPLETE) {
                     $log->getBattery()->setBlockchainSecured(true);
                     $log->getBattery()->setStatus($log->getTransactionType());
+                    $log->getBattery()->setUpdated(new \DateTime('now'));
                 }
             }
 

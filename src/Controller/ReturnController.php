@@ -149,6 +149,7 @@ class ReturnController extends CRUDController
             $return->setBattery($battery);
             $return->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $battery->setUpdated(new \DateTime('now'));
             $battery->setCurrentPossessor($user);
 
             $this->entityManager->persist($return);

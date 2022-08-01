@@ -80,7 +80,7 @@ class BatteryRepository extends ServiceEntityRepository
             ->select('DISTINCT b as battery', 'bt.type')
             ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
             ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
-            ->join('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
             ->where($dqlStatement)
             ->getQuery()
             ->getResult();
@@ -96,7 +96,7 @@ class BatteryRepository extends ServiceEntityRepository
             ->select('DISTINCT b as battery', 'bt.type')
             ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
             ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
-            ->join('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
             ->where($dqlStatement)
             ->getQuery()
             ->getArrayResult();

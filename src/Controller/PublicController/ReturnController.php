@@ -221,6 +221,7 @@ class ReturnController extends AbstractController
 
             $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $battery->setUpdated(new \DateTime('now'));
             $this->returnService
                 ->createReturn(
                     $battery->getManufacturer()->getUser(),

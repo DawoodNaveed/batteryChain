@@ -318,6 +318,7 @@ class BatteryService
 
                     $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
                     $shipment = $this->shipmentService->createShipment($user, $battery, $transactionLog);
                 }
@@ -392,6 +393,7 @@ class BatteryService
 
                     $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+                    $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
                     $return = $this->returnService->createReturn($user, $battery, $recycler, $transactionLog);
                 }
