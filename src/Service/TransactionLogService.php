@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Battery;
+use App\Entity\TransactionLog;
 use App\Helper\CustomHelper;
 use App\Repository\TransactionLogRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -27,12 +28,13 @@ class TransactionLogService
     /**
      * @param Battery $battery
      * @param string $transactionType
+     * @return TransactionLog
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createTransactionLog(Battery $battery, string $transactionType = CustomHelper::BATTERY_STATUS_REGISTERED)
+    public function createTransactionLog(Battery $battery, string $transactionType = CustomHelper::BATTERY_STATUS_REGISTERED): TransactionLog
     {
-        $this->transactionLogRepository->createTransactionLog($battery, $transactionType);
+        return $this->transactionLogRepository->createTransactionLog($battery, $transactionType);
     }
 
     /**

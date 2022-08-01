@@ -75,6 +75,13 @@ class Shipment extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @var TransactionLog|null
+     * @ORM\OneToOne(targetEntity="App\Entity\TransactionLog", inversedBy="shipment", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="transaction_log_id", referencedColumnName="id")
+     */
+    private $transactionLog;
+
+    /**
      * @return Battery|null
      */
     public function getBattery(): ?Battery
@@ -208,5 +215,21 @@ class Shipment extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->battery->getSerialNumber();
+    }
+
+    /**
+     * @return TransactionLog|null
+     */
+    public function getTransactionLog(): ?TransactionLog
+    {
+        return $this->transactionLog;
+    }
+
+    /**
+     * @param TransactionLog|null $transactionLog
+     */
+    public function setTransactionLog(?TransactionLog $transactionLog): void
+    {
+        $this->transactionLog = $transactionLog;
     }
 }

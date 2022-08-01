@@ -119,7 +119,7 @@ class ShipmentController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
-            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
             $shipment = new Shipment();
             $shipment->setUpdated(new \DateTime('now'));
             $shipment->setCreated(new \DateTime('now'));
@@ -130,6 +130,7 @@ class ShipmentController extends CRUDController
             $shipment->setShipmentFrom($user);
             $shipment->setShipmentTo($user);
             $shipment->setBattery($battery);
+            $shipment->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
             $battery->setCurrentPossessor($user);
 

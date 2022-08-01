@@ -89,10 +89,11 @@ class TransactionLogRepository extends ServiceEntityRepository
      * @param Battery $battery
      * @param string $transactionType
      * @param string $status
+     * @return TransactionLog
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createTransactionLog(Battery $battery, string $transactionType, string $status = CustomHelper::STATUS_PENDING)
+    public function createTransactionLog(Battery $battery, string $transactionType, string $status = CustomHelper::STATUS_PENDING): TransactionLog
     {
         $transactionLog = new TransactionLog();
         $transactionLog->setBattery($battery);
@@ -103,5 +104,7 @@ class TransactionLogRepository extends ServiceEntityRepository
 
         $this->_em->persist($transactionLog);
         $this->_em->flush();
+
+        return $transactionLog;
     }
 }
