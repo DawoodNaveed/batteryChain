@@ -132,7 +132,26 @@ class ReturnController extends AbstractController
         }
 
         $isFallback = false;
-        $country = $this->countryService->getCountryByName('Switzerland');
+        $response = CustomHelper::get_ip_address();
+
+        if (empty($response)) {
+            $response = CustomHelper::sendCurlRequestToGetIp(Request::METHOD_GET, ['Content-Type: application/json']);
+
+            if (!empty($response->ip)) {
+                $response = $response->ip;
+            }
+        }
+
+        $details = CustomHelper::get_ip_details($response);
+
+        if (!empty($details) && $details['country_code'] !== 'xx' && $details['country_code'] !== 'XX') {
+            $country = $this->countryService->getCountryByCode($details['country_code']);
+        }
+
+        if (empty($country)) {
+            $country = $this->countryService->getCountryByName('Switzerland');
+        }
+
         $recyclers = $this->recyclerService->fetchManufacturerRecyclersByCountry(
             $battery->getManufacturer(),
             $country
@@ -200,13 +219,15 @@ class ReturnController extends AbstractController
                 $formData['information']['contact'] = $recycler->getContact();
             }
 
-            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $battery->setUpdated(new \DateTime('now'));
             $this->returnService
                 ->createReturn(
                     $battery->getManufacturer()->getUser(),
                     $battery,
-                    $recycler
+                    $recycler,
+                    $transactionLog
                 );
 
             $this->recyclerService

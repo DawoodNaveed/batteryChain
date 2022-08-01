@@ -75,6 +75,13 @@ class BatteryReturn extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @var TransactionLog|null
+     * @ORM\OneToOne(targetEntity="App\Entity\TransactionLog", inversedBy="batteryReturn", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="transaction_log_id", referencedColumnName="id")
+     */
+    private $transactionLog;
+
+    /**
      * @return Battery|null
      */
     public function getBattery(): ?Battery
@@ -200,5 +207,29 @@ class BatteryReturn extends AbstractEntity
     public function setDeletedAt(?\DateTime $deletedAt)
     {
         $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->battery->getSerialNumber();
+    }
+
+    /**
+     * @return TransactionLog|null
+     */
+    public function getTransactionLog(): ?TransactionLog
+    {
+        return $this->transactionLog;
+    }
+
+    /**
+     * @param TransactionLog|null $transactionLog
+     */
+    public function setTransactionLog(?TransactionLog $transactionLog): void
+    {
+        $this->transactionLog = $transactionLog;
     }
 }

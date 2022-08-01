@@ -171,6 +171,7 @@ class BatteryController extends AbstractController
 
             $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RECYCLED);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
+            $battery->setUpdated(new \DateTime('now'));
             $this->entityManager->flush();
             $this->addFlash('success', $this->translator->trans('Report Added Successfully!'));
 

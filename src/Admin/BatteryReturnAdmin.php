@@ -56,7 +56,8 @@ class BatteryReturnAdmin extends AbstractAdmin
         $list
             ->addIdentifier('battery.serialNumber')
             ->addIdentifier('returnTo.name', TextType::class, [
-                'label' => 'Recycler Name'
+                'label' => 'Recycler Name',
+                'template' => 'return/list_recycler_name_field.html.twig'
             ])
             ->addIdentifier('returnDate', null, [
                 'label' => 'Return Date',

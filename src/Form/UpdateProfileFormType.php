@@ -59,7 +59,8 @@ class UpdateProfileFormType extends AbstractType
                     new NotBlank([
                         'message' => 'Please enter a valid number',
                     ]),
-                ]
+                ],
+                'label' => 'Phone Number'
             ])
             ->add('city', TextType::class, [
                 'attr' => [

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Battery;
 use App\Entity\BatteryReturn;
 use App\Entity\Recycler;
+use App\Entity\TransactionLog;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -29,23 +30,25 @@ class BatteryReturnRepository extends ServiceEntityRepository
     /**
      * @param User $user
      * @param Battery $battery
-     * @param Recycler $recycler
+     * @param Recycler|null $recycler
+     * @param TransactionLog|null $transactionLog
      * @return BatteryReturn
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createReturn(User $user, Battery $battery, Recycler $recycler): BatteryReturn
+    public function createReturn(User $user, Battery $battery, ?Recycler $recycler, ?TransactionLog $transactionLog): BatteryReturn
     {
-        $shipment = new BatteryReturn();
-        $shipment->setUpdated(new \DateTime('now'));
-        $shipment->setCreated(new \DateTime('now'));
-        $shipment->setReturnDate(new \DateTime('now'));
-        $shipment->setReturnFrom($user);
-        $shipment->setReturnTo($recycler);
-        $shipment->setBattery($battery);
-        $this->_em->persist($shipment);
+        $return = new BatteryReturn();
+        $return->setUpdated(new \DateTime('now'));
+        $return->setCreated(new \DateTime('now'));
+        $return->setReturnDate(new \DateTime('now'));
+        $return->setReturnFrom($user);
+        $return->setReturnTo($recycler);
+        $return->setBattery($battery);
+        $return->setTransactionLog($transactionLog);
+        $this->_em->persist($return);
         $this->_em->flush();
 
-        return $shipment;
+        return $return;
     }
 }
