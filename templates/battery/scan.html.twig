@@ -41,9 +41,30 @@
             outline: 0;
             box-shadow: 0 0 0 .25rem #d4edda;
         }
+        .mb-3 {
+            margin-bottom: 2rem;
+        }
+        .intro {
+            font-weight: 100;
+        }
+        .intro span {
+            font-size: 1.5rem;
+        }
+        #btn-div {
+            padding-left: 0;
+        }
+        #text-div {
+            padding-right: 0;
+        }
         @media (max-width: 900px) {
-            video#preview {
+            video#video {
                 width: 100% !important;
+            }
+            #btn-div {
+                padding-left: 16px;
+            }
+            #text-div {
+                padding-right: 16px;
             }
         }
     </style>
@@ -56,6 +77,10 @@
 
 {% block sonata_admin_content %}
     <div class="container">
+        <div class="row text-center pb-5 intro">
+            <h4>{{ "Please allow this website to use the camera." | trans }}</h4>
+            <span>{{ "If you are facing any issues, please check the settings of your Browser or Device." | trans }}</span>
+        </div>
         <div class="row mb-4">
             <div class="col-md-12">
                 <div id="error-messages" class="alert alert-danger" style="display: none">
@@ -64,16 +89,26 @@
                     <div class="scan-qr-div pt-7">
                         <video id="video" width="50%" style="border: 1px solid gray"></video>
                     </div>
+                    <div id="sourceSelectPanel" style="display:none;" class="mt-10">
+                        <select id="sourceSelect" class="form-select form-select-sm" aria-label="Select Camera" style="max-width:100%;margin: 0 auto;">
+                            <option disabled>{{ "Select Camera" | trans }}</option>
+                        </select>
+                    </div>
                 </div>
                 <hr>
+                <div class="mb-3">
+                    <small>
+                        <i class="fa fa-info-circle"></i>
+                        {{ "Bring the QR or barcode within the camera's field of view. After the serial number has been successfully read, it appears in the input field below the camera window. To retrieve the information, press the search button." | trans }}
+                    </small>
+                </div>
                 <div class="mb-3 text-center">
-
                     <form class="card p-2" action="{{ path }}" autocomplete="off">
                         <div class="row">
-                            <div class="col-md-10" style="padding-right: 0">
+                            <div class="col-md-10 mb-3" id="text-div">
                                 <input style="border-radius: 2px" type="text" name="search" id="search" class="form-control" placeholder="{{ "Detected ID" | trans }}">
                             </div>
-                            <div class="col-md-2" style="padding-left: 0">
+                            <div class="col-md-2 col-sm-12" id="btn-div">
                                 <button type="submit" id="btn-search" class="btn btn-green btn-block">{{ "Search" | trans }}</button>
                             </div>
                         </div>
@@ -108,6 +143,35 @@
                         console.log('No video devices found');
                         return;
                     }
+
+                    if (videoInputDevices.length > 1) {
+                        const sourceSelect = document.getElementById('sourceSelect');
+                        videoInputDevices.forEach((element) => {
+                            const sourceOption = document.createElement('option')
+                            sourceOption.text = element.label
+                            sourceOption.value = element.deviceId
+                            sourceSelect.appendChild(sourceOption)
+                        })
+
+                        sourceSelect.onchange = () => {
+                            console.log($("#sourceSelect option:selected").text());
+                            console.log(sourceSelect.value);
+                            let text = $("#sourceSelect option:selected").text();
+                            selectedDeviceId = sourceSelect.value;
+
+                            if (text.indexOf('back') !== -1 || text.indexOf('Back') !== -1) {
+                                $('.scan-qr-div').removeClass('videoElement');
+                            } else {
+                                $('.scan-qr-div').addClass('videoElement');
+                            }
+
+                            openCamera(codeReader, selectedDeviceId);
+                        }
+
+                        const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+                        sourceSelectPanel.style.display = 'block'
+                    }
+
                     selectedDeviceId = videoInputDevices[0].deviceId;
                     $('.scan-qr-div').addClass('videoElement');
                     $.each(videoInputDevices, (i, c) => {
@@ -117,21 +181,8 @@
                             return false;
                         }
                     });
-
-                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        if (result) {
-                            $('#btn-search').prop('disabled', false);
-                            console.log(result.getText())
-                            $('#search').val(result.text);
-                            $('#search').addClass('detected');
-                        }
-                        if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error(err)
-                            $('#error-messages').show();
-                            $('#error-messages').html(err.toString());
-                        }
-                    })
-                    console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+                    $('select>option[value="' + selectedDeviceId + '"]').prop('selected', true);
+                    openCamera(codeReader, selectedDeviceId);
                 })
                 .catch((err) => {
                     $('#error-messages').show();
@@ -139,5 +190,25 @@
                     console.error(err)
                 })
         })
+
+        function openCamera(codeReader, selectedDeviceId)
+        {
+            document.getElementById('search').textContent = '';
+            codeReader.reset();
+            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                if (result) {
+                    $('#btn-search').prop('disabled', false);
+                    console.log(result.getText())
+                    $('#search').val(result.text);
+                    $('#search').addClass('detected');
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err)
+                    $('#error-messages').show();
+                    $('#error-messages').html(err.toString());
+                }
+            })
+            console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+        }
     </script>
 {% endblock %}
