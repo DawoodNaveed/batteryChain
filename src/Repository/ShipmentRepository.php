@@ -41,7 +41,6 @@ class ShipmentRepository extends ServiceEntityRepository
         $shipment->setCreated(new \DateTime('now'));
         $shipment->setShipmentDate(new \DateTime('now'));
         $shipment->setShipmentFrom($user);
-        $shipment->setShipmentTo($user);
         $shipment->setBattery($battery);
         $shipment->setTransactionLog($transactionLog);
         $this->_em->persist($shipment);

@@ -52,6 +52,12 @@ class Shipment extends AbstractEntity
 
     /**
      * @var string|null
+     * @ORM\Column(name="name", type="string", length=255, nullable="true")
+     */
+    private $name;
+
+    /**
+     * @var string|null
      * @ORM\Column(name="address", type="text", nullable="true")
      */
     private $address;
@@ -143,6 +149,22 @@ class Shipment extends AbstractEntity
     public function setShipmentDate(?DateTime $shipmentDate): void
     {
         $this->shipmentDate = $shipmentDate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
