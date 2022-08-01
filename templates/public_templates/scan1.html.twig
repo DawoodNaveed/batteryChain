@@ -65,6 +65,11 @@
                         <div class="scan-qr-div pt-7">
                             <video id="video" width="50%" style="border: 1px solid gray"></video>
                         </div>
+                        <div id="sourceSelectPanel" style="display:none;" class="mt-10">
+                            <select id="sourceSelect" class="form-select form-select-sm" aria-label="Select Camera" style="max-width:500px;margin: 0 auto;">
+                                <option disabled>{{ "Select Camera" | trans }}</option>
+                            </select>
+                        </div>
                     </div>
                     <hr>
                     <div class="mb-3">
@@ -119,6 +124,35 @@
                             console.log('No video devices found');
                             return;
                         }
+
+                        if (videoInputDevices.length > 1) {
+                            const sourceSelect = document.getElementById('sourceSelect');
+                            videoInputDevices.forEach((element) => {
+                                const sourceOption = document.createElement('option')
+                                sourceOption.text = element.label
+                                sourceOption.value = element.deviceId
+                                sourceSelect.appendChild(sourceOption)
+                            })
+
+                            sourceSelect.onchange = () => {
+                                console.log($("#sourceSelect option:selected").text());
+                                console.log(sourceSelect.value);
+                                let text = $("#sourceSelect option:selected").text();
+                                selectedDeviceId = sourceSelect.value;
+
+                                if (text.indexOf('back') !== -1 || text.indexOf('Back') !== -1) {
+                                    $('.scan-qr-div').removeClass('videoElement');
+                                } else {
+                                    $('.scan-qr-div').addClass('videoElement');
+                                }
+
+                                openCamera(codeReader, selectedDeviceId);
+                            }
+
+                            const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+                            sourceSelectPanel.style.display = 'block'
+                        }
+
                         selectedDeviceId = videoInputDevices[0].deviceId;
                         $('.scan-qr-div').addClass('videoElement');
                         $.each(videoInputDevices, (i, c) => {
@@ -128,31 +162,8 @@
                                 return false;
                             }
                         });
-
-                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                            if (result) {
-                                $('#btn-search').prop('disabled', false);
-
-                                if(new RegExp("^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$").test(result.text)) {
-                                    $('#btn-search').hide();
-                                    $('#btn-go-to').show();
-                                    $("#btn-go-to").attr("href", result.text);
-                                } else {
-                                    $('#btn-search').show();
-                                    $('#btn-go-to').hide();
-                                    $("#btn-go-to").attr("href", '#');
-                                }
-
-                                console.log(result.getText())
-                                $('#search').val(result.text);
-                                $('#search').addClass('detected');
-                            }
-                            if (err && !(err instanceof ZXing.NotFoundException)) {
-                                console.error(err)
-                                $('#error-messages').show();
-                                $('#error-messages').html(err.toString());
-                            }
-                        })
+                        $('select>option[value="' + selectedDeviceId + '"]').prop('selected', true);
+                        openCamera(codeReader, selectedDeviceId);
                         console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
                     })
                     .catch((err) => {
@@ -161,6 +172,35 @@
                         console.error(err)
                     })
             })
+
+            function openCamera(codeReader, selectedDeviceId)
+            {
+                document.getElementById('result').textContent = '';
+                codeReader.reset();
+                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                    if (result) {
+                        $('#btn-search').prop('disabled', false);
+
+                        if(new RegExp("^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$").test(result.text)) {
+                            $('#btn-search').hide();
+                            $('#btn-go-to').show();
+                            $("#btn-go-to").attr("href", result.text);
+                        } else {
+                            $('#btn-search').show();
+                            $('#btn-go-to').hide();
+                            $("#btn-go-to").attr("href", '#');
+                        }
+                        console.log(result.getText())
+                        $('#search').val(result.text);
+                        $('#search').addClass('detected');
+                    }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err)
+                        $('#error-messages').show();
+                        $('#error-messages').html(err.toString());
+                    }
+                })
+            }
         </script>
     </body>
 {% endblock %}
