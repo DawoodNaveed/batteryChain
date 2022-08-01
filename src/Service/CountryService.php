@@ -63,4 +63,15 @@ class CountryService
             'name' => $name
         ]);
     }
+
+    /**
+     * @param string $code
+     * @return Country|null
+     */
+    public function getCountryByCode(string $code): ?Country
+    {
+        return $this->countryRepository->findOneBy([
+            'zipCode' => $code
+        ]);
+    }
 }

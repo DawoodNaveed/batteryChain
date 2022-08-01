@@ -6,7 +6,7 @@ service.success.battery_added_successfully: 'Batteries Added Successfully!'
 service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Batteries'
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
-service.error.bulk_register_batteries: '%failure_batteries% batteries are already registered or in queue to be registered!'
+service.error.bulk_register_batteries: '%failure_batteries% battery(s) are already registered or in queue to be registered!'
 service.info.flash_bulk_create_info_exist: "Some Manufacturer already has battery with similar serial numbers. So, we update serial number for '%count%' battery(s)."
 en: "English"
 de: "German"
@@ -85,3 +85,7 @@ Phone Number: "Phone Number"
 flash_create_error_exist: "Manufacturer already has battery with similar serial number '%name%'."
 flash_create_info_exist: "Some Manufacturer already has battery with similar serial number '%exist%'. So, serial number would be '%name%'"
 flash_edit_error_exist: "Battery with similar serial number '%name%' exists."
+
+Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!: 'Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!'
+Alert! %count% selected items are already registered so you cannot delete them.: 'Alert! %count% selected items are already registered so you cannot delete them.'
+Success! Only %count% pre-registered selected battery(s) have been successfully deleted.: 'Success! Only %count% pre-registered selected battery(s) have been successfully deleted.'

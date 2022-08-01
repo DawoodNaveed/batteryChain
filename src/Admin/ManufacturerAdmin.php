@@ -37,7 +37,9 @@ class ManufacturerAdmin extends AbstractAdmin
                 ->add('address', TextType::class)
                 ->add('country', TextType::class)
                 ->add('city', TextType::class)
-                ->add('contact', TextType::class);
+                ->add('contact', TextType::class, [
+                    'label' => 'Phone Number'
+                ]);
         }
     }
 
@@ -74,7 +76,9 @@ class ManufacturerAdmin extends AbstractAdmin
             ->add('address')
             ->add('city')
             ->add('country')
-            ->add('contact');
+            ->add('contact', TextType::class, [
+                'label' => 'Phone Number'
+            ]);
     }
 
     /**

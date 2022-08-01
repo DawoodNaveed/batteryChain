@@ -316,10 +316,11 @@ class BatteryService
                         continue;
                     }
 
-                    $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
-                    $shipment = $this->shipmentService->createShipment($user, $battery);
+                    $shipment = $this->shipmentService->createShipment($user, $battery, $transactionLog);
                 }
             }
 
@@ -338,10 +339,10 @@ class BatteryService
     /**
      * @param UploadedFile $file
      * @param User $user
-     * @param Recycler $recycler
+     * @param Recycler|null $recycler
      * @return array|null
      */
-    public function extractCsvAndAddReturns(UploadedFile $file, User $user, Recycler $recycler): ?array
+    public function extractCsvAndAddReturns(UploadedFile $file, User $user, ?Recycler $recycler): ?array
     {
         try {
             $error = [];
@@ -390,10 +391,11 @@ class BatteryService
                         continue;
                     }
 
-                    $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+                    $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
-                    $return = $this->returnService->createReturn($user, $battery, $recycler);
+                    $return = $this->returnService->createReturn($user, $battery, $recycler, $transactionLog);
                 }
             }
 
@@ -425,6 +427,7 @@ class BatteryService
         $this->filterByMode($dqlStatement, $validFilters);
         $this->filterByType($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters, $filename);
+        $this->filterByReportModeDate($dqlStatement, $validFilters);
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
@@ -453,6 +456,7 @@ class BatteryService
         $this->filterByMode($dqlStatement, $validFilters);
         $this->filterByType($dqlStatement, $validFilters);
         $this->filterByDates($dqlStatement, $validFilters);
+        $this->filterByReportModeDate($dqlStatement, $validFilters);
         $this->filterByNominalVoltage($dqlStatement, $validFilters);
         $this->filterByNominalCapacity($dqlStatement, $validFilters);
         $this->filterByNominalEnergy($dqlStatement, $validFilters);
@@ -553,6 +557,26 @@ class BatteryService
 
             if (!empty($filename)) {
                 $filename .= $startDate . ' - ' . (new \DateTime($dates[1]))->format('Y-m-d');
+            }
+        }
+    }
+
+    /**
+     * @param string $dqlStatement
+     * @param array $validFilters
+     * @throws \Exception
+     */
+    private function filterByReportModeDate(string &$dqlStatement, array $validFilters)
+    {
+        if (isset($validFilters['report_period'])) {
+            $dates = explode(' - ', $validFilters['report_period']);
+            $startDate = (new \DateTime($dates[0]))->format('Y-m-d');
+            $endDate = (new \DateTime('+1 day' . $dates[1]))->format('Y-m-d');
+
+            if (CustomHelper::validateReportMode($validFilters['mode'])) {
+                $dqlStatement .= " AND (t.created BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND t.transactionType = '" . $validFilters['mode'] . "')";
+            } else {
+                $dqlStatement .= " AND ((t.created BETWEEN '" . $startDate . "' AND '" . $endDate . "') OR (b.status = 'pre-registered' AND b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "'))";
             }
         }
     }

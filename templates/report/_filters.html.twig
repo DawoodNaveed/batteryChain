@@ -68,6 +68,21 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-4">
                             <ul class="filters__checklists">
+                                <h4>{{ 'Report Period'|trans }}{{ ":" }}</h4>
+                                <li style="width: 100%;">
+                                    <div class="icon-addon addon-sm">
+                                        <input readonly type="text" class="form-control" id="report_period" name="report_period"
+                                               value="{{ app.request.get('report_period') }}" placeholder="{{ "Select range"|trans }}"
+                                               style="border-radius: 5px; width: 100%">
+                                        <label for="report_period" class="fa fa-calendar" rel="tooltip" title="report_period"></label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-4">
+                            <ul class="filters__checklists">
                                 <h4 class="mb-0">{{ 'Battery Type'|trans }}{{ ":" }}</h4>
                                 <li style="width: 100%;">
                                     <label style="width: 100%;">
