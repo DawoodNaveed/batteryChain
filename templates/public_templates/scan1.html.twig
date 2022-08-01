@@ -135,7 +135,17 @@
                             })
 
                             sourceSelect.onchange = () => {
+                                console.log($("#sourceSelect option:selected").text());
+                                console.log(sourceSelect.value);
+                                let text = $("#sourceSelect option:selected").text();
                                 selectedDeviceId = sourceSelect.value;
+
+                                if (text.indexOf('back') !== -1 || text.indexOf('Back') !== -1) {
+                                    $('.scan-qr-div').removeClass('videoElement');
+                                } else {
+                                    $('.scan-qr-div').addClass('videoElement');
+                                }
+
                                 openCamera(codeReader, selectedDeviceId);
                             }
 
@@ -152,6 +162,7 @@
                                 return false;
                             }
                         });
+                        $('select>option[value="' + selectedDeviceId + '"]').prop('selected', true);
                         openCamera(codeReader, selectedDeviceId);
                         console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
                     })
@@ -166,7 +177,7 @@
             {
                 document.getElementById('result').textContent = '';
                 codeReader.reset();
-                codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     if (result) {
                         $('#btn-search').prop('disabled', false);
 
