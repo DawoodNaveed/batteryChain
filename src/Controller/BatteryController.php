@@ -509,6 +509,7 @@ class BatteryController extends CRUDController
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_REGISTERED);
                     $battery->setIsBulkImport(false);
+                    $battery->setUpdated(new \DateTime('now'));
                     $this->transactionLogService->createTransactionLog(
                         $battery,
                         CustomHelper::BATTERY_STATUS_REGISTERED

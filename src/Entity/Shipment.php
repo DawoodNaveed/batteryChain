@@ -52,6 +52,12 @@ class Shipment extends AbstractEntity
 
     /**
      * @var string|null
+     * @ORM\Column(name="name", type="string", length=255, nullable="true")
+     */
+    private $name;
+
+    /**
+     * @var string|null
      * @ORM\Column(name="address", type="text", nullable="true")
      */
     private $address;
@@ -73,6 +79,13 @@ class Shipment extends AbstractEntity
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
+
+    /**
+     * @var TransactionLog|null
+     * @ORM\OneToOne(targetEntity="App\Entity\TransactionLog", inversedBy="shipment", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="transaction_log_id", referencedColumnName="id")
+     */
+    private $transactionLog;
 
     /**
      * @return Battery|null
@@ -136,6 +149,22 @@ class Shipment extends AbstractEntity
     public function setShipmentDate(?DateTime $shipmentDate): void
     {
         $this->shipmentDate = $shipmentDate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
     }
 
     /**
@@ -208,5 +237,21 @@ class Shipment extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->battery->getSerialNumber();
+    }
+
+    /**
+     * @return TransactionLog|null
+     */
+    public function getTransactionLog(): ?TransactionLog
+    {
+        return $this->transactionLog;
+    }
+
+    /**
+     * @param TransactionLog|null $transactionLog
+     */
+    public function setTransactionLog(?TransactionLog $transactionLog): void
+    {
+        $this->transactionLog = $transactionLog;
     }
 }

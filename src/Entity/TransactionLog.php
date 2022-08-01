@@ -55,6 +55,34 @@ class TransactionLog extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @var BatteryReturn|null
+     * @ORM\OneToOne(targetEntity="App\Entity\BatteryReturn", mappedBy="transactionLog")
+     */
+    protected $batteryReturn;
+
+    /**
+     * @var Shipment|null
+     * @ORM\OneToOne(targetEntity="App\Entity\Shipment", mappedBy="transactionLog")
+     */
+    protected $shipment;
+
+    /**
+     * @return BatteryReturn|null
+     */
+    public function getBatteryReturn(): ?BatteryReturn
+    {
+        return $this->batteryReturn;
+    }
+
+    /**
+     * @return Shipment|null
+     */
+    public function getShipment(): ?Shipment
+    {
+        return $this->shipment;
+    }
+
+    /**
      * @return Battery
      */
     public function getBattery(): Battery

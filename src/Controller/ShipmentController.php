@@ -119,18 +119,20 @@ class ShipmentController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
-            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
             $shipment = new Shipment();
             $shipment->setUpdated(new \DateTime('now'));
             $shipment->setCreated(new \DateTime('now'));
+            $shipment->setName($formData['information']['name']);
             $shipment->setAddress($formData['information']['address']);
             $shipment->setCity($formData['information']['city']);
             $shipment->setCountry($formData['information']['country']);
             $shipment->setShipmentDate(new \DateTime('now'));
             $shipment->setShipmentFrom($user);
-            $shipment->setShipmentTo($user);
             $shipment->setBattery($battery);
+            $shipment->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+            $battery->setUpdated(new \DateTime('now'));
             $battery->setCurrentPossessor($user);
 
             $this->entityManager->persist($shipment);

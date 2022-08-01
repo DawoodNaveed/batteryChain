@@ -219,13 +219,15 @@ class ReturnController extends AbstractController
                 $formData['information']['contact'] = $recycler->getContact();
             }
 
-            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $battery->setUpdated(new \DateTime('now'));
             $this->returnService
                 ->createReturn(
                     $battery->getManufacturer()->getUser(),
                     $battery,
-                    $recycler
+                    $recycler,
+                    $transactionLog
                 );
 
             $this->recyclerService

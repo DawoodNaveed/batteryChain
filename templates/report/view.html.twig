@@ -64,7 +64,7 @@
             margin-top: 0 !important;
             display: inline-flex !important;
         }
-        #period {
+        #period, #report_period {
             background-color: #fff;
         }
         .report-content {
@@ -161,6 +161,16 @@
             locale: { cancelLabel: 'Clear' }
         });
         $('#period').on('cancel.daterangepicker', function(ev, picker) {
+            //do something, like clearing an input
+            $(this).data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY")); //date now
+            $(this).data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));
+        });
+
+        // Datepicker jQuery
+        $('input[name="report_period"]').daterangepicker({
+            locale: { cancelLabel: 'Clear' }
+        });
+        $('#report_period').on('cancel.daterangepicker', function(ev, picker) {
             //do something, like clearing an input
             $(this).data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY")); //date now
             $(this).data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));

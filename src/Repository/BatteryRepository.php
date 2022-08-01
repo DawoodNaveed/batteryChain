@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Battery;
 use App\Entity\Manufacturer;
+use App\Entity\TransactionLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
@@ -76,9 +77,10 @@ class BatteryRepository extends ServiceEntityRepository
     public function getBatteriesByFilters(string $dqlStatement)
     {
         return $this->createQueryBuilder('b')
-            ->select('b as battery', 'bt.type')
+            ->select('DISTINCT b as battery', 'bt.type')
             ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
             ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
             ->where($dqlStatement)
             ->getQuery()
             ->getResult();
@@ -91,9 +93,10 @@ class BatteryRepository extends ServiceEntityRepository
     public function getBatteriesArrayByFilters(string $dqlStatement)
     {
         return $this->createQueryBuilder('b')
-            ->select('b as battery', 'bt.type')
+            ->select('DISTINCT b as battery', 'bt.type')
             ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
             ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
             ->where($dqlStatement)
             ->getQuery()
             ->getArrayResult();

@@ -31,6 +31,13 @@ class ShipmentFormType extends AbstractType
             $builder->create('information', FormType::class, ['by_reference' => false,
                 'label_attr' => ['style' => 'font-size: medium'], 'required' => false, 'label' => 'Additional Information (optional)',
             ])
+                ->add('name', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                    'label' => 'Name or Company',
+                    'required' => false,
+                ])
                 ->add('address', TextType::class, [
                     'attr' => [
                         'class' => 'form-control'

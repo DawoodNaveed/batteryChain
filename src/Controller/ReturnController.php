@@ -136,7 +136,7 @@ class ReturnController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
-            $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
             $return = new BatteryReturn();
             $return->setUpdated(new \DateTime('now'));
             $return->setCreated(new \DateTime('now'));
@@ -147,7 +147,9 @@ class ReturnController extends CRUDController
             $return->setReturnFrom($user);
             $return->setReturnTo($recycler instanceof Recycler ? $recycler : null);
             $return->setBattery($battery);
+            $return->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
+            $battery->setUpdated(new \DateTime('now'));
             $battery->setCurrentPossessor($user);
 
             $this->entityManager->persist($return);
