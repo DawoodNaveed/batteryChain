@@ -69,10 +69,11 @@ class RecyclerRepository extends ServiceEntityRepository
 
         if (!$recycler instanceof Recycler) {
             $recycler = new Recycler();
+            $recycler->setEmail($data['email']);
             $isNew = true;
         }
 
-        if (!empty($data['updated_email']) && $data['updated_email'] !== $data['email'])
+        if (!$isNew && !empty($data['updated_email']) && $data['updated_email'] !== $data['email'])
         {
             $recycler->setEmail($data['updated_email']);
         }
