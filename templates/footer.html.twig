@@ -11,9 +11,7 @@
             {% set underline_class = 'underline-none' %}
         {% endif %}
         <small>
-            <a class="lang_link {{ underline_class }}" href="{{ path(route, params|merge({ _locale: locale })) }}">
-                {{ locale | trans }}
-            </a>
+            <a class="lang_link {{ underline_class }}" href="{{ path(route, params|merge({ _locale: locale })) }}">{{ locale | trans | trim }}</a>
         </small>
         {% if key != (count - 1) %}
             <span class="ms-1 me-1">
