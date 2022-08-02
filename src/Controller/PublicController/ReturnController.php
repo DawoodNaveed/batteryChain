@@ -134,22 +134,25 @@ class ReturnController extends AbstractController
         $isFallback = false;
         $response = CustomHelper::get_ip_address();
 
-        if (empty($response)) {
+        if (!empty($response)) {
+            $details = CustomHelper::get_ip_details($response);
+        }
+
+        if (empty($details) ||
+            ($details['country_code'] === 'xx' || $details['country_code'] === 'XX')) {
             $response = CustomHelper::sendCurlRequestToGetIp(Request::METHOD_GET, ['Content-Type: application/json']);
 
             if (!empty($response->ip)) {
-                $response = $response->ip;
+                $details = CustomHelper::get_ip_details($response->ip);
             }
         }
-
-        $details = CustomHelper::get_ip_details($response);
 
         if (!empty($details) && $details['country_code'] !== 'xx' && $details['country_code'] !== 'XX') {
             $country = $this->countryService->getCountryByCode($details['country_code']);
         }
 
         if (empty($country)) {
-            $country = $this->countryService->getCountryByName('Switzerland');
+            $country = $this->countryService->countryRepository->findOneBy([], ['name' => 'ASC']);
         }
 
         $recyclers = $this->recyclerService->fetchManufacturerRecyclersByCountry(
