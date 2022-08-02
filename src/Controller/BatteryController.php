@@ -482,6 +482,52 @@ class BatteryController extends CRUDController
     }
 
     /**
+     * @param ProxyQueryInterface $selectedModelQuery
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function batchActionDownload(ProxyQueryInterface $selectedModelQuery, Request $request): RedirectResponse
+    {
+        $this->admin->checkAccess('edit');
+        $this->admin->checkAccess('delete');
+        $selectedModels = $selectedModelQuery->execute();
+
+        try {
+            foreach ($selectedModels as $selectedModel) {
+                $ids[] = $selectedModel->getId();
+            }
+
+            return new RedirectResponse(
+                $this->admin->generateUrl('downloadBatchPdf', [
+                    'ids' => $ids,
+                ])
+            );
+        } catch (\Exception $e) {
+            $this->addFlash('sonata_flash_error', $e->getMessage());
+
+            return new RedirectResponse(
+                $this->admin->generateUrl('list', [
+                    'filter' => $this->admin->getFilterParameters()
+                ])
+            );
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function downloadBatchPdfAction(Request $request): RedirectResponse
+    {
+        $batteries = $this->batteryService->getBatteriesByIds($request->get('ids'));
+        $this->pdfService->createBatteriesReportPdf($batteries, 'Batteries');
+        exit();
+    }
+
+    /**
      * @param Request $request
      * @return RedirectResponse
      */

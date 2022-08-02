@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
 use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -716,5 +717,22 @@ class BatteryService
                 $dqlStatement .= " AND (b.length BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
+    }
+
+    /**
+     * @param $ids
+     * @return Battery[]|null
+     */
+    public function getBatteriesByIds($ids): ?array
+    {
+        return $this->batteryRepository->createQueryBuilder('b')
+            ->select('DISTINCT b as battery', 'bt.type')
+            ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
+            ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
+            ->where('b.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
     }
 }
