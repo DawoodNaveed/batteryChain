@@ -52,7 +52,7 @@ class CsvService
         header('Content-Type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
         $f = fopen('php://output', 'w');
-        $header = ['Name', 'Email', 'Address', 'City', 'Country', 'Contact'];
+        $header = ['Name', 'Email', 'Address','Post Code', 'City', 'Country', 'Contact'];
         fputcsv($f, $header);
         /** @var Recycler $recycler */
         foreach ($recyclers as $recycler) {
@@ -60,6 +60,7 @@ class CsvService
                 $recycler->getName(),
                 $recycler->getEmail(),
                 $recycler->getAddress(),
+                $recycler->getPostalCode(),
                 $recycler->getCity(),
                 $recycler->getCountry()->getName(),
                 (string) $recycler->getContact(),
@@ -78,7 +79,7 @@ class CsvService
         header('Content-Type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
         $f = fopen('php://output', 'w');
-        $header = ['Name', 'Email', 'Address', 'City', 'Country', 'Contact'];
+        $header = ['Name', 'Email', 'Address', 'Post Code', 'City', 'Country', 'Contact'];
         fputcsv($f, $header);
         /** @var Recycler $recycler */
         foreach ($recyclers as $recycler) {
@@ -86,6 +87,7 @@ class CsvService
                 $recycler['name'],
                 $recycler['email'],
                 $recycler['address'],
+                $recycler['postalCode'],
                 $recycler['city'],
                 $recycler['country_name'],
                 (string) $recycler['contact'],

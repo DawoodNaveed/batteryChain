@@ -180,7 +180,7 @@ class RecyclerRepository extends ServiceEntityRepository
      */
     public function fetchFallbackRecyclers()
     {
-        $query = 'SELECT r.name, r.address, r.contact, r.email, r.city, c.name as country_name from recycler r left outer join manufacturers_recyclers ' .
+        $query = 'SELECT r.name, r.address, r.contact, r.email, r.postal_code as postalCode, r.city, c.name as country_name from recycler r left outer join manufacturers_recyclers ' .
             'ON (r.id = manufacturers_recyclers.recycler_id) join country c ON r.country_id = c.id ' .
             'WHERE manufacturers_recyclers.manufacturer_id is null and r.deleted_at is null';
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
