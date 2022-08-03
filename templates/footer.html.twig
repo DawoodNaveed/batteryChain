@@ -19,8 +19,9 @@
             </span>
         {% endif %}
     {% endfor %}
-    <p class="mb-1">&copy; {{ 'now' | date('Y') }} Battery Chain</p>
+    <p class="mb-1">&copy; {{ 'now' | date('Y') }} Battery Chain AG</p>
     <ul class="list-inline">
+        <li class="list-inline-item"><a href="{{ path('about') }}">{{ "About" | trans }}</a></li>
         <li class="list-inline-item"><a href="#">{{ "Privacy" | trans }}</a></li>
         <li class="list-inline-item"><a href="#">{{ "Terms" | trans }}</a></li>
         <li class="list-inline-item"><a href="#">{{ "Support" | trans }}</a></li>

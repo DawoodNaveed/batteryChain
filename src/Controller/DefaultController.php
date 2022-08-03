@@ -217,4 +217,13 @@ class DefaultController extends AbstractController
             ]
         );
     }
+
+    /**
+     * @Route(name="about", path="about")
+     * @return Response
+     */
+    public function aboutPage(): Response
+    {
+        return $this->render('about.html.twig');
+    }
 }
