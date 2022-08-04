@@ -60,6 +60,11 @@ class CustomHelper
         'serial_number'
     ];
 
+    /** @var array */
+    const RECYCLE_CSV_HEADERS = [
+        'serial_number'
+    ];
+
     const BATTERY_STATUS_PRE_REGISTERED = 'pre-registered';
     const BATTERY_STATUS_REGISTERED = 'registered';
     const BATTERY_STATUS_DELIVERED = 'delivered';

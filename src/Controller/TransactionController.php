@@ -8,6 +8,7 @@ use App\Entity\Manufacturer;
 use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\RoleEnum;
+use App\Form\BulkRecycleFormType;
 use App\Form\BulkReturnFormType;
 use App\Form\RecycleFormType;
 use App\Form\ReturnFormType;
@@ -381,6 +382,111 @@ class TransactionController  extends CRUDController
 
         return $this->render(
             'recycle/add_single_recycle.html.twig',
+            array(
+                'form' => $form->createView(),
+            )
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function bulkRecycleAction(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $manufacturers = null;
+
+        // In-Case of Super Admin
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
+            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
+            $manufacturers = $this->manufacturerService->getManufactures($user, true);
+        }
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers());
+            $recyclers = array_merge([
+                $user->getManufacturer()->getName() => $user->getManufacturer()
+            ], $recyclers);
+        } else {
+            $recyclers = $this->recyclerService->getAllRecyclers();
+            $recyclers = $this->recyclerService->toChoiceArray($recyclers);
+        }
+
+        $form = $this->createForm(BulkRecycleFormType::class, null, [
+            'manufacturer' => $manufacturers,
+            'recyclers' => $recyclers
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            /** @var Manufacturer $manufacturer */
+            $manufacturer = $formData['manufacturer'] ?? null;
+
+            if (!empty($manufacturer)) {
+                $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy([
+                    'id' => $manufacturer
+                ]);
+            }
+            /** @var Recycler|null $recycler */
+            $recycler = $formData['recycler'] ?? null;
+
+            if (empty($recycler)) {
+                $this->addFlash('sonata_flash_error', 'Kindly provide Recycler!');
+                return new RedirectResponse($this->admin->generateUrl('bulkRecycle'));
+            } else {
+                // if battery return to manufacturer
+                if ($recycler instanceof Manufacturer) {
+                    $recycler = null;
+                } else {
+                    $recycler = $this->recyclerService->recyclerRepository->findOneBy([
+                        'id' => $recycler
+                    ]);
+                }
+            }
+
+            $file = $request->files->all();
+
+            if (!empty($file) && isset($file['bulk_recycle_form']['csv'])) {
+                /** @var UploadedFile $file */
+                $file = $file['bulk_recycle_form']['csv'];
+                $validCsv = $this->batteryService->isValidCsv($file);
+                if ($validCsv['error'] == 0) {
+                    if (!empty($manufacturer)) {
+                        $user = $manufacturer->getUser();
+                    }
+
+                    $addRecycles = $this->batteryService->extractCsvAndAddRecycles($file, $user, $recycler);
+
+                    if (!empty($addRecycles) && !empty($addRecycles['error'])) {
+                        foreach ($addRecycles['error'] as $error) {
+                            $this->addFlash('error', $this->translator->trans($error['message']));
+                        }
+                    }
+
+                    if (!empty($addRecycles) && $addRecycles['total'] === 0 ) {
+                        $this->addFlash('error', $this->translator->trans('Please provide serial numbers!'));
+                    }
+
+                    if (!empty($addRecycles) && $addRecycles['successful'] > 0 ) {
+                        $this->addFlash('success', $this->translator->trans('service.success.bulk_recycle_added', [
+                            '%total%' => $addRecycles['successful']
+                        ]));
+                    }
+                } else {
+                    $this->addFlash('error', $this->translator->trans($validCsv['message']));
+                }
+
+                return new RedirectResponse($this->admin->generateUrl('list'));
+            }
+        }
+
+        return $this->render(
+            'recycle/bulk_recycles.html.twig',
             array(
                 'form' => $form->createView(),
             )

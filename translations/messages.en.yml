@@ -3,11 +3,12 @@ service.error.file_size_exceeds: 'Error! File size exceeded.'
 service.error.something_went_wrong: 'Error! Something went wrong.'
 service.error.invalid_csv_headers: 'Error! Please upload valid csv with valid headers.'
 service.success.battery_added_successfully: 'Batteries Added Successfully!'
-service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Batteries'
+service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Battery(s)'
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
 service.error.bulk_register_batteries: '%failure_batteries% battery(s) are already registered or in queue to be registered!'
 service.info.flash_bulk_create_info_exist: "Some Manufacturer already has battery with similar serial numbers. So, we update serial number for '%count%' battery(s)."
+service.success.bulk_recycle_added: 'Success! Recycle added for %total% battery(s)'
 en: "English"
 de: "German"
 #Home-page Translations
