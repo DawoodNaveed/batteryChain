@@ -1,0 +1,36 @@
+{% extends 'layout.html.twig' %}
+
+{% block sonata_breadcrumb %}
+    <div class="hidden-xs">
+        <ol class="nav navbar-top-links breadcrumb">
+            <li>
+                <a href="/admin">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li class="active">
+                <span>{{ "Add Return" }}</span>
+            </li>
+        </ol>
+    </div>
+{% endblock sonata_breadcrumb %}
+
+{% block sonata_admin_content %}
+    {% block notice %}
+        {{ parent() }}
+    {% endblock notice %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_start(form) }}
+                {{ form_row(form.battery) }}
+                {{ form_row(form.recycler) }}
+                <div class="mt-10">
+                    <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100 mr-5">{{ "Add Recycle" }}</button>
+                    <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

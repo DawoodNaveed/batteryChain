@@ -16,6 +16,18 @@
                      {{ "Add Return" | trans }}
                  </a>
              </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" href="{{ admin.generateUrl('bulkRecycle') }}">
+                     <i class="fa fa-recycle" aria-hidden="true"></i>
+                     {{ "Add Bulk Recycle" | trans }}
+                 </a>
+             </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('recycle')}}">
+                     <i class="fa fa-recycle" aria-hidden="true"></i>
+                     {{ "Add Recycle" | trans }}
+                 </a>
+             </li>
          </ul>
      {% endif  %}
  {% endblock sonata_admin_content_actions_wrappers %}
