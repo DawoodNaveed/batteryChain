@@ -42,6 +42,30 @@ class TransactionLogService
     /**
      * @param Battery $battery
      * @param User $user
+     * @param array|null $data
+     * @param string $transactionType
+     * @return TransactionLog
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function createDeliveryTransactionLog(
+        Battery $battery,
+        User $user,
+        ?array $data,
+        string $transactionType = CustomHelper::BATTERY_STATUS_DELIVERED
+    ): TransactionLog {
+        return $this->transactionLogRepository
+            ->createDeliveryTransactionLog(
+                $battery,
+                $user,
+                $data,
+                $transactionType
+            );
+    }
+
+    /**
+     * @param Battery $battery
+     * @param User $user
      * @param Recycler|null $recycler
      * @param array|null $data
      * @param string $transactionType

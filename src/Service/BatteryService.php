@@ -317,7 +317,12 @@ class BatteryService
                         continue;
                     }
 
-                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $transactionLog = $this->transactionLogService
+                        ->createDeliveryTransactionLog(
+                            $battery,
+                            $user,
+                            null
+                        );
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);

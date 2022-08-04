@@ -114,6 +114,44 @@ class TransactionLogRepository extends ServiceEntityRepository
     /**
      * @param Battery $battery
      * @param User $user
+     * @param array|null $formData
+     * @param string $transactionType
+     * @param string $status
+     * @return TransactionLog
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function createDeliveryTransactionLog(
+        Battery $battery,
+        User $user,
+        ?array $formData,
+        string $transactionType,
+        string $status = CustomHelper::STATUS_PENDING): TransactionLog
+    {
+        $transactionLog = new TransactionLog();
+        $transactionLog->setBattery($battery);
+        $transactionLog->setTransactionType($transactionType);
+        $transactionLog->setFromUser($user);
+        $transactionLog->setStatus($status);
+        $transactionLog->setCreated(new \DateTime('now'));
+        $transactionLog->setUpdated(new \DateTime('now'));
+
+        if (!empty($formData)) {
+            $transactionLog->setAddress($formData['address'] ?? null);
+            $transactionLog->setPostalCode($formData['postalCode'] ?? null);
+            $transactionLog->setCity($formData['city'] ?? null);
+            $transactionLog->setCountry($formData['country'] ?? null);
+        }
+
+        $this->_em->persist($transactionLog);
+        $this->_em->flush();
+
+        return $transactionLog;
+    }
+
+    /**
+     * @param Battery $battery
+     * @param User $user
      * @param Recycler|null $recycler
      * @param array|null $formData
      * @param string $transactionType
