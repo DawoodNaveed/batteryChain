@@ -29,7 +29,12 @@ class ReCaptchaService
             $request->getClientIp()
         );
 
-        if ($resp->isSuccess()) {
+        /*
+            NOTE: score conditional is optional, since the successful score default
+            is set at >= 0.5 by Google. Some developers want to
+            be able to control score result conditions, so added it
+        */
+        if ($resp->isSuccess() && $resp->getScore() >= 0.5) {
            return true;
         }
 
