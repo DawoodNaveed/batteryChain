@@ -3,7 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Battery;
+use App\Entity\Recycler;
 use App\Entity\TransactionLog;
+use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\TransactionLogRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -35,6 +37,33 @@ class TransactionLogService
     public function createTransactionLog(Battery $battery, string $transactionType = CustomHelper::BATTERY_STATUS_REGISTERED): TransactionLog
     {
         return $this->transactionLogRepository->createTransactionLog($battery, $transactionType);
+    }
+
+    /**
+     * @param Battery $battery
+     * @param User $user
+     * @param Recycler|null $recycler
+     * @param array|null $data
+     * @param string $transactionType
+     * @return TransactionLog
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function createReturnTransactionLog(
+        Battery $battery,
+        User $user,
+        ?Recycler $recycler,
+        ?array $data,
+        string $transactionType = CustomHelper::BATTERY_STATUS_REGISTERED
+    ): TransactionLog {
+        return $this->transactionLogRepository
+            ->createReturnTransactionLog(
+                $battery,
+                $user,
+                $recycler,
+                $data,
+                $transactionType
+            );
     }
 
     /**

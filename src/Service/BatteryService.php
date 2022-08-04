@@ -392,7 +392,14 @@ class BatteryService
                         continue;
                     }
 
-                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+                    $transactionLog = $this->transactionLogService
+                        ->createReturnTransactionLog(
+                            $battery,
+                            $user,
+                            $recycler instanceof Recycler ? $recycler : null,
+                            null,
+                            CustomHelper::BATTERY_STATUS_RETURNED
+                        );
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);

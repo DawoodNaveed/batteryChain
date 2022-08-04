@@ -90,6 +90,15 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, label: Returns, group: Return }
 
+    admin.transaction:
+        class: App\Admin\TransactionAdmin
+        arguments: [~, App\Entity\TransactionLog, App\Controller\TransactionController]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+            - [ setTemplate, [ 'layout', 'return/list.html.twig' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "Return/Recycle", group: "Return/Recycle" }
+
     admin.country:
         class: App\Admin\CountryAdmin
         arguments: [~, App\Entity\Country, ~]

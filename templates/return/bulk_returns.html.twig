@@ -57,7 +57,7 @@
                 data[$manufacturer.attr('name')] = $manufacturer.val();
                 // Submit data via AJAX to the form's action path.
                 $.ajax({
-                    url : '/admin/app/batteryreturn/getRecyclerByManufacturer',
+                    url : '/admin/app/transactionlog/getRecyclerByManufacturer',
                     type: 'POST',
                     data : data,
                     success: function(data) {

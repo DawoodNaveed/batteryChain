@@ -43,6 +43,13 @@ class ReturnFormType extends AbstractType
                     ],
                     'required' => false,
                 ])
+                ->add('postalCode', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                    'label' => 'Post Code',
+                    'required' => false,
+                ])
                 ->add('city', TextType::class, [
                     'attr' => [
                         'class' => 'form-control'

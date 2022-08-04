@@ -88,6 +88,12 @@ class Recycler extends AbstractEntity
     private $returnsTo;
 
     /**
+     * One Recycler has many transactions.
+     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="returnTo")
+     */
+    private $returnTransactions;
+
+    /**
      * @var \DateTime|null
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
@@ -99,6 +105,7 @@ class Recycler extends AbstractEntity
     public function __construct() {
         $this->manufacturers = new ArrayCollection();
         $this->returnsTo = new ArrayCollection();
+        $this->returnTransactions = new ArrayCollection();
     }
 
     /**
@@ -330,6 +337,38 @@ class Recycler extends AbstractEntity
     public function removeReturnsTo(BatteryReturn $return): self
     {
         $this->returnsTo->removeElement($return);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TransactionLog[]
+     */
+    public function getReturnTransactions(): Collection
+    {
+        return $this->returnTransactions;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function addReturnTransactions(TransactionLog $transactionLog): self
+    {
+        if (!$this->returnTransactions->contains($transactionLog)) {
+            $this->returnTransactions[] = $transactionLog;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function removeReturnTransactions(TransactionLog $transactionLog): self
+    {
+        $this->returnTransactions->removeElement($transactionLog);
 
         return $this;
     }

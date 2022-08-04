@@ -29,7 +29,11 @@ sonata_admin:
         icon: '<i class="fa fa-battery"></i>'
         on-top: true
         roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER' ]
-      Return:
+#      Return:
+#        icon: '<i class="fa fa-file"></i>'
+#        on-top: true
+#        roles: [ 'ROLE_MANUFACTURER' ]
+      "Return/Recycle":
         icon: '<i class="fa fa-file"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]
