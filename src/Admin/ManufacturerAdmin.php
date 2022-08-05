@@ -34,12 +34,15 @@ class ManufacturerAdmin extends AbstractAdmin
                 ->add('user', AdminType::class);
         } else {
             $form
-                ->add('address', TextType::class)
-                ->add('country', TextType::class)
-                ->add('city', TextType::class)
                 ->add('contact', TextType::class, [
                     'label' => 'Phone Number'
-                ]);
+                ])
+                ->add('address', TextType::class)
+                ->add('postalCode', TextType::class, [
+                    'label' => 'Post Code'
+                ])
+                ->add('city', TextType::class)
+                ->add('country', TextType::class);
         }
     }
 
@@ -52,6 +55,9 @@ class ManufacturerAdmin extends AbstractAdmin
         $list
             ->addIdentifier('name')
             ->addIdentifier('address')
+            ->addIdentifier('postalCode', TextType::class, [
+                'label' => 'Post Code'
+            ])
             ->addIdentifier('city')
             ->addIdentifier('country');
     }
@@ -73,12 +79,16 @@ class ManufacturerAdmin extends AbstractAdmin
             ->add('user.email', EmailType::class, [
                 'label' => 'Email'
             ])
-            ->add('address')
-            ->add('city')
-            ->add('country')
             ->add('contact', TextType::class, [
                 'label' => 'Phone Number'
-            ]);
+            ])
+            ->add('address')
+            ->add('postalCode', TextType::class, [
+                'label' => 'Post Code'
+            ])
+            ->add('city')
+            ->add('country')
+        ;
     }
 
     /**

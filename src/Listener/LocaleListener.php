@@ -15,6 +15,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property TranslatorInterface translator
  * @property UrlGeneratorInterface urlGenerator
  * @property SessionInterface session
+ * @property $availableLocales
  */
 class LocaleListener implements EventSubscriberInterface
 {
@@ -23,15 +24,18 @@ class LocaleListener implements EventSubscriberInterface
      * @param TranslatorInterface $translator
      * @param UrlGeneratorInterface $urlGenerator
      * @param SessionInterface $session
+     * @param $availableLocales
      */
     public function __construct(
         TranslatorInterface $translator,
         UrlGeneratorInterface $urlGenerator,
-        SessionInterface $session
+        SessionInterface $session,
+        $availableLocales
     ) {
         $this->translator = $translator;
         $this->urlGenerator = $urlGenerator;
         $this->session = $session;
+        $this->availableLocales = $availableLocales;
     }
 
     /**
@@ -40,6 +44,7 @@ class LocaleListener implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
+        $sessionSet = false;
 
         if (!$request->hasPreviousSession()) {
             return;
@@ -54,11 +59,22 @@ class LocaleListener implements EventSubscriberInterface
             $request->setLocale($request->get('_locale'));
             $this->translator->setLocale($request->get('_locale'));
             $this->session->set('_locale', $request->get('_locale'));
+            $sessionSet = true;
         }
 
         if (!empty($this->session->get('_locale'))) {
             $request->setLocale($this->session->get('_locale'));
             $this->translator->setLocale($this->session->get('_locale'));
+            $sessionSet = true;
+        }
+
+        if ($sessionSet === false) {
+            $lang = substr($request->server->get('HTTP_ACCEPT_LANGUAGE'), 0, 2);
+            $acceptLang = explode('|', $this->availableLocales);
+            $lang = in_array($lang, $acceptLang) ? $lang : 'en';
+            $request->setLocale($lang);
+            $this->translator->setLocale($lang);
+            $this->session->set('_locale', $lang);
         }
     }
 

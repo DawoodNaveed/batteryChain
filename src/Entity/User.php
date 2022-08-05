@@ -138,6 +138,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $returnsFrom;
 
     /**
+     * One User has many return/delivery transactions From.
+     * @OneToMany(targetEntity="App\Entity\TransactionLog", mappedBy="fromUser")
+     */
+    private $transactionFrom;
+
+    /**
      * @var \DateTime|null
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
@@ -151,6 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->shipmentsFrom = new ArrayCollection();
         $this->returnsFrom = new ArrayCollection();
         $this->batteries = new ArrayCollection();
+        $this->transactionFrom = new ArrayCollection();
     }
 
     /**
@@ -445,6 +452,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReturnsFrom(BatteryReturn $return): self
     {
         $this->returnsFrom->removeElement($return);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TransactionLog[]
+     */
+    public function getTransactionFrom(): Collection
+    {
+        return $this->transactionFrom;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function addTransactionFrom(TransactionLog $transactionLog): self
+    {
+        if (!$this->transactionFrom->contains($transactionLog)) {
+            $this->transactionFrom[] = $transactionLog;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param TransactionLog $transactionLog
+     * @return $this
+     */
+    public function removeTransactionFrom(TransactionLog $transactionLog): self
+    {
+        $this->transactionFrom->removeElement($transactionLog);
 
         return $this;
     }

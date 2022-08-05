@@ -190,7 +190,7 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route(name="ip_api", path="api/ip", methods={"GET"})
+     * @Route(name="ip_api_address", path="api/ip", methods={"GET"})
      * @return JsonResponse
      */
     public function getIpFromAPI(): JsonResponse
@@ -216,5 +216,14 @@ class DefaultController extends AbstractController
                 'data' => CustomHelper::get_ip_details($ip)
             ]
         );
+    }
+
+    /**
+     * @Route(name="about", path="about")
+     * @return Response
+     */
+    public function aboutPage(): Response
+    {
+        return $this->render('about.html.twig');
     }
 }

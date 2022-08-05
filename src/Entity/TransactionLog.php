@@ -25,6 +25,22 @@ class TransactionLog extends AbstractEntity
     private $battery;
 
     /**
+     * @var Recycler|null
+     * Many Return Transactions have one Recycler. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Recycler", inversedBy="returnTransactions")
+     * @JoinColumn(name="return_to", referencedColumnName="id")
+     */
+    private $returnTo;
+
+    /**
+     * @var User|null
+     * Many Return Transactions have one User. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\User", inversedBy="transactionFrom")
+     * @JoinColumn(name="from_user", referencedColumnName="id")
+     */
+    private $fromUser;
+
+    /**
      * @var string|null
      * @ORM\Column(name="transaction_hash", nullable="true", type="string", length=255)
      */
@@ -81,6 +97,30 @@ class TransactionLog extends AbstractEntity
     {
         return $this->shipment;
     }
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="address", type="text", nullable="true")
+     */
+    private $address;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="postal_code", type="string", length=50, nullable="true")
+     */
+    private $postalCode;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="city", type="string", length=50, nullable="true")
+     */
+    private $city;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="country", type="string", length=50, nullable="true")
+     */
+    private $country;
 
     /**
      * @return Battery
@@ -176,5 +216,109 @@ class TransactionLog extends AbstractEntity
     public function setDeletedAt(?\DateTime $deletedAt): void
     {
         $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return Recycler|null
+     */
+    public function getReturnTo(): ?Recycler
+    {
+        return $this->returnTo;
+    }
+
+    /**
+     * @param Recycler|null $returnTo
+     */
+    public function setReturnTo(?Recycler $returnTo): void
+    {
+        $this->returnTo = $returnTo;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getFromUser(): ?User
+    {
+        return $this->fromUser;
+    }
+
+    /**
+     * @param User|null $user
+     */
+    public function setFromUser(?User $user): void
+    {
+        $this->fromUser = $user;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param string|null $address
+     */
+    public function setAddress(?string $address): void
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @param string|null $postalCode
+     */
+    public function setPostalCode(?string $postalCode): void
+    {
+        $this->postalCode = $postalCode;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param string|null $city
+     */
+    public function setCity(?string $city): void
+    {
+        $this->city = $city;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param string|null $country
+     */
+    public function setCountry(?string $country): void
+    {
+        $this->country = $country;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): ?string
+    {
+        return $this->battery->getSerialNumber();
     }
 }

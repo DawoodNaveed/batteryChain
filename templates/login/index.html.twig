@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ gg_recaptcha_site_key }}"></script>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
 {% endblock %}
@@ -52,9 +57,7 @@
                         <div class="mb-3">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                         </div>
-                        <div class="mb-3">
-                            <div class="g-recaptcha" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
-                        </div>
+                        <input type="hidden" name="g-recaptcha-response" value="" id="recaptchaResponse">
                         <div class="text-center">
                             <input type="submit" class="btn btn-green px-5 mb-2 w-100" value="{{ "Login" | trans }}">
                         </div>
@@ -71,6 +74,19 @@
 
     {% include 'footer.html.twig' %}
 
+    <script>
+        grecaptcha.ready(() => {
+            grecaptcha.execute( "{{ gg_recaptcha_site_key }}", { action: 'submit' }).then(token => {
+                document.querySelector('#recaptchaResponse').value = token;
+            });
+
+            setInterval(function(){
+                grecaptcha.execute("{{ gg_recaptcha_site_key }}", {action: 'submit'}).then(function(token) {
+                    document.querySelector('#recaptchaResponse').value = token;
+                });
+            }, 60000);
+        });
+    </script>
     <script>
         (function() {
             'use strict';

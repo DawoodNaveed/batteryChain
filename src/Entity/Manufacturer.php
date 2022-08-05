@@ -45,6 +45,12 @@ class Manufacturer extends AbstractEntity
 
     /**
      * @var string|null
+     * @ORM\Column(name="postal_code", type="string", length=50, nullable="true")
+     */
+    private $postalCode;
+
+    /**
+     * @var string|null
      * @ORM\Column(name="country", type="string", length=50, nullable="true")
      */
     private $country;
@@ -119,6 +125,22 @@ class Manufacturer extends AbstractEntity
     public function setAddress(?string $address): void
     {
         $this->address = $address;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @param string|null $postalCode
+     */
+    public function setPostalCode(?string $postalCode): void
+    {
+        $this->postalCode = $postalCode;
     }
 
     /**

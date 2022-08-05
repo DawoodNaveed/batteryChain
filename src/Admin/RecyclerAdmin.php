@@ -41,6 +41,9 @@ class RecyclerAdmin extends AbstractAdmin
                 'label' => 'Phone Number'
             ])
             ->add('address', TextType::class)
+            ->add('postalCode', TextType::class, [
+                'label' => 'Post Code'
+            ])
             ->add('city', TextType::class)
             ->add('country', ModelType::class, [
                 'property' => 'name',
@@ -84,6 +87,7 @@ class RecyclerAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->addIdentifier('email')
             ->addIdentifier('address')
+            ->addIdentifier('postalCode', TextType::class, ['label' => 'Post Code'])
             ->addIdentifier('city')
             ->addIdentifier('country.name', TextType::class, ['label' => 'Country']);
     }
@@ -113,6 +117,7 @@ class RecyclerAdmin extends AbstractAdmin
                 'label' => 'Email'
             ])
             ->add('address')
+            ->add('postalCode', TextType::class, ['label' => 'Post Code'])
             ->add('city')
             ->add('contact', TextType::class, [
                 'label' => 'Phone Number'

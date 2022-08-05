@@ -92,6 +92,7 @@ class RecyclerController extends AbstractController
                 'name' => $recyclers[0]->name,
                 'contact' => $recyclers[0]->contact,
                 'address' => $recyclers[0]->address,
+                'postalCode' => $recyclers[0]->postal_code,
                 'city' => $recyclers[0]->city,
             ];
         } elseif (!empty($recyclers[0]) && $isFallback === false) {
@@ -129,6 +130,7 @@ class RecyclerController extends AbstractController
             'email' => $recycler->getEmail(),
             'contact' => $recycler->getContact(),
             'address' => $recycler->getAddress(),
+            'postalCode' => $recycler->getPostalCode(),
             'city' => $recycler->getCity(),
         ]);
     }

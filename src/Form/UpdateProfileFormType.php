@@ -22,6 +22,9 @@ class UpdateProfileFormType extends AbstractType
                     'class' => 'form-control',
                     'value' => $options['firstname']
                 ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a name',
@@ -34,6 +37,9 @@ class UpdateProfileFormType extends AbstractType
                     'class' => 'form-control',
                     'value' => $options['lastname']
                 ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a name',
@@ -44,6 +50,9 @@ class UpdateProfileFormType extends AbstractType
             ->add('address', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -60,11 +69,31 @@ class UpdateProfileFormType extends AbstractType
                         'message' => 'Please enter a valid number',
                     ]),
                 ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
+                ],
                 'label' => 'Phone Number'
+            ])
+            ->add('postalCode', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label' => 'Post Code',
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter a postal code',
+                    ]),
+                ]
             ])
             ->add('city', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -75,6 +104,9 @@ class UpdateProfileFormType extends AbstractType
             ->add('country', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'style' => 'margin-top:15px'
                 ],
                 'constraints' => [
                     new NotBlank([

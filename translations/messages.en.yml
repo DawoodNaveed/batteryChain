@@ -3,11 +3,12 @@ service.error.file_size_exceeds: 'Error! File size exceeded.'
 service.error.something_went_wrong: 'Error! Something went wrong.'
 service.error.invalid_csv_headers: 'Error! Please upload valid csv with valid headers.'
 service.success.battery_added_successfully: 'Batteries Added Successfully!'
-service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Batteries'
+service.error.battery_import_status: '%failure_batteries% Batteries are failed to add due to same or no serial number, out of Total: %total_batteries% Battery(s)'
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
 service.error.bulk_register_batteries: '%failure_batteries% battery(s) are already registered or in queue to be registered!'
 service.info.flash_bulk_create_info_exist: "Some Manufacturer already has battery with similar serial numbers. So, we update serial number for '%count%' battery(s)."
+service.success.bulk_recycle_added: 'Success! Recycle added for %total% battery(s)'
 en: "English"
 de: "German"
 #Home-page Translations
@@ -89,3 +90,31 @@ flash_edit_error_exist: "Battery with similar serial number '%name%' exists."
 Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!: 'Success! Request to Register Battery is submitted! %count% Battery(s) will be registered soon!'
 Alert! %count% selected items are already registered so you cannot delete them.: 'Alert! %count% selected items are already registered so you cannot delete them.'
 Success! Only %count% pre-registered selected battery(s) have been successfully deleted.: 'Success! Only %count% pre-registered selected battery(s) have been successfully deleted.'
+
+#About Page
+About the BatteryChain: "About the BatteryChain"
+What is the Batterychain?: "What is the Batterychain?"
+The BatteryChain is a blockchain-based information platform for industrially used batteries and accumalators.: "The BatteryChain is a blockchain-based information platform for industrially used batteries and accumalators."
+Users are offered a convenient opportunity to query all important information and find out about recycling and disposal worldwide.: "Users are offered a convenient opportunity to query all important information and find out about recycling and disposal worldwide."
+The BatteryChain offers manufacturers a more modern and data-secure battery management tool.: "The BatteryChain offers manufacturers a more modern and data-secure battery management tool."
+Security: "Security"
+Maxiumum security thanks to our own modern <u>blockchain</u> technology.: "Maxiumum security thanks to our own modern <u>blockchain</u> technology."
+Quality: "Quality"
+The service offered meets all requirements and gives you complete satisfaction.: "The service offered meets all requirements and gives you complete satisfaction."
+Efficiency: "Efficiency"
+Our optimized systems and processes are characterized by a high degree of user-friendliness.: "Our optimized systems and processes are characterized by a high degree of user-friendliness."
+Recycling: "Recycling"
+Our service enables users worldwide to easily return or correctly dispose of their batteries.: "Our service enables users worldwide to easily return or correctly dispose of their batteries."
+What can the BatteryChain do?: "What can the BatteryChain do?"
+For Consumers: "For Consumers"
+Consumers and other users can easily and simply query all essential information about their batteries and accumalators and download them as battery passport.: "Consumers and other users can easily and simply query all essential information about their batteries and accumalators and download them as battery passport."
+In addition to the physical dimensions, data on performance and capacity, this information also includes information about the manufacturer.: "In addition to the physical dimensions, data on performance and capacity, this information also includes information about the manufacturer."
+Another service offered to the user concerns the return or recycling or disposal of the batteries.: "Another service offered to the user concerns the return or recycling or disposal of the batteries."
+Based on the user's location and the manufacturer of the battery, the user is referred to qualified partners.: "Based on the user's location and the manufacturer of the battery, the user is referred to qualified partners."
+For Manufacturer: "For Manufacturer"
+The BatteryChain offers manufacturers a modern and powerful battery management tool.: "The BatteryChain offers manufacturers a modern and powerful battery management tool."
+All battery information is written on its own blockchain in a legally complaint and unchangeable manner and track the complete life cycle of a battery and get reports and statistics.: "All battery information is written on its own blockchain in a legally complaint and unchangeable manner and track the complete life cycle of a battery and get reports and statistics."
+The BatteryChain is the point of contact for consumers to request information about their batteries and find out about disposal or recycling.: "The BatteryChain is the point of contact for consumers to request information about their batteries and find out about disposal or recycling."
+Our solution offers you the opportunity to control the return of your batteries worldwide, regardless of whether you offer such a service yourself or whether regional partners take it on.: "Our solution offers you the opportunity to control the return of your batteries worldwide, regardless of whether you offer such a service yourself or whether regional partners take it on."
+Who operates the BatteryChain?: "Who operates the BatteryChain?"
+The BatteryChain is operated by BatteryChain AG in cooperation with leading battery manufacturers.: "The BatteryChain is operated by BatteryChain AG in cooperation with leading battery manufacturers."

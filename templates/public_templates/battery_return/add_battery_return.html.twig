@@ -180,7 +180,7 @@
                             $('#fallback-name').html(data.details.name);
                             $('#fallback-email').html(data.details.email);
                             $('#fallback-contact').html(data.details.contact);
-                            $('#fallback-address').html(data.details.address + ', ' + data.details.city);
+                            $('#fallback-address').html(data.details.address + ', ' + data.details.postalCode + ', ' + data.details.city);
                             $('.fallback-div').show();
                             $('#return_public_form_fallback').val(1);
                             $("#return_public_form_cancel").text('Back');
@@ -232,7 +232,7 @@
                         $('#fallback-name').html(data.name);
                         $('#fallback-email').html(data.email);
                         $('#fallback-contact').html(data.contact);
-                        $('#fallback-address').html(data.address + ', ' + data.city);
+                        $('#fallback-address').html(data.address + ', ' + data.postalCode + ', ' + data.city);
                     }
                 });
             })
@@ -246,7 +246,7 @@
                             $('#fallback-name').html(data.name);
                             $('#fallback-email').html(data.email);
                             $('#fallback-contact').html(data.contact);
-                            $('#fallback-address').html(data.address + ', ' + data.city);
+                            $('#fallback-address').html(data.address + ', ' + data.postalCode + ', ' + data.city);
                         } else {
                             $('.fallback-div').hide();
                         }

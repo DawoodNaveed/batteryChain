@@ -69,10 +69,11 @@ class RecyclerRepository extends ServiceEntityRepository
 
         if (!$recycler instanceof Recycler) {
             $recycler = new Recycler();
+            $recycler->setEmail($data['email']);
             $isNew = true;
         }
 
-        if (!empty($data['updated_email']) && $data['updated_email'] !== $data['email'])
+        if (!$isNew && !empty($data['updated_email']) && $data['updated_email'] !== $data['email'])
         {
             $recycler->setEmail($data['updated_email']);
         }
@@ -90,6 +91,11 @@ class RecyclerRepository extends ServiceEntityRepository
         if (!empty($data['address']))
         {
             $recycler->setAddress($data['address']);
+        }
+
+        if (!empty($data['postal_code']))
+        {
+            $recycler->setPostalCode($data['postal_code']);
         }
 
         if (!empty($data['city']))
@@ -179,7 +185,7 @@ class RecyclerRepository extends ServiceEntityRepository
      */
     public function fetchFallbackRecyclers()
     {
-        $query = 'SELECT r.name, r.address, r.contact, r.email, r.city, c.name as country_name from recycler r left outer join manufacturers_recyclers ' .
+        $query = 'SELECT r.name, r.address, r.contact, r.email, r.postal_code as postalCode, r.city, c.name as country_name from recycler r left outer join manufacturers_recyclers ' .
             'ON (r.id = manufacturers_recyclers.recycler_id) join country c ON r.country_id = c.id ' .
             'WHERE manufacturers_recyclers.manufacturer_id is null and r.deleted_at is null';
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);

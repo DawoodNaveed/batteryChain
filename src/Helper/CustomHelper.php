@@ -46,6 +46,7 @@ class CustomHelper
         'name',
         'phone_number',
         'address',
+        'post_code',
         'city',
         'updated_email'
     ];
@@ -57,6 +58,11 @@ class CustomHelper
 
     /** @var array */
     const RETURN_CSV_HEADERS = [
+        'serial_number'
+    ];
+
+    /** @var array */
+    const RECYCLE_CSV_HEADERS = [
         'serial_number'
     ];
 
