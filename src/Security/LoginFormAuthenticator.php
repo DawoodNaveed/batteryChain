@@ -82,6 +82,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             );
         }
 
+        $GLOBALS['validReCaptcha'] = false;
+
         return new Passport(new UserBadge(''),
             new PasswordCredentials('')
         );
@@ -112,7 +114,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->hasSession()) {
-            if (!$this->reCaptchaService->validateReCaptcha($request)) {
+            if (isset($GLOBALS['validReCaptcha']) && $GLOBALS['validReCaptcha'] === false) {
                 $exception = new AuthenticationException("The reCAPTCHA wasn't entered correctly.");
             } else {
                 $exception = new AuthenticationException('Invalid username or password');
