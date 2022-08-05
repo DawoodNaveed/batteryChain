@@ -46,6 +46,7 @@ class CustomHelper
         'name',
         'phone_number',
         'address',
+        'post_code',
         'city',
         'updated_email'
     ];

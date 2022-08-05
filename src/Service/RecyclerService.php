@@ -175,6 +175,7 @@ class RecyclerService
                 $email = (string) $row['email'];
                 $contact = (string) $row['phone_number'];
                 $address = (string) $row['address'];
+                $postalCode = (string) $row['post_code'];
                 $city = (string) $row['city'];
                 $newEmail = (string) $row['updated_email'];
                 $rowCount++;
@@ -197,6 +198,7 @@ class RecyclerService
                     'name' => $name,
                     'contact' => $contact,
                     'address' => $address,
+                    'postal_code' => $postalCode,
                     'city' => $city,
                     'updated_email' => $newEmail,
                     'country' => $country,

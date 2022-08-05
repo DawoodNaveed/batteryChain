@@ -93,6 +93,11 @@ class RecyclerRepository extends ServiceEntityRepository
             $recycler->setAddress($data['address']);
         }
 
+        if (!empty($data['postal_code']))
+        {
+            $recycler->setPostalCode($data['postal_code']);
+        }
+
         if (!empty($data['city']))
         {
             $recycler->setCity($data['city']);
