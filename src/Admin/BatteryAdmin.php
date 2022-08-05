@@ -287,6 +287,7 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('scanQr');
         $collection->add('getScanResult');
         $collection->add('register');
+        $collection->add('downloadBatchPdf');
     }
 
     /**
@@ -331,6 +332,10 @@ class BatteryAdmin extends AbstractAdmin
                 'ask_confirmation' => true,
                 'controller' => 'app.controller.battery::batchRegisterAction',
                 'template' => 'battery/ask_confirmation.html.twig'
+            ];
+            $actions['download'] = [
+                'ask_confirmation' => false,
+                'controller' => 'app.controller.battery::batchDownloadAction'
             ];
         }
 

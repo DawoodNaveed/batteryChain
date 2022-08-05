@@ -41,14 +41,15 @@
                 {{ form_start(updateProfileForm) }}
                 {{ form_row(updateProfileForm.firstname) }}
                 {{ form_row(updateProfileForm.lastname) }}
-                {{ form_row(updateProfileForm.address) }}
                 {{ form_row(updateProfileForm.contact) }}
+                {{ form_row(updateProfileForm.address) }}
+                {{ form_row(updateProfileForm.postalCode) }}
                 {{ form_row(updateProfileForm.city) }}
                 {{ form_row(updateProfileForm.country) }}
 
                 <div class="mt-1">
-                    <button type="submit" class="btn btn-primary m-r-1 px-5 mb-2 w-100">{{ "Update" }}</button>
-                    <a class="btn btn-default" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+                    <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100">{{ "Update" }}</button>
+                    <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
                 </div>
                 {{ form_end(updateProfileForm) }}
             </div>

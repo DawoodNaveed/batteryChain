@@ -1,0 +1,157 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .box {
+            display: flex !important;
+            align-items:center !important;
+        }
+        .box img {
+            margin-bottom: 15px;
+        }
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        .icon-div, .icon-content {
+            padding-left: 0;
+        }
+        .icon-content {
+            margin-left: -20px;
+            padding-top: 15px;
+        }
+        @media (max-width: 767px) {
+            .icon-div, .icon-content {
+                 padding-left: 12px;
+            }
+            .icon-content {
+                margin-left: 0px;
+            }
+            .icon-div {
+                text-align: center;
+            }
+            .icon-content {
+                padding-top: 0px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
+    <div class="container">
+        <div class="py-5 text-center">
+            <a href="{{ path('homepage') }}" class="homepage-link">
+                <div style="display: inline-block">
+                    <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                </div>
+                <div style="display: inline-block">
+                    <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
+                    <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
+                </div>
+            </a>
+        </div>
+        <div class="row text-left pb-3">
+            <h2>{{ "About the BatteryChain" | trans }}</h2>
+            <h4>{{ "What is the Batterychain?" | trans }}</h4>
+            <p>
+                {{ "The BatteryChain is a blockchain-based information platform for industrially used batteries and accumalators." | trans }}
+                {{ "Users are offered a convenient opportunity to query all important information and find out about recycling and disposal worldwide." | trans }}
+                {{ "The BatteryChain offers manufacturers a more modern and data-secure battery management tool." | trans }}
+            </p>
+        </div>
+        <div class="row">
+            <div class="row pb-3">
+                <div class="col-md-2 col-sm-3 icon-div">
+                    <img src="{{ asset('resources/icons/security_icon.png') }}" width="100">
+                </div>
+                <div class="col-md-10 col-sm-7 icon-content">
+                    <h4>{{ "Security" | trans }}</h4>
+                    <p>
+                        {{ "Maxiumum security thanks to our own modern <u>blockchain</u> technology." | trans | raw }}
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 icon-div">
+                    <img src="{{ asset('resources/icons/quality_icon.png') }}" width="100">
+                </div>
+                <div class="col-md-10 icon-content">
+                    <h4>{{ "Quality" | trans }}</h4>
+                    <p>
+                        {{ "The service offered meets all requirements and gives you complete satisfaction." | trans }}
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 icon-div">
+                    <img src="{{ asset('resources/icons/efficiency_icon.png') }}" width="100">
+                </div>
+                <div class="col-md-10 icon-content">
+                    <h4>{{ "Efficiency" | trans }}</h4>
+                    <p>
+                        {{ "Our optimized systems and processes are characterized by a high degree of user-friendliness." | trans }}
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 icon-div">
+                    <img src="{{ asset('resources/icons/recycle_icon.png') }}" width="100">
+                </div>
+                <div class="col-md-10 icon-content">
+                    <h4>{{ "Recycling" | trans }}</h4>
+                    <p>
+                        {{ "Our service enables users worldwide to easily return or correctly dispose of their batteries." | trans }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row text-left pb-3 pt-3">
+            <h4>{{ "What can the BatteryChain do?" | trans }}</h4>
+            <h5>
+                <u>
+                    {{ "For Consumers" | trans }}
+                </u>
+            </h5>
+            <p>
+                {{ "Consumers and other users can easily and simply query all essential information about their batteries and accumalators and download them as battery passport." | trans }}
+                {{ "In addition to the physical dimensions, data on performance and capacity, this information also includes information about the manufacturer." | trans }}
+                {{ "Another service offered to the user concerns the return or recycling or disposal of the batteries." | trans }}
+                {{ "Based on the user's location and the manufacturer of the battery, the user is referred to qualified partners." | trans }}
+            </p>
+        </div>
+        <div class="row text-left pb-3">
+            <h5>
+                <u>
+                    {{ "For Manufacturer" | trans }}
+                </u>
+            </h5>
+            <p>
+                {{ "The BatteryChain offers manufacturers a modern and powerful battery management tool." | trans }}
+                {{ "All battery information is written on its own blockchain in a legally complaint and unchangeable manner and track the complete life cycle of a battery and get reports and statistics." | trans }}
+                {{ "The BatteryChain is the point of contact for consumers to request information about their batteries and find out about disposal or recycling." | trans }}
+                {{ "Our solution offers you the opportunity to control the return of your batteries worldwide, regardless of whether you offer such a service yourself or whether regional partners take it on." | trans }}
+            </p>
+        </div>
+        <div class="row text-left pb-5">
+            <h4>{{ "Who operates the BatteryChain?" | trans }}</h4>
+            <p>
+                {{ "The BatteryChain is operated by BatteryChain AG in cooperation with leading battery manufacturers." | trans }}
+            </p>
+            <div>
+                <div class="box">
+                    <img src="{{ asset('resources/batterychain_logo.png') }}" alt="logo" width="100" height="100">
+                    <ul style="list-style: none;display: inline-block">
+                        <li>{{ "BatteryChain AG" }}</li>
+                        <li>{{ "Turmstrasse 30" }}</li>
+                        <li>{{ "6312 Steinhausen" }}</li>
+                        <li>{{ "Zug, Switzerland" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html.twig' %}
+    </body>
+{% endblock %}

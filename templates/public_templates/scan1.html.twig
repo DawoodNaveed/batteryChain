@@ -41,6 +41,16 @@
 
 {% block body %}
     <body class="bg-light d-flex flex-column min-vh-100">
+        <div id="flash-messages">
+            {% for type, messages in app.session.flashbag.all() %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }}">
+                        {{ message|raw }}
+                        <i class="fa fa-close float-right close-flash-message"></i>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
         <div class="container">
             <div class="text-center py-5">
                 <a href="{{ path('homepage') }}" class="homepage-link">
@@ -84,12 +94,32 @@
                                 <pre><code id="result"></code></pre>
                                 <input type="text" name="search" id="search" readonly class="form-control" placeholder="{{ "Detected ID" | trans }}">
                                 <div class="input-group-append">
-                                    <button type="submit" id="btn-search" class="btn btn-secondary" style="background-color: #55bc5e; border-color: #55bc5e">{{ "Search" | trans }}</button>
-                                    <a type="button" id="btn-go-to" class="btn btn-secondary" style="background-color: #55bc5e; border-color: #55bc5e; display: none">{{ "Go To" | trans }}</a>
+                                    <button type="submit" class="btn btn-secondary btn-search" style="background-color: #55bc5e; border-color: #55bc5e">{{ "Search" | trans }}</button>
+                                    <a type="button" class="btn btn-secondary btn-go-to" style="background-color: #55bc5e; border-color: #55bc5e; display: none">{{ "Go To" | trans }}</a>
                                 </div>
                                 <div class="input-group-append">
                                     <a class="btn btn-secondary btn-outline-green ms-2" href="{{ path('homepage') }}">{{ "Back" | trans }}</a>
                                 </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade ps-3 pe-3" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header alert-success">
+                            <h6 class="modal-title" id="exampleModalLabel">{{ "Success!" }}</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form class="card p-2" action="{{ path('battery_qr_result') }}" method="post" autocomplete="off">
+                            <div class="modal-body">
+                                <input type="text" id="success-text" name="search" readonly class="success-text form-control" placeholder="{{ "Detected ID" | trans }}">
+                            </div>
+                            <div class="modal-footer">
+                                <a type="button" class="btn btn-green btn-go-to" style="display: none">{{ "Go To" | trans }}</a>
+                                <button type="submit" class="btn btn-green btn-search">{{ "Search" | trans }}</button>
                             </div>
                         </form>
                     </div>
@@ -100,7 +130,7 @@
         {% include 'footer.html.twig' %}
 
         <script type="text/javascript">
-            $('#btn-search').prop('disabled', true);
+            $('.btn-search').prop('disabled', true);
             window.addEventListener('load', function () {
                 let selectedDeviceId;
                 var hints = new Map();
@@ -179,20 +209,23 @@
                 codeReader.reset();
                 codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     if (result) {
-                        $('#btn-search').prop('disabled', false);
+                        $('.btn-search').prop('disabled', false);
 
                         if(new RegExp("^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$").test(result.text)) {
-                            $('#btn-search').hide();
-                            $('#btn-go-to').show();
-                            $("#btn-go-to").attr("href", result.text);
+                            $('.btn-search').hide();
+                            $('.btn-go-to').show();
+                            $(".btn-go-to").attr("href", result.text);
                         } else {
-                            $('#btn-search').show();
-                            $('#btn-go-to').hide();
-                            $("#btn-go-to").attr("href", '#');
+                            $('.btn-search').show();
+                            $('.btn-go-to').hide();
+                            $(".btn-go-to").attr("href", '#');
                         }
                         console.log(result.getText())
+                        $('.success-text').val(result.text);
+                        $('.success-text').addClass('detected');
                         $('#search').val(result.text);
                         $('#search').addClass('detected');
+                        $('#exampleModal').modal('show');
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
                         console.error(err)

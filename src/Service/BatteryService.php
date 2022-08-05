@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
 use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -316,7 +317,12 @@ class BatteryService
                         continue;
                     }
 
-                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+                    $transactionLog = $this->transactionLogService
+                        ->createDeliveryTransactionLog(
+                            $battery,
+                            $user,
+                            null
+                        );
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
@@ -391,7 +397,14 @@ class BatteryService
                         continue;
                     }
 
-                    $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_RETURNED);
+                    $transactionLog = $this->transactionLogService
+                        ->createReturnTransactionLog(
+                            $battery,
+                            $user,
+                            $recycler instanceof Recycler ? $recycler : null,
+                            null,
+                            CustomHelper::BATTERY_STATUS_RETURNED
+                        );
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setUpdated(new \DateTime('now'));
                     $battery->setCurrentPossessor($user);
@@ -716,5 +729,104 @@ class BatteryService
                 $dqlStatement .= " AND (b.length BETWEEN " . $ratings[0] . " AND " . $ratings[1] . ")";
             }
         }
+    }
+
+    /**
+     * @param $ids
+     * @return Battery[]|null
+     */
+    public function getBatteriesByIds($ids): ?array
+    {
+        return $this->batteryRepository->createQueryBuilder('b')
+            ->select('DISTINCT b as battery', 'bt.type')
+            ->join('b.manufacturer', 'm', Join::WITH, 'b.manufacturer = m.id')
+            ->join('b.batteryType', 'bt', Join::WITH, 'b.batteryType = bt.id')
+            ->leftJoin('b.transactionLogs', 't', Join::WITH, 'b.id = t.battery')
+            ->where('b.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param User $user
+     * @param Recycler|null $recycler
+     * @return array|null
+     */
+    public function extractCsvAndAddRecycles(UploadedFile $file, User $user, ?Recycler $recycler): ?array
+    {
+        try {
+            $error = [];
+            $rowCount = 1;
+
+            if (($handle = fopen($file, "r")) !== false) {
+                $csvHeaders = fgetcsv($handle, 1000, ",");
+
+                if ($csvHeaders !== CustomHelper::RECYCLE_CSV_HEADERS) {
+                    $error['error']['invalid_csv_header'] = ['message' => 'service.error.invalid_csv_headers'];
+                    return $error;
+                }
+
+                $notExistCount = 0;
+                $alreadyRecycledCount = 0;
+
+                while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    if (count($csvData) !== count(CustomHelper::RECYCLE_CSV_HEADERS)) {
+                        $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
+                        return $error;
+                    }
+
+                    $row = [];
+
+                    for ($headerIndex = 0; $headerIndex < count($csvHeaders); $headerIndex++) {
+                        $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
+                    }
+
+                    $rowCount++;
+                    $battery = $this->fetchBatteryBySerialNumber(
+                        (string) $row['serial_number'],
+                        $user->getManufacturer() ?? null,
+                        $user->getManufacturer() ? false : true);
+
+                    if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
+                        $notExistCount++;
+                        $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery(s) may not exist or registered!'];
+                        continue;
+                    }
+
+                    if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
+                            CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RECYCLED]) ||
+                        ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RECYCLED))) {
+                        $alreadyRecycledCount++;
+                        $error['error']['already_delivered_error'] = ['message' => $alreadyRecycledCount . ' Battery(s) already recycled!'];
+                        continue;
+                    }
+
+                    $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
+                    $battery->setUpdated(new \DateTime('now'));
+                    $battery->setCurrentPossessor($user);
+                    $this->transactionLogService
+                        ->createReturnTransactionLog(
+                            $battery,
+                            $user,
+                            $recycler instanceof Recycler ? $recycler : null,
+                            null,
+                            CustomHelper::BATTERY_STATUS_RECYCLED
+                        );
+                }
+            }
+
+            fclose($handle);
+
+            return array_merge($error, [
+                'total' => ($rowCount - 1),
+                'successful' => (($rowCount - 1) - ($notExistCount + $alreadyRecycledCount))
+            ]);
+        } catch (\Exception $exception) {
+            $this->logger->error('[Bulk Return]' . $exception->getMessage());
+        }
+
+        return [];
     }
 }

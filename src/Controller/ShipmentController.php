@@ -13,7 +13,10 @@ use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\ManufacturerService;
 use App\Service\TransactionLogService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -62,6 +65,8 @@ class ShipmentController extends CRUDController
     /**
      * @param Request $request
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function shipmentAction(Request $request): Response
     {
@@ -119,20 +124,27 @@ class ShipmentController extends CRUDController
                 $user = $battery->getManufacturer()->getUser();
             }
 
-            $transactionLog = $this->transactionLogService->createTransactionLog($battery, CustomHelper::BATTERY_STATUS_DELIVERED);
+            $transactionLog = $this->transactionLogService
+                ->createDeliveryTransactionLog(
+                    $battery,
+                    $user,
+                    $formData['information'],
+                    CustomHelper::BATTERY_STATUS_DELIVERED
+                );
             $shipment = new Shipment();
-            $shipment->setUpdated(new \DateTime('now'));
-            $shipment->setCreated(new \DateTime('now'));
+            $shipment->setUpdated(new DateTime('now'));
+            $shipment->setCreated(new DateTime('now'));
             $shipment->setName($formData['information']['name']);
             $shipment->setAddress($formData['information']['address']);
+            $shipment->setPostalCode($formData['information']['postalCode']);
             $shipment->setCity($formData['information']['city']);
             $shipment->setCountry($formData['information']['country']);
-            $shipment->setShipmentDate(new \DateTime('now'));
+            $shipment->setShipmentDate(new DateTime('now'));
             $shipment->setShipmentFrom($user);
             $shipment->setBattery($battery);
             $shipment->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
-            $battery->setUpdated(new \DateTime('now'));
+            $battery->setUpdated(new DateTime('now'));
             $battery->setCurrentPossessor($user);
 
             $this->entityManager->persist($shipment);

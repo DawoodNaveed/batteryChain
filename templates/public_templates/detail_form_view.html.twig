@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ gg_recaptcha_site_key }}"></script>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -93,12 +98,8 @@
                                 {{ "Please enter a valid serial number." | trans }}
                             </div>
                         </div>
-                        <div class="mb-3 col-md-12 col-sm-12">
-                            <div class="mb-3 mt-2 p-0 div-captcha">
-                                <div class="g-recaptcha p-0" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
-                            </div>
-                        </div>
-                        <hr class="mb-4">
+                        <input type="hidden" name="g-recaptcha-response" value="" id="recaptchaResponse">
+                        <div class="mb-1"></div>
                         <div style="display: inline-block" class="mb-5 btn-div">
                             {{ form_widget(searchForm.search) }}
                             <span class="p-0-3 or-span ms-1 me-1">
@@ -115,6 +116,19 @@
 
         {% include 'footer.html.twig' %}
 
+        <script>
+            grecaptcha.ready(() => {
+                grecaptcha.execute( "{{ gg_recaptcha_site_key }}", { action: 'submit' }).then(token => {
+                    document.querySelector('#recaptchaResponse').value = token;
+                });
+
+                setInterval(function(){
+                    grecaptcha.execute("{{ gg_recaptcha_site_key }}", {action: 'submit'}).then(function(token) {
+                        document.querySelector('#recaptchaResponse').value = token;
+                    });
+                }, 60000);
+            });
+        </script>
         <script>
             (function() {
                 'use strict';
