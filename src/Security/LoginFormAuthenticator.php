@@ -3,8 +3,8 @@
 namespace App\Security;
 
 use App\Repository\UserRepository;
+use App\Service\ReCaptchaService;
 use Psr\Log\LoggerInterface;
-use ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,7 +28,7 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
  * @property UserRepository userRepository
  * @property RequestStack requestStack
  * @property LoggerInterface logger
- * @property $recaptchaSecretKey
+ * @property ReCaptchaService reCaptchaService
  */
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -42,15 +42,15 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      * @param UserRepository $userRepository
      * @param RequestStack $requestStack
      * @param LoggerInterface $logger
-     * @param $recaptchaSecretKey
+     * @param ReCaptchaService $reCaptchaService
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, RequestStack $requestStack, LoggerInterface $logger, $recaptchaSecretKey)
+    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, RequestStack $requestStack, LoggerInterface $logger, ReCaptchaService $reCaptchaService)
     {
         $this->urlGenerator = $urlGenerator;
         $this->userRepository = $userRepository;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
-        $this->recaptchaSecretKey = $recaptchaSecretKey;
+        $this->reCaptchaService = $reCaptchaService;
     }
 
     /**
@@ -71,10 +71,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $username = $request->request->get('_username', '');
         $request->getSession()->set(Security::LAST_USERNAME, $username);
 
-        $recaptcha = new ReCaptcha($this->recaptchaSecretKey);
-        $resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
-
-        if ($resp->isSuccess()) {
+        if ($this->reCaptchaService->validateReCaptcha($request)) {
             return new Passport(
                 new UserBadge($username),
                 new PasswordCredentials($request->request->get('_password', '')),
@@ -115,7 +112,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         if ($request->hasSession()) {
-            if (empty($request->request->get('g-recaptcha-response'))) {
+            if (!$this->reCaptchaService->validateReCaptcha($request)) {
                 $exception = new AuthenticationException("The reCAPTCHA wasn't entered correctly.");
             } else {
                 $exception = new AuthenticationException('Invalid username or password');
