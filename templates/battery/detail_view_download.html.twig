@@ -103,6 +103,10 @@
         .f-size-14 {
             font-size: 14px;
         }
+        a {
+            text-decoration: none;
+            color: #55bc5e;
+        }
     </style>
 </head>
 <body>
@@ -130,6 +134,18 @@
             <span class="heading-span">{{ "Serial Number" | trans }}</span>
             <span class="heading-title">{{ battery.serialNumber }}</span>
         </div>
+        {% if battery.status != 'pre-registered' %}
+            <div class="row-border-bottom row-div">
+                <span class="heading-span">{{ "Transaction" | trans }}</span>
+                {% if transaction is null or transaction is empty %}
+                    <span class="heading-title">{{ "Transaction is in Progress!" }}</span>
+                {% else %}
+                    <span class="heading-title">
+                    <a href={{ etherscan_url ~ transaction.transactionHash }}>{{ transaction.transactionHash | slice(0, 15) ~ '...' }}</a>
+                </span>
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Manufacturer" | trans }}</span>
             <span class="heading-title">{{ battery.manufacturer.name }}</span>
