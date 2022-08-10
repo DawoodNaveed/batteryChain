@@ -7,6 +7,7 @@ use App\Entity\Shipment;
 use App\Entity\TransactionLog;
 use App\Entity\User;
 use App\Repository\ShipmentRepository;
+use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
@@ -30,12 +31,13 @@ class ShipmentService
      * @param User $user
      * @param Battery $battery
      * @param TransactionLog|null $transactionLog
+     * @param DateTime|null $deliveryDate
      * @return Shipment
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createShipment(User $user, Battery $battery, ?TransactionLog $transactionLog): Shipment
+    public function createShipment(User $user, Battery $battery, ?TransactionLog $transactionLog, ?DateTime $deliveryDate = null): Shipment
     {
-        return $this->shipmentRepository->createShipment($user, $battery, $transactionLog);
+        return $this->shipmentRepository->createShipment($user, $battery, $transactionLog, $deliveryDate);
     }
 }
