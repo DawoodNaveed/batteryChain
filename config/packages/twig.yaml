@@ -6,6 +6,7 @@ twig:
         live_url: '%env(LIVE_URL)%'
         defaultLocale: '%env(DEFAULT_LOCALE)%'
         locales: '%env(APP_LOCALES)%'
+        etherscan_url: '%env(ETHERSCAN_URL)%'
 when@test:
     twig:
         strict_variables: true

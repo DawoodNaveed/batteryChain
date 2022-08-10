@@ -104,7 +104,8 @@ class BatteryController extends AbstractController
                     'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         : null,
-                    'slug' => $request->get('search')
+                    'slug' => $request->get('search'),
+                    'transactions' => $battery->getTransactionLogs()->toArray()
                 ]
             );
         }
