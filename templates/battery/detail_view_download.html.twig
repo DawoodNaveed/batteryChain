@@ -54,11 +54,18 @@
             font-size: 16px;
             resize: none;
         }
-        .heading-title {
+        .heading-title, .heading-title a {
             font-family: 'Montserrat', sans-serif;
             font-weight: bold;
             font-style: normal;
             font-size: 24px;
+            float: right;
+        }
+        .heading-title-transactions, .heading-title-transactions a {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 14px;
             float: right;
         }
         .heading-title-hash {
@@ -76,6 +83,13 @@
             font-style: normal;
             font-size: 18px;
         }
+        .heading-span-transactions {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 14px;
+            padding-bottom: 7px;
+        }
         .row-border-bottom {
             border-bottom: 1px solid lightgray;
         }
@@ -84,6 +98,14 @@
             align-items: center;
             justify-content: space-between;
             height: 40px;
+        }
+        .transaction-row-div {
+            display: table;
+            width: 100%;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            align-items: center;
+            justify-content: space-between;
         }
         .h-auto {
             height: auto !important;
@@ -107,6 +129,10 @@
             text-decoration: none;
             color: #55bc5e;
         }
+        .status-link {
+            text-decoration: none;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -121,7 +147,18 @@
 </div>
 <h1 class="title">{{ documentTitle }}</h1>
 <hr>
-<div id="footer">
+<div id="footer" class="h-auto">
+    <div class="row-div h-auto">
+        <span class="heading-span f-bold f-size-24">{{ "Status" | trans }}</span>
+        <span class="heading-title">
+            <a class="status-link" href={{ etherscan_url ~ transaction.transactionHash }}>{{ battery.status | capitalize | trans }}</a>
+        </span>
+    </div>
+    {% if detail is not null %}
+        <span class="heading-span f-bold f-size-14">
+            <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
+        </span>
+    {% endif %}
     <hr>
     <div class="row-div">
         <span class="heading-span page"> {{ createdDate }} | Pg. </span>
@@ -134,18 +171,6 @@
             <span class="heading-span">{{ "Serial Number" | trans }}</span>
             <span class="heading-title">{{ battery.serialNumber }}</span>
         </div>
-        {% if battery.status != 'pre-registered' %}
-            <div class="row-border-bottom row-div">
-                <span class="heading-span">{{ "Transaction" | trans }}</span>
-                {% if transaction is null or transaction is empty %}
-                    <span class="heading-title">{{ "Transaction is in Progress!" }}</span>
-                {% else %}
-                    <span class="heading-title">
-                    <a href={{ etherscan_url ~ transaction.transactionHash }}>{{ transaction.transactionHash | slice(0, 15) ~ '...' }}</a>
-                </span>
-                {% endif %}
-            </div>
-        {% endif %}
         <div class="row-border-bottom row-div">
             <span class="heading-span">{{ "Manufacturer" | trans }}</span>
             <span class="heading-title">{{ battery.manufacturer.name }}</span>
@@ -206,32 +231,14 @@
             </span>
         </div>
         <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "Height" | trans }}</span>
+            <span class="heading-span">{{ "Height x Width x Length" | trans }}</span>
             <span class="heading-title-hash">
-                {% if battery.height != 0 and battery.height is not null  %}
-                    {{ battery.height ~ ' cm' }}
-                {% else %}
-                    {{ battery.height }}
-                {% endif %}
-            </span>
-        </div>
-        <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "Width" | trans }}</span>
-            <span class="heading-title-hash">
-                {% if battery.width != 0 and battery.width is not null  %}
-                    {{ battery.width ~ ' cm' }}
-                {% else %}
-                    {{ battery.width }}
-                {% endif %}
-            </span>
-        </div>
-        <div class="row-border-bottom row-div">
-            <span class="heading-span">{{ "Length" | trans }}</span>
-            <span class="heading-title-hash">
-                {% if battery.length != 0 and battery.length is not null  %}
-                    {{ battery.length ~ ' cm' }}
-                {% else %}
-                    {{ battery.length }}
+                {{ battery.height ~ ' x ' ~ battery.width ~ ' x ' ~ battery.length }}
+                {% if (battery.height != 0 and battery.height is not null) or
+                    (battery.height != 0 and battery.height is not null) or
+                    (battery.width != 0 and battery.width is not null)
+                %}
+                    {{ ' cm' }}
                 {% endif %}
             </span>
         </div>
@@ -239,18 +246,21 @@
             <span class="heading-span">{{ "Weight" | trans }}</span>
             <span class="heading-title-hash">{{ battery.mass ~ ' kg' }}</span>
         </div>
+        {% if battery.status != 'pre-registered' %}
+            {% for transaction in transactions %}
+                <div class="row-border-bottom transaction-row-div">
+                    <div class="row-div" style="height: auto">
+                        <span class="heading-span-transactions">{{ transaction.transactionType | trans | capitalize ~ ":" }}</span>
+                        <span class="heading-title-transactions"><a class="status-link" href={{ etherscan_url ~ transaction.transactionHash }}>{{ transaction.transactionHash }}</a></span>
+                    </div>
+                    <div class="row-div" style="height: auto">
+                        <span class="heading-span-transactions">{{ "Date & Time:" | trans }}</span>
+                        <span class="heading-title-transactions">{{ transaction.updated | date('Y-m-d H:i:s') }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
-    <br><br><br>
-    <div class="row-div h-auto">
-        <span class="heading-span f-bold f-size-24">{{ "Status" | trans }}</span>
-        <span class="heading-title">{{ battery.status | capitalize | trans }}</span>
-    </div>
-    {% if detail is not null %}
-        <span class="heading-span f-bold f-size-14">
-            <span style="font-family: FontAwesome">&#xf05a;</span>&#8201; {{ detail }}
-        </span>
-    {% endif %}
-    <br><br><br><br>
 </div>
 </body>
 </html>

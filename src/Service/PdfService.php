@@ -57,7 +57,8 @@ class PdfService
             'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 : null,
-            'transaction' => array_pop($transaction) ?? null
+            'transaction' => array_pop($transaction) ?? null,
+            'transactions' => $battery->getTransactionLogs()->toArray()
         ]);
 
         $domPdf->loadHtml($html);
