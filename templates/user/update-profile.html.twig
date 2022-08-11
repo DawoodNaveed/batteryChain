@@ -39,6 +39,12 @@
             </div>
             <div class="col-md-12">
                 {{ form_start(updateProfileForm) }}
+
+                {% if app.user.manufacturer.logo is not null %}
+                    <img src="{{ asset('resources/uploads/logos/' ~ app.user.manufacturer.logo) }}" height="125" width="125"  alt="logo"/>
+                {% endif %}
+
+                {{ form_row(updateProfileForm.logoFile) }}
                 {{ form_row(updateProfileForm.firstname) }}
                 {{ form_row(updateProfileForm.lastname) }}
                 {{ form_row(updateProfileForm.contact) }}

@@ -24,6 +24,16 @@ doctrine:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
                 enabled: true
+vich_uploader:
+    db_driver: orm
+    mappings:
+        manufacturer_logo:
+            uri_prefix:         '%app.path.manufacturer_logos%'
+            upload_destination: '%kernel.project_dir%/public%app.path.manufacturer_logos%'
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     true
+            delete_on_update:   true
+            delete_on_remove:   true
 
 when@test:
     doctrine:

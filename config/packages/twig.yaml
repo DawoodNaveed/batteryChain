@@ -7,6 +7,7 @@ twig:
         defaultLocale: '%env(DEFAULT_LOCALE)%'
         locales: '%env(APP_LOCALES)%'
         etherscan_url: '%env(ETHERSCAN_URL)%'
+        logo_path: '%app.path.manufacturer_logos%'
 when@test:
     twig:
         strict_variables: true

@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Class Manufacturer
@@ -16,8 +18,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Entity(repositoryClass="App\Repository\ManufacturerRepository")
  * @ORM\Table(name="manufacturer")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Vich\Uploadable
  */
-class Manufacturer extends AbstractEntity
+class Manufacturer extends AbstractEntity implements \Serializable
 {
     /**
      * @var string|null
@@ -88,11 +91,63 @@ class Manufacturer extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @var string|null
+     */
+    private $logo;
+
+    /**
+     * @Vich\UploadableField(mapping="manufacturer_logo", fileNameProperty="logo")
+     * @var File|null
+     */
+    private $logoFile;
+
+    /**
      * Manufacturer constructor.
      */
     public function __construct() {
         $this->recyclers = new ArrayCollection();
         $this->batteries = new ArrayCollection();
+    }
+
+    /**
+     * @param File|null $logo
+     */
+    public function setLogoFile(File $logo = null)
+    {
+        $this->logoFile = $logo;
+
+        // VERY IMPORTANT:
+        // It is required that at least one field changes if you are using Doctrine,
+        // otherwise the event listeners won't be called and the file is lost
+        if ($logo) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updated = new \DateTime('now');
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    /**
+     * @param string|null $logo
+     */
+    public function setLogo(?string $logo): void
+    {
+        $this->logo = $logo;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
     }
 
     /**
@@ -309,5 +364,21 @@ class Manufacturer extends AbstractEntity
     public function __toString(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|void|null
+     */
+    public function serialize()
+    {
+        $this->logoFile = base64_encode($this->logoFile);
+    }
+
+    /**
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        $this->logoFile = base64_decode($this->logoFile);
     }
 }

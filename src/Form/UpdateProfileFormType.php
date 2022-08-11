@@ -7,6 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
  * Class UpdateProfileFormType
@@ -17,6 +18,15 @@ class UpdateProfileFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('logoFile', VichFileType::class, array(
+                'required'      => false,
+                'allow_delete'  => false,
+                'download_link' => false,
+                'label' => false,
+                'attr' => [
+                    'style' => 'margin-top:10px'
+                ]
+            ))
             ->add('firstname', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
