@@ -383,7 +383,9 @@ class BatteryAdmin extends AbstractAdmin
                     CustomHelper::BATTERY_STATUS_REGISTERED
                 );
             } elseif (!empty($state) && $state === CustomHelper::BATTERY_STATUS_DELIVERED) {
+                $deliveryDate = $this->getForm()->get('deliveryDate')->getData();
                 $object->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+                $object->setDeliveryDate($deliveryDate);
                 /** @var Battery $object */
                 $this->transactionLogService->createTransactionLog(
                     $object,
@@ -396,14 +398,14 @@ class BatteryAdmin extends AbstractAdmin
                     null,
                     CustomHelper::BATTERY_STATUS_DELIVERED,
                     CustomHelper::STATUS_PENDING,
-                    $this->getForm()->get('deliveryDate')->getData()
+                    $deliveryDate
                 );
                 $this->shipmentService
                     ->createShipment(
                         $object->getManufacturer()->getUser(),
                         $object,
                         $transactionLog,
-                        $this->getForm()->get('deliveryDate')->getData()
+                        $deliveryDate
                     );
             }
         } catch (\Exception $exception) {
