@@ -85,6 +85,29 @@
                         {{ battery.serialNumber }}
                     </div>
                 </div>
+                {% if battery.status != 'pre-registered' %}
+                    <div class="col-md-12 p-0 row-border-bottom p-tb-5">
+                        <div class="col-md-4 p-0">
+                        <span class="heading">
+                            {{ "Transaction(s)" | trans }}
+                        </span>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-green dropdown-toggle" type="button" id="transactionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ "View Transaction(s)" }}
+                                </button>
+                                <ul style="" class="dropdown-menu" aria-labelledby="transactionsDropdown">
+                                    {% for transaction in transactions %}
+                                        <li>
+                                            <a class="dropdown-item" target="_blank" href={{ etherscan_url ~ transaction.transactionHash }}>{{ transaction.transactionType | trans | capitalize }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="col-md-12 p-0 row-border-bottom p-tb-5">
                     <div class="col-md-4 p-0">
                         <span class="heading">

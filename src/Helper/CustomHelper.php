@@ -37,7 +37,8 @@ class CustomHelper
         'height',
         'width',
         'length',
-        'mass'
+        'mass',
+        'delivery_date'
     ];
 
     /** @var array */

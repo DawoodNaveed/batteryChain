@@ -156,6 +156,7 @@ class BatteryService
                 $moduleType = (string) $row['module_type'] ?? null;
                 $trayNumber = (string) $row['tray_number'] ?? null;
                 $productionDate = (string) $row['production_date'] ?? null;
+                $deliveryDate = (string) $row['delivery_date'] ?? null;
                 $nominalVoltage = (float) $row['nominal_voltage'];
                 $nominalCapacity = (float) $row['nominal_capacity'];
                 $nominalEnergy = (float) $row['nominal_energy'];
@@ -168,12 +169,13 @@ class BatteryService
                 $status = CustomHelper::BATTERY_STATUS_PRE_REGISTERED;
 
                 $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
+                $deliveryDate = (new \DateTime($deliveryDate))->format('Y-m-d H:i:s');
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
                     "', '" . $acidVolume . "', '" . $co2 . "', '" . 1
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
-                    . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', now(), now()), ";
+                    . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', '" . $deliveryDate . "', now(), now()), ";
 
                 $rowCount++;
 
@@ -587,7 +589,11 @@ class BatteryService
             $endDate = (new \DateTime('+1 day' . $dates[1]))->format('Y-m-d');
 
             if (CustomHelper::validateReportMode($validFilters['mode'])) {
-                $dqlStatement .= " AND (t.created BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND t.transactionType = '" . $validFilters['mode'] . "')";
+                if ($validFilters['mode'] === CustomHelper::BATTERY_STATUS_DELIVERED) {
+                    $dqlStatement .= " AND (t.deliveryDate BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND t.transactionType = '" . $validFilters['mode'] . "')";
+                } else {
+                    $dqlStatement .= " AND (t.created BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND t.transactionType = '" . $validFilters['mode'] . "')";
+                }
             } else {
                 $dqlStatement .= " AND ((t.created BETWEEN '" . $startDate . "' AND '" . $endDate . "') OR (b.status = 'pre-registered' AND b.created BETWEEN '" . $startDate . "' AND '" . $endDate . "'))";
             }

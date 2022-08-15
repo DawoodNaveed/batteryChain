@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.path.manufacturer_logos: /resources/uploads/logos
+    app.path.co2_icons: /resources/uploads/icons/co2
+    app.path.insurance_icons: /resources/uploads/icons/insurance
+    app.path.no_image: /resources/icons/no-image.png
 
 services:
     # default configuration for services in *this* file
@@ -49,6 +53,7 @@ services:
         arguments: [~, App\Entity\Manufacturer, ~]
         calls:
             - [ setPasswordEncoder, [ '@security.password_hasher' ] ]
+            - [ setTemplate, [ 'edit', 'manufacturer/edit.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Manufacturer, group: Manufacturer }
 
@@ -69,6 +74,7 @@ services:
         calls:
             - [ setTokenStorage, [ '@security.token_storage' ] ]
             - [ setTransactionLogService, [ '@App\Service\TransactionLogService' ] ]
+            - [ setShipmentService, [ '@App\Service\ShipmentService' ] ]
             - [ setTemplate, [ 'layout', 'battery/list.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
