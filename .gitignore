@@ -28,3 +28,6 @@
 /deploy/docker-compose.yml
 /deploy/.env
 ###< Docker ###
+
+### Logos ###
+/public/resources/uploads

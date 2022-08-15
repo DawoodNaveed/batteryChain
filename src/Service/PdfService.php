@@ -41,6 +41,9 @@ class PdfService
      */
     public function createBatteryPdf(Battery $battery)
     {
+        $transaction = array_filter(($battery->getTransactionLogs()->toArray()), function ($trans) {
+            return $trans->getTransactionType() === $trans->getBattery()->getStatus();
+        });
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
         $poweredByLogo = $this->getEncodedImage('https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png');
@@ -53,7 +56,9 @@ class PdfService
             'poweredByLogo' => $poweredByLogo,
             'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                : null
+                : null,
+            'transaction' => array_pop($transaction) ?? null,
+            'transactions' => $battery->getTransactionLogs()->toArray()
         ]);
 
         $domPdf->loadHtml($html);

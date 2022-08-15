@@ -249,7 +249,8 @@ class BatteryController extends CRUDController
                     ]),
                     'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                        : null
+                        : null,
+                    'transactions' => $battery->getTransactionLogs()->toArray()
                 ]
             );
         }
