@@ -5,9 +5,7 @@
     <style>
         .header-div {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 60px;
+            height: max-content;
             position: relative;
         }
         .sub-header-div {
@@ -41,8 +39,8 @@
             font-size: 0.9rem;
         }
         .btn-download {
-            position: absolute;
-            right: 0;
+            /*position: absolute;*/
+            /*right: 0;*/
         }
         .row-div {
             width: 100%;
@@ -52,6 +50,21 @@
             color: #212529 !important;
             border-color: #212529 !important;
             background-color: white;
+        }
+        .logo-div {
+            display: flex;
+            align-content: end;
+            align-items: center;
+            justify-content: end;
+        }
+        .icon-div {
+            justify-content: flex-end;
+            align-items: center;
+            align-content: space-around;
+            display: flex;
+        }
+        .icon-div img {
+            margin-right: 15px;
         }
         @media (max-width: 767px) {
             .row-div {
@@ -82,6 +95,20 @@
             }
             .btn-download {
                 position: relative;
+            }
+            .logo-div img {
+                width: 100% !important;
+            }
+            .logo-div {
+                justify-content: center;
+            }
+        }
+        @media (max-width: 1200px) {
+            .icon-div, .logo-div {
+                width: 100%;
+            }
+            .logo-div {
+                justify-content: center;
             }
         }
     </style>
@@ -127,17 +154,37 @@
                                 {{ "Here you will find an overview of all information about your battery. At the bottom you can register your battery for a pickup service (if supported for your area) or get disposal information" | trans }}
                             </span>
                         </div>
-                        <div class="header-div">
-                            <div>
-                                <h2 style="display: inline-block">
-                                    {{ battery.manufacturer.name | upper }}
-                                </h2>
+                        <div class="header-div row">
+                            <div class="col-md-8 logo-div">
+                                {% if battery.manufacturer.logo is not null and battery.manufacturer.logo != '' %}
+                                    <img style="object-fit: contain; width: 300px; height: 100px" src="{{ logo_path ~ '/' ~ battery.manufacturer.logo }}">
+                                {% else %}
+                                    <h2 style="display: inline-block">
+                                        {{ battery.manufacturer.name | upper }}
+                                    </h2>
+                                {% endif %}
                             </div>
-                            <a class="btn-outline-dark mr-5 btn-download"
-                               href="{{ path('download', {"slug": slug}) }}"
-                               target="_blank">
-                                <i class="far fa-file-pdf fa-3x"></i>
-                            </a>
+                            <div class="col-md-4 icon-div">
+                                {% if battery.isClimateNeutral %}
+                                    {% if battery.manufacturer.co2Logo is not null and battery.manufacturer.co2Logo != '' %}
+                                        <img style="object-fit: contain; max-width: 100px; width: 100px; height: 100px; float: right" src="{{ co2_path ~ '/' ~ battery.manufacturer.co2Logo }}">
+                                    {% elseif battery.manufacturer.co2Logo is null or battery.manufacturer.co2Logo == ''  %}
+                                        <img style="object-fit: contain; max-width: 75px; width: 75px; height: 75px; float: right" src="{{ no_image_path }}">
+                                    {% endif %}
+                                {% endif %}
+                                {% if battery.isInsured %}
+                                    {% if battery.manufacturer.insuranceLogo is not null and battery.manufacturer.insuranceLogo != '' %}
+                                        <img style="object-fit: contain; max-width: 75px; width: 75px; height: 100px" src="{{ insurance_path ~ '/' ~ battery.manufacturer.insuranceLogo }}">
+                                    {% elseif battery.manufacturer.insuranceLogo is null or battery.manufacturer.insuranceLogo == ''  %}
+                                        <img style="object-fit: contain; max-width: 75px; width: 75px; height: 75px; float: right" src="{{ no_image_path }}">
+                                    {% endif %}
+                                {% endif %}
+                                <a class="btn-outline-dark mr-5 btn-download"
+                                   href="{{ path('download', {"slug": slug}) }}"
+                                   target="_blank">
+                                    <i class="far fa-file-pdf fa-3x"></i>
+                                </a>
+                            </div>
                         </div>
                         <hr class="mb-0">
                         <div class="sub-header-div">

@@ -166,6 +166,8 @@ class BatteryService
                 $width = ((float) $row['width']) ?? 0;
                 $length = ((float) $row['length']) ?? 0;
                 $mass = (float) $row['mass'];
+                $isInsured = (int) $row['is_insured'] ?? 0;
+                $isClimateNeutral = (int) $row['is_climate_neutral'] ?? 0;
                 $status = CustomHelper::BATTERY_STATUS_PRE_REGISTERED;
 
                 $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
@@ -173,7 +175,7 @@ class BatteryService
                 $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
-                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1
+                    "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $isInsured . "', '" . $isClimateNeutral
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
                     . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', '" . $deliveryDate . "', now(), now()), ";
 

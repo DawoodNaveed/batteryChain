@@ -38,7 +38,9 @@ class CustomHelper
         'width',
         'length',
         'mass',
-        'delivery_date'
+        'delivery_date',
+        'is_insured',
+        'is_climate_neutral'
     ];
 
     /** @var array */

@@ -16,6 +16,7 @@ use Sonata\AdminBundle\Form\Type\ChoiceFieldMaskType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -122,6 +123,16 @@ class BatteryAdmin extends AbstractAdmin
                 'label' => 'Weight',
                 'disabled' => $disabled,
                 'invalid_message' => "This value '{{ value }}' should be of type number."
+            ])
+            ->add('isInsured', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Has Insurance?',
+                'disabled' => $disabled,
+            ])
+            ->add('isClimateNeutral', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Is Climate Neutral?',
+                'disabled' => $disabled,
             ]);
 
         if ($battery->getId() === null) {
@@ -229,7 +240,9 @@ class BatteryAdmin extends AbstractAdmin
             ->add('height')
             ->add('width')
             ->add('length')
-            ->add('mass', TextType::class, ['label' => 'Weight']);
+            ->add('mass', TextType::class, ['label' => 'Weight'])
+            ->add('isInsured', null, ['label' => 'Has Insurance?'])
+            ->add('isClimateNeutral', null, ['label' => 'Is Climate Neutral?']);
     }
 
     /**
