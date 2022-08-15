@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -194,6 +195,12 @@ class Battery extends AbstractEntity
      * @ORM\Column(name="is_bulk_import", type="boolean", nullable=true, options={"default"=false})
      */
     private $isBulkImport;
+
+    /**
+     * @var DateTime|null
+     * @ORM\Column(name="delivery_date", type="datetime", nullable="true")
+     */
+    private $deliveryDate;
 
     /**
      * One Battery has many transaction Logs.
@@ -419,6 +426,22 @@ class Battery extends AbstractEntity
     public function setStatus(?string $status): void
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDeliveryDate(): ?DateTime
+    {
+        return $this->deliveryDate;
+    }
+
+    /**
+     * @param DateTime|null $deliveryDate
+     */
+    public function setDeliveryDate(?DateTime $deliveryDate): void
+    {
+        $this->deliveryDate = $deliveryDate;
     }
 
     /**

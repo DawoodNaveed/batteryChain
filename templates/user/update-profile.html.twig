@@ -39,6 +39,38 @@
             </div>
             <div class="col-md-12">
                 {{ form_start(updateProfileForm) }}
+
+                {% if app.user.manufacturer.logo is not null and app.user.manufacturer.logo != '' %}
+                    <img src="{{ asset(logo_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+
+                {% if app.user.manufacturer.logo is null or app.user.manufacturer.logo == '' %}
+                    <br>
+                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+                {{ form_row(updateProfileForm.logoFile) }}
+
+                {% if app.user.manufacturer.co2Logo is not null and app.user.manufacturer.co2Logo != '' %}
+                    <br>
+                    <img src="{{ asset(co2_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+
+                {% if app.user.manufacturer.co2Logo is null or app.user.manufacturer.co2Logo == '' %}
+                    <br>
+                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+                {{ form_row(updateProfileForm.co2LogoFile) }}
+
+                {% if app.user.manufacturer.insuranceLogo is not null and app.user.manufacturer.insuranceLogo != '' %}
+                    <br>
+                    <img src="{{ asset(insurance_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+
+                {% if app.user.manufacturer.insuranceLogo is null or app.user.manufacturer.insuranceLogo == '' %}
+                    <br>
+                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                {% endif %}
+                {{ form_row(updateProfileForm.insuranceLogoFile) }}
                 {{ form_row(updateProfileForm.firstname) }}
                 {{ form_row(updateProfileForm.lastname) }}
                 {{ form_row(updateProfileForm.contact) }}

@@ -165,3 +165,13 @@ a {
 .underline-none {
     text-decoration: none;
 }
+
+img.manufacturer_logo {
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+img.manufacturer_logo + div {
+    display: inline-block !important;
+    margin-left: 10px;
+}

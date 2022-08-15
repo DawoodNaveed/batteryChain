@@ -8,6 +8,7 @@ use App\Entity\TransactionLog;
 use App\Entity\User;
 use App\Helper\CustomHelper;
 use App\Repository\TransactionLogRepository;
+use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
@@ -44,6 +45,8 @@ class TransactionLogService
      * @param User $user
      * @param array|null $data
      * @param string $transactionType
+     * @param string $status
+     * @param DateTime|null $deliveryDate
      * @return TransactionLog
      * @throws ORMException
      * @throws OptimisticLockException
@@ -52,14 +55,18 @@ class TransactionLogService
         Battery $battery,
         User $user,
         ?array $data,
-        string $transactionType = CustomHelper::BATTERY_STATUS_DELIVERED
+        string $transactionType = CustomHelper::BATTERY_STATUS_DELIVERED,
+        string $status = CustomHelper::STATUS_PENDING,
+        ?DateTime $deliveryDate = null
     ): TransactionLog {
         return $this->transactionLogRepository
             ->createDeliveryTransactionLog(
                 $battery,
                 $user,
                 $data,
-                $transactionType
+                $transactionType,
+                $status,
+                $deliveryDate
             );
     }
 

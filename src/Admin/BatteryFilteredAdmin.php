@@ -288,6 +288,7 @@ class BatteryFilteredAdmin extends AbstractAdmin
         $collection->add('detail');
         $collection->add('download');
         $collection->add('register');
+        $collection->add('deliver');
     }
 
     /**
@@ -304,6 +305,11 @@ class BatteryFilteredAdmin extends AbstractAdmin
                 'ask_confirmation' => true,
                 'controller' => 'app.controller.battery::batchRegisterAction',
                 'template' => 'battery/ask_confirmation.html.twig'
+            ];
+            $actions['deliver'] = [
+                'ask_confirmation' => true,
+                'controller' => 'app.controller.battery::batchDeliverAction',
+                'template' => 'battery/ask_confirmation_delivery.html.twig'
             ];
         }
 
