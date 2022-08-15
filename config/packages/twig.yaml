@@ -8,6 +8,9 @@ twig:
         locales: '%env(APP_LOCALES)%'
         etherscan_url: '%env(ETHERSCAN_URL)%'
         logo_path: '%app.path.manufacturer_logos%'
+        co2_path: '%app.path.co2_icons%'
+        insurance_path: '%app.path.insurance_icons%'
+        no_image_path: '%app.path.no_image%'
 when@test:
     twig:
         strict_variables: true

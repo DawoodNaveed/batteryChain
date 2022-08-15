@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.path.manufacturer_logos: /resources/uploads/logos
+    app.path.co2_icons: /resources/uploads/icons/co2
+    app.path.insurance_icons: /resources/uploads/icons/insurance
+    app.path.no_image: /resources/icons/no-image.png
 
 services:
     # default configuration for services in *this* file
