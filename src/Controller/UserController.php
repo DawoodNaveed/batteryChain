@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\RoleEnum;
 use App\Form\UpdateProfileFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -52,7 +53,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route(path="\update_profile", name="update_profile")
+     * @Route(path="/admin/profile/update", name="update_profile")
      * @param Request $request
      * @return Response
      */
@@ -60,6 +61,12 @@ class UserController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+
+        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+            in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+            return $this->redirectToRoute('app_login');
+        }
+
         $form = $this->createForm(UpdateProfileFormType::class, $user->getManufacturer(), [
             'firstname' => $user->getFirstName(),
             'lastname' => $user->getLastName(),
