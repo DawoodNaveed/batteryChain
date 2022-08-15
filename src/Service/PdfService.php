@@ -46,6 +46,9 @@ class PdfService
         });
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
+        $manufacturerLogo = $battery->getManufacturer()->getLogo() ? $this->getEncodedImage('resources/uploads/logos/' . $battery->getManufacturer()->getLogo()) : '';
+        $co2NeutralLogo = $battery->getManufacturer()->getCo2Logo() ? $this->getEncodedImage('resources/uploads/icons/co2/' . $battery->getManufacturer()->getCo2Logo()) : '';
+        $insuranceLogo = $battery->getManufacturer()->getInsuranceLogo() ? $this->getEncodedImage('resources/uploads/icons/insurance/' . $battery->getManufacturer()->getInsuranceLogo()) : '';
         $poweredByLogo = $this->getEncodedImage('https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png');
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
@@ -58,7 +61,10 @@ class PdfService
                 ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 : null,
             'transaction' => array_pop($transaction) ?? null,
-            'transactions' => $battery->getTransactionLogs()->toArray()
+            'transactions' => $battery->getTransactionLogs()->toArray(),
+            'manufacturerLogo' => $manufacturerLogo,
+            'co2NeutralLogo' => $co2NeutralLogo,
+            'insuranceLogo' => $insuranceLogo,
         ]);
 
         $domPdf->loadHtml($html);

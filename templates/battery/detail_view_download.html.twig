@@ -136,13 +136,30 @@
     </style>
 </head>
 <body>
-<div class="py-5 text-center">
-    <div style="display: inline-block">
+{% set divAlignment = 'left' %}
+{% set positionType = 'relative' %}
+{% if manufacturerLogo != '' %}
+    {% set divAlignment = 'center' %}
+    {% set positionType = 'absolute' %}
+{% endif %}
+<div class="py-5 text-center" style="display: inline-block; text-align: {{ divAlignment }}; width: 100%; position: relative">
+    <div style="display: inline-block; position: {{ positionType }}; left: 0;">
         <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">
+        <div style="display: inline-block">
+            <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
+            <h1 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h1>
+        </div>
     </div>
-    <div style="display: inline-block">
-        <h1 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h1>
-        <h1 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h1>
+    <div style="display: inline-block; text-align: center">
+        <img class="mt-3" style="object-fit: contain;" src="{{ manufacturerLogo }}" alt="" width="200" height="80">
+    </div>
+    <div style="display: inline;  position: {{ positionType }}; right: 0;">
+        {% if battery.isClimateNeutral %}
+            <img class="mt-3" style="object-fit: contain;" src="{{ co2NeutralLogo }}" alt="" width="75" height="75">
+        {% endif %}
+        {% if battery.isInsured %}
+            <img class="mt-3" style="object-fit: contain;" src="{{ insuranceLogo }}" alt="" width="75" height="75">
+        {% endif %}
     </div>
 </div>
 <h1 class="title">{{ documentTitle }}</h1>
