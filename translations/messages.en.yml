@@ -7,6 +7,7 @@ service.error.battery_import_status: '%failure_batteries% Batteries are failed t
 service.success.recycler_added_successfully: 'Recyclers Added/Updated Successfully!'
 service.success.recycler_bulk_status: '%failure_recyclers% Recyclers are failed to add/update, out of Total: %total_recyclers% Recyclers'
 service.error.bulk_register_batteries: '%failure_batteries% battery(s) are already registered or in queue to be registered!'
+service.error.bulk_deliver_batteries: '%failure_batteries% battery(s) are not valid!'
 service.info.flash_bulk_create_info_exist: "Some Manufacturer already has battery with similar serial numbers. So, we update serial number for '%count%' battery(s)."
 service.success.bulk_recycle_added: 'Success! Recycle added for %total% battery(s)'
 en: "English"
@@ -52,6 +53,7 @@ Height: "Height"
 Width: "Width"
 Length: "Length"
 Weight: "Weight"
+Height x Width x Length: "Height x Width x Length"
 Status: "Status"
 Registered: "Registered"
 Delivered: "Delivered"

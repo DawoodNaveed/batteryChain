@@ -144,6 +144,7 @@ class ShipmentController extends CRUDController
             $shipment->setBattery($battery);
             $shipment->setTransactionLog($transactionLog);
             $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
+            $battery->setDeliveryDate(new DateTime('now'));
             $battery->setUpdated(new DateTime('now'));
             $battery->setCurrentPossessor($user);
 

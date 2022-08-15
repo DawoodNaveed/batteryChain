@@ -1,1 +1,1 @@
-serial_number,battery_type,cell_type,module_type,tray_number,production_date,nominal_voltage,nominal_capacity,nominal_energy,acid_volume,CO2,height,width,length,mass
+serial_number,battery_type,cell_type,module_type,tray_number,production_date,nominal_voltage,nominal_capacity,nominal_energy,acid_volume,CO2,height,width,length,mass,delivery_date

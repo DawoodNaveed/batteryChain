@@ -1,0 +1,10 @@
+{% extends '@SonataAdmin/CRUD/base_show_field.html.twig' %}
+
+{% block field %}
+    {% if value is not null and value != '' %}
+        <img src="{{ asset(insurance_path ~ '/' ~ value) }}" height="125" width="125">
+    {% endif %}
+    {% if value is null or value == '' %}
+        <img src="{{ asset(no_image_path) }}" height="125" width="125">
+    {% endif %}
+{% endblock %}

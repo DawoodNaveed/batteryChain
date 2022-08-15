@@ -7,6 +7,7 @@ use App\Entity\Recycler;
 use App\Entity\TransactionLog;
 use App\Entity\User;
 use App\Helper\CustomHelper;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -62,7 +63,7 @@ class TransactionLogRepository extends ServiceEntityRepository
                 if ($status === CustomHelper::STATUS_COMPLETE) {
                     $log->getBattery()->setBlockchainSecured(true);
                     $log->getBattery()->setStatus($log->getTransactionType());
-                    $log->getBattery()->setUpdated(new \DateTime('now'));
+                    $log->getBattery()->setUpdated(new DateTime('now'));
                 }
             }
 
@@ -70,7 +71,7 @@ class TransactionLogRepository extends ServiceEntityRepository
                 $log->setTransactionHash($transactionHash);
             }
 
-            $log->setUpdated(new \DateTime('now'));
+            $log->setUpdated(new DateTime('now'));
             $this->_em->flush();
         }
     }
@@ -102,8 +103,8 @@ class TransactionLogRepository extends ServiceEntityRepository
         $transactionLog->setBattery($battery);
         $transactionLog->setTransactionType($transactionType);
         $transactionLog->setStatus($status);
-        $transactionLog->setCreated(new \DateTime('now'));
-        $transactionLog->setUpdated(new \DateTime('now'));
+        $transactionLog->setCreated(new DateTime('now'));
+        $transactionLog->setUpdated(new DateTime('now'));
 
         $this->_em->persist($transactionLog);
         $this->_em->flush();
@@ -117,6 +118,7 @@ class TransactionLogRepository extends ServiceEntityRepository
      * @param array|null $formData
      * @param string $transactionType
      * @param string $status
+     * @param DateTime|null $deliveryDate
      * @return TransactionLog
      * @throws ORMException
      * @throws OptimisticLockException
@@ -126,15 +128,22 @@ class TransactionLogRepository extends ServiceEntityRepository
         User $user,
         ?array $formData,
         string $transactionType,
-        string $status = CustomHelper::STATUS_PENDING): TransactionLog
+        string $status = CustomHelper::STATUS_PENDING,
+        ?DateTime $deliveryDate = null): TransactionLog
     {
         $transactionLog = new TransactionLog();
         $transactionLog->setBattery($battery);
         $transactionLog->setTransactionType($transactionType);
         $transactionLog->setFromUser($user);
         $transactionLog->setStatus($status);
-        $transactionLog->setCreated(new \DateTime('now'));
-        $transactionLog->setUpdated(new \DateTime('now'));
+        $transactionLog->setCreated(new DateTime('now'));
+        $transactionLog->setUpdated(new DateTime('now'));
+
+        if (empty($deliveryDate)) {
+            $transactionLog->setDeliveryDate(new DateTime('now'));
+        } else {
+            $transactionLog->setDeliveryDate($deliveryDate);
+        }
 
         if (!empty($formData)) {
             $transactionLog->setAddress($formData['address'] ?? null);
@@ -174,8 +183,8 @@ class TransactionLogRepository extends ServiceEntityRepository
         $transactionLog->setFromUser($user);
         $transactionLog->setReturnTo($recycler);
         $transactionLog->setStatus($status);
-        $transactionLog->setCreated(new \DateTime('now'));
-        $transactionLog->setUpdated(new \DateTime('now'));
+        $transactionLog->setCreated(new DateTime('now'));
+        $transactionLog->setUpdated(new DateTime('now'));
 
         if (!empty($formData)) {
             $transactionLog->setAddress($formData['address'] ?? null);

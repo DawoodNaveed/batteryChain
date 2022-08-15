@@ -11,8 +11,8 @@
         "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "ext-pdo": "*",
         "ext-openssl": "*",
+        "ext-pdo": "*",
         "doctrine/common": "^3.3",
         "doctrine/doctrine-bundle": "^2.6",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
@@ -44,7 +44,8 @@
         "symfonycasts/reset-password-bundle": "^1.13",
         "symfonycasts/verify-email-bundle": "^1.10",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "vich/uploader-bundle": "^1.21"
     },
     "require-dev": {
         "symfony/stopwatch": "5.4.*"

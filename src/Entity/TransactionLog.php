@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -69,6 +70,12 @@ class TransactionLog extends AbstractEntity
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
+
+    /**
+     * @var DateTime|null
+     * @ORM\Column(name="delivery_date", type="datetime", nullable="true")
+     */
+    private $deliveryDate;
 
     /**
      * @var BatteryReturn|null
@@ -216,6 +223,22 @@ class TransactionLog extends AbstractEntity
     public function setDeletedAt(?\DateTime $deletedAt): void
     {
         $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getDeliveryDate(): ?DateTime
+    {
+        return $this->deliveryDate;
+    }
+
+    /**
+     * @param DateTime|null $deliveryDate
+     */
+    public function setDeliveryDate(?DateTime $deliveryDate): void
+    {
+        $this->deliveryDate = $deliveryDate;
     }
 
     /**
