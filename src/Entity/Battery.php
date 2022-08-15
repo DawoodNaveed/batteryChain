@@ -197,6 +197,18 @@ class Battery extends AbstractEntity
     private $isBulkImport;
 
     /**
+     * @var boolean|null
+     * @ORM\Column(name="is_insured", type="boolean", nullable=true, options={"default"=false})
+     */
+    private $isInsured;
+
+    /**
+     * @var boolean|null
+     * @ORM\Column(name="is_climate_neutral", type="boolean", nullable=true, options={"default"=false})
+     */
+    private $isClimateNeutral;
+
+    /**
      * @var DateTime|null
      * @ORM\Column(name="delivery_date", type="datetime", nullable="true")
      */
@@ -658,6 +670,38 @@ class Battery extends AbstractEntity
     public function setIsBulkImport(?bool $isBulkImport): void
     {
         $this->isBulkImport = $isBulkImport;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsInsured(): ?bool
+    {
+        return $this->isInsured;
+    }
+
+    /**
+     * @param bool|null $isInsured
+     */
+    public function setIsInsured(?bool $isInsured): void
+    {
+        $this->isInsured = $isInsured;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getIsClimateNeutral(): ?bool
+    {
+        return $this->isClimateNeutral;
+    }
+
+    /**
+     * @param bool|null $isClimateNeutral
+     */
+    public function setIsClimateNeutral(?bool $isClimateNeutral): void
+    {
+        $this->isClimateNeutral = $isClimateNeutral;
     }
 
     /**
