@@ -13,14 +13,16 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
+        "aws/aws-sdk-php": "^3.0",
         "doctrine/common": "^3.3",
-        "doctrine/doctrine-bundle": "^2.6",
+        "doctrine/doctrine-bundle": "~2.6.4",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
         "dompdf/dompdf": "^1.2",
         "gedmo/doctrine-extensions": "^3.7",
         "google/recaptcha": "~1.1",
+        "knplabs/knp-gaufrette-bundle": "^0.7.2",
         "mailjet/mailjet-bundle": "^2.0",
         "sonata-project/admin-bundle": "^4.12",
         "sonata-project/doctrine-orm-admin-bundle": "^4.3",
@@ -45,7 +47,8 @@
         "symfonycasts/verify-email-bundle": "^1.10",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "vich/uploader-bundle": "^1.21"
+        "vich/uploader-bundle": "^1.21",
+        "mtdowling/jmespath.php": "^2.0"
     },
     "require-dev": {
         "symfony/stopwatch": "5.4.*"
