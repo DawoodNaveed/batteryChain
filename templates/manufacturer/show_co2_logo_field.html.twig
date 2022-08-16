@@ -2,9 +2,9 @@
 
 {% block field %}
     {% if value is not null and value != '' %}
-        <img src="{{ asset(co2_path ~ '/' ~ value) }}" height="125" width="125">
+        <img src="{{ asset(co2_path ~ '/' ~ value) }}" height="100" width="100" style="object-fit: contain">
     {% endif %}
     {% if value is null or value == '' %}
-        <img src="{{ asset(no_image_path) }}" height="125" width="125">
+        <img src="{{ asset(no_image_path) }}" height="100" width="100" style="object-fit: contain">
     {% endif %}
 {% endblock %}
