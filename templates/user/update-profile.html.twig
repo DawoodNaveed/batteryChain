@@ -30,61 +30,75 @@
     </style>
 {% endblock %}
 
-
-{% block sonata_admin_content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="margin-bottom">
-                <h2>{{ "Update Profile" | trans }}</h2>
-            </div>
-            <div class="col-md-12">
-                {{ form_start(updateProfileForm) }}
-
-                {% if app.user.manufacturer.logo is not null and app.user.manufacturer.logo != '' %}
-                    <img src="{{ asset(logo_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-
-                {% if app.user.manufacturer.logo is null or app.user.manufacturer.logo == '' %}
-                    <br>
-                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-                {{ form_row(updateProfileForm.logoFile) }}
-
-                {% if app.user.manufacturer.co2Logo is not null and app.user.manufacturer.co2Logo != '' %}
-                    <br>
-                    <img src="{{ asset(co2_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-
-                {% if app.user.manufacturer.co2Logo is null or app.user.manufacturer.co2Logo == '' %}
-                    <br>
-                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-                {{ form_row(updateProfileForm.co2LogoFile) }}
-
-                {% if app.user.manufacturer.insuranceLogo is not null and app.user.manufacturer.insuranceLogo != '' %}
-                    <br>
-                    <img src="{{ asset(insurance_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-
-                {% if app.user.manufacturer.insuranceLogo is null or app.user.manufacturer.insuranceLogo == '' %}
-                    <br>
-                    <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
-                {% endif %}
-                {{ form_row(updateProfileForm.insuranceLogoFile) }}
-                {{ form_row(updateProfileForm.firstname) }}
-                {{ form_row(updateProfileForm.lastname) }}
-                {{ form_row(updateProfileForm.contact) }}
-                {{ form_row(updateProfileForm.address) }}
-                {{ form_row(updateProfileForm.postalCode) }}
-                {{ form_row(updateProfileForm.city) }}
-                {{ form_row(updateProfileForm.country) }}
-
-                <div class="mt-1">
-                    <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100">{{ "Update" }}</button>
-                    <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+{% block sonata_page_content %}
+    <section class="content-header">
+        <div class="sticky-wrapper" style="">
+            <nav class="navbar navbar-default" role="navigation" style="width: auto;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">{{ 'Edit "' ~ app.user.manufacturer.name ~ '"'}}</a>
+                    </div>
                 </div>
-                {{ form_end(updateProfileForm) }}
+            </nav>
+        </div>
+    </section>
+    <section class="content">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h4 class="box-title">
+                    {{ "Manufacturer" | trans }}
+                </h4>
+            </div>
+            <div class="box-body">
+                <div class="col-md-12">
+                    {{ form_start(updateProfileForm) }}
+
+                    {% if app.user.manufacturer.logo is not null and app.user.manufacturer.logo != '' %}
+                        <img style="object-fit: contain" src="{{ asset(logo_path ~ '/' ~ app.user.manufacturer.logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+
+                    {% if app.user.manufacturer.logo is null or app.user.manufacturer.logo == '' %}
+                        <br>
+                        <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+                    {{ form_row(updateProfileForm.logoFile) }}
+
+                    {% if app.user.manufacturer.co2Logo is not null and app.user.manufacturer.co2Logo != '' %}
+                        <br>
+                        <img src="{{ asset(co2_path ~ '/' ~ app.user.manufacturer.co2Logo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+
+                    {% if app.user.manufacturer.co2Logo is null or app.user.manufacturer.co2Logo == '' %}
+                        <br>
+                        <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+                    {{ form_row(updateProfileForm.co2LogoFile) }}
+
+                    {% if app.user.manufacturer.insuranceLogo is not null and app.user.manufacturer.insuranceLogo != '' %}
+                        <br>
+                        <img src="{{ asset(insurance_path ~ '/' ~ app.user.manufacturer.insuranceLogo) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+
+                    {% if app.user.manufacturer.insuranceLogo is null or app.user.manufacturer.insuranceLogo == '' %}
+                        <br>
+                        <img src="{{ asset(no_image_path) }}" height="100" width="100"  alt="logo" class="manufacturer_logo"/>
+                    {% endif %}
+                    {{ form_row(updateProfileForm.insuranceLogoFile) }}
+                    {{ form_row(updateProfileForm.firstname) }}
+                    {{ form_row(updateProfileForm.lastname) }}
+                    {{ form_row(updateProfileForm.contact) }}
+                    {{ form_row(updateProfileForm.address) }}
+                    {{ form_row(updateProfileForm.postalCode) }}
+                    {{ form_row(updateProfileForm.city) }}
+                    {{ form_row(updateProfileForm.country) }}
+
+                    <div class="mt-1">
+                        <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100">{{ "Update" }}</button>
+                        <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+                    </div>
+                    {{ form_end(updateProfileForm) }}
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}
