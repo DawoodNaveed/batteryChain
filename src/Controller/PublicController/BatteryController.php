@@ -3,7 +3,6 @@
 namespace App\Controller\PublicController;
 
 use App\Entity\Battery;
-use App\Form\ReportBatteryReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\CountryService;
