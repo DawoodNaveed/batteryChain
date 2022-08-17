@@ -32,6 +32,9 @@ services:
             $openssl_password: '%env(OPENSSL_PASSWORD)%'
             $availableLocales: '%env(APP_LOCALES)%'
             $awsBucket: '%env(AWS_BUCKET)%'
+            $awsLogoFolder: '%app.path.manufacturer_aws_logos%'
+            $awsCo2Folder: '%app.path.co2_aws_icons%'
+            $awsInsuranceFolder: '%app.path.insurance_aws_icons%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
