@@ -157,7 +157,7 @@
                         <div class="header-div row">
                             <div class="col-md-8 logo-div">
                                 {% if battery.manufacturer.logo is not null and battery.manufacturer.logo != '' %}
-                                    <img style="object-fit: contain; width: 300px; height: 100px" src="{{ logo_path ~ '/' ~ battery.manufacturer.logo }}">
+                                    <img style="object-fit: contain; width: 300px; height: 100px" src="{{ battery.manufacturer.logo | preSignedUrl(logo_aws_path) }}">
                                 {% else %}
                                     <h2 style="display: inline-block">
                                         {{ battery.manufacturer.name | upper }}
@@ -167,14 +167,14 @@
                             <div class="col-md-4 icon-div">
                                 {% if battery.isClimateNeutral %}
                                     {% if battery.manufacturer.co2Logo is not null and battery.manufacturer.co2Logo != '' %}
-                                        <img style="object-fit: contain; max-width: 100px; width: 100px; height: 100px; float: right" src="{{ co2_path ~ '/' ~ battery.manufacturer.co2Logo }}">
+                                        <img style="object-fit: contain; max-width: 100px; width: 100px; height: 100px; float: right" src="{{ battery.manufacturer.co2Logo | preSignedUrl(co2_aws_path) }}">
                                     {% elseif battery.manufacturer.co2Logo is null or battery.manufacturer.co2Logo == ''  %}
                                         <img style="object-fit: contain; max-width: 75px; width: 75px; height: 75px; float: right" src="{{ no_image_path }}">
                                     {% endif %}
                                 {% endif %}
                                 {% if battery.isInsured %}
                                     {% if battery.manufacturer.insuranceLogo is not null and battery.manufacturer.insuranceLogo != '' %}
-                                        <img style="object-fit: contain; max-width: 75px; width: 75px; height: 100px" src="{{ insurance_path ~ '/' ~ battery.manufacturer.insuranceLogo }}">
+                                        <img style="object-fit: contain; max-width: 75px; width: 75px; height: 100px" src="{{ battery.manufacturer.insuranceLogo | preSignedUrl(insurance_aws_path) }}">
                                     {% elseif battery.manufacturer.insuranceLogo is null or battery.manufacturer.insuranceLogo == ''  %}
                                         <img style="object-fit: contain; max-width: 75px; width: 75px; height: 75px; float: right" src="{{ no_image_path }}">
                                     {% endif %}

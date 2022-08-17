@@ -22,4 +22,5 @@ return [
     Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Vich\UploaderBundle\VichUploaderBundle::class => ['all' => true],
+    Knp\Bundle\GaufretteBundle\KnpGaufretteBundle::class => ['all' => true],
 ];
