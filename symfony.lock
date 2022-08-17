@@ -119,6 +119,9 @@
     "jms/serializer": {
         "version": "3.17.1"
     },
+    "knplabs/knp-gaufrette-bundle": {
+        "version": "v0.7.2"
+    },
     "knplabs/knp-menu": {
         "version": "v3.3.0"
     },

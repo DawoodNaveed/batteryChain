@@ -26,28 +26,26 @@ doctrine:
                 enabled: true
 vich_uploader:
     db_driver: orm
+    storage: gaufrette
     mappings:
         manufacturer_logo:
-            uri_prefix:         '%app.path.manufacturer_logos%'
-            upload_destination: '%kernel.project_dir%/public%app.path.manufacturer_logos%'
+            uri_prefix:         ''
+            upload_destination: 'logos'
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
-            delete_on_update:   true
-            delete_on_remove:   true
+            delete_on_update:   false
         co2_icons:
-            uri_prefix:         '%app.path.co2_icons%'
-            upload_destination: '%kernel.project_dir%/public%app.path.co2_icons%'
+            uri_prefix:         ''
+            upload_destination: 'logos_co2'
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
-            delete_on_update:   true
-            delete_on_remove:   true
+            delete_on_update:   false
         insurance_icons:
-            uri_prefix:         '%app.path.insurance_icons%'
-            upload_destination: '%kernel.project_dir%/public%app.path.insurance_icons%'
+            uri_prefix:         ''
+            upload_destination: 'logos_insurance'
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
-            delete_on_update:   true
-            delete_on_remove:   true
+            delete_on_update:   false
 
 when@test:
     doctrine:

@@ -17,6 +17,10 @@ use Twig\Error\SyntaxError;
  * @package App\Service
  * @property Environment twig
  * @property TranslatorInterface translator
+ * @property AwsService awsService
+ * @property $awsLogoFolder
+ * @property $awsCo2Folder
+ * @property $awsInsuranceFolder
  */
 class PdfService
 {
@@ -26,11 +30,25 @@ class PdfService
      * PdfService constructor.
      * @param Environment $twig
      * @param TranslatorInterface $translator
+     * @param AwsService $awsService
+     * @param $awsLogoFolder
+     * @param $awsCo2Folder
+     * @param $awsInsuranceFolder
      */
-    public function __construct(Environment $twig, TranslatorInterface $translator)
-    {
+    public function __construct(
+        Environment $twig,
+        TranslatorInterface $translator,
+        AwsService $awsService,
+        $awsLogoFolder,
+        $awsCo2Folder,
+        $awsInsuranceFolder
+    ) {
         $this->twig = $twig;
         $this->translator = $translator;
+        $this->awsService = $awsService;
+        $this->awsLogoFolder = $awsLogoFolder;
+        $this->awsCo2Folder = $awsCo2Folder;
+        $this->awsInsuranceFolder = $awsInsuranceFolder;
     }
 
     /**
@@ -46,15 +64,33 @@ class PdfService
         });
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
-        $manufacturerLogo = $battery->getManufacturer()->getLogo() ? $this->getEncodedImage('resources/uploads/logos/' . $battery->getManufacturer()->getLogo()) : '';
-        $co2NeutralLogo = $battery->getManufacturer()->getCo2Logo() ? $this->getEncodedImage('resources/uploads/icons/co2/' . $battery->getManufacturer()->getCo2Logo()) : '';
-        $insuranceLogo = $battery->getManufacturer()->getInsuranceLogo() ? $this->getEncodedImage('resources/uploads/icons/insurance/' . $battery->getManufacturer()->getInsuranceLogo()) : '';
-        $poweredByLogo = $this->getEncodedImage('https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png');
+        $manufacturerLogo = $battery->getManufacturer()->getLogo()
+            ? $this->getEncodedImage(
+                $this->awsService->getPreSignedUrl(
+                    $battery->getManufacturer()->getLogo(),
+                    $this->awsLogoFolder
+                )
+            ) : '';
+        $co2NeutralLogo = ($battery->getManufacturer()->getCo2Logo() && $battery->getIsClimateNeutral())
+            ?  $this->getEncodedImage(
+                $this->awsService->getPreSignedUrl(
+                    $battery->getManufacturer()->getCo2Logo(),
+                    $this->awsCo2Folder
+                )
+            ) : '';
+        $insuranceLogo = ($battery->getManufacturer()->getInsuranceLogo() && $battery->getIsInsured())
+            ?  $this->getEncodedImage(
+                $this->awsService->getPreSignedUrl(
+                    $battery->getManufacturer()->getInsuranceLogo(),
+                    $this->awsInsuranceFolder
+                )
+            ) : '';
+        $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/detail_view_download.html.twig', [
             'battery' => $battery,
-            'documentTitle' => "Battery Passport",
+            'documentTitle' => CustomHelper::PDF_TITLE,
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
             'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
