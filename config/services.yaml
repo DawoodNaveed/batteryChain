@@ -141,38 +141,33 @@ services:
             -
                 version: 'latest'
                 region: '%env(AWS_REGION)%'
-                credentials:
-                    key: '%env(AWS_KEY)%'
-                    secret: '%env(AWS_SECRET)%'
 knp_gaufrette:
     adapters:
         logo_adapter:
             aws_s3:
                 service_id: 'bc.aws_s3.client'
-                bucket_name: 'manufacturer_logos'
+                bucket_name: '%env(AWS_BUCKET)%'
                 detect_content_type: true
                 options:
                     directory: 'upload/logos'
-                    acl: 'public-read'
                     create: true
         logo_co2_adapter:
             aws_s3:
                 service_id: 'bc.aws_s3.client'
-                bucket_name: 'manufacturer_logos'
+                bucket_name: '%env(AWS_BUCKET)%'
                 detect_content_type: true
                 options:
                     directory: 'upload/logos/co2'
-                    acl: 'public-read'
                     create: true
         logo_insurance_adapter:
             aws_s3:
                 service_id: 'bc.aws_s3.client'
-                bucket_name: 'manufacturer_logos'
+                bucket_name: '%env(AWS_BUCKET)%'
                 detect_content_type: true
                 options:
                     directory: 'upload/logos/insurance'
-                    acl: 'public-read'
                     create: true
+
     filesystems:
         logos:
             adapter: logo_adapter
