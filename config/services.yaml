@@ -8,6 +8,9 @@ parameters:
     app.path.co2_icons: /resources/uploads/icons/co2
     app.path.insurance_icons: /resources/uploads/icons/insurance
     app.path.no_image: /resources/icons/no-image.png
+    app.path.manufacturer_aws_logos: upload/logos/
+    app.path.co2_aws_icons: upload/logos/co2/
+    app.path.insurance_aws_icons: upload/logos/insurance/
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +31,7 @@ services:
             $openssl_iv: '%env(OPENSSL_IV)%'
             $openssl_password: '%env(OPENSSL_PASSWORD)%'
             $availableLocales: '%env(APP_LOCALES)%'
+            $awsBucket: '%env(AWS_BUCKET)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -134,6 +138,11 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    App\Service\AwsService:
+        arguments:
+            - '@bc.aws_s3.client'
+
     bc.aws_s3.client:
         class: Aws\S3\S3Client
         factory: [Aws\S3\S3Client, 'factory']
