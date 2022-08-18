@@ -133,8 +133,9 @@ class BlockchainService
             $battery = $log->getBattery();
 
             $postFields = [
-                'serial_number' => $battery->getSerialNumber(),
+                'serial_number' => $battery->getInternalSerialNumber(),
                 'meta_data' => [
+                    'main_serial_number' => $battery->getSerialNumber(),
                     'type_id' => $battery->getBatteryType()->getId(),
                     'kwh' => $battery->getNominalEnergy(),
                     'voltage' => $battery->getNominalVoltage(),
@@ -150,7 +151,9 @@ class BlockchainService
                     'co2' => $battery->getCo2(),
                     'acid_volume' => $battery->getAcidVolume(),
                     'production_date' => $battery->getProductionDate()->format('Y-m-d H:i:s'),
-                    'tray_number' => $battery->getTrayNumber()
+                    'tray_number' => $battery->getTrayNumber(),
+                    'climate_neutral' => $battery->getIsClimateNeutral() ? CustomHelper::YES : CustomHelper::NO,
+                    'insured' => $battery->getIsInsured() ? CustomHelper::YES : CustomHelper::NO
                 ],
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];

@@ -20,6 +20,7 @@ use App\Service\UserService;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\Inflector\InflectorFactory;
+use Psr\Log\LoggerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
@@ -36,6 +37,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -56,6 +58,7 @@ use Twig\Error\SyntaxError;
  * @property TransactionLogService transactionLogService
  * @property CsvService csvService
  * @property ShipmentService shipmentService
+ * @property LoggerInterface logger
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -74,6 +77,7 @@ class BatteryController extends CRUDController
      * @param TransactionLogService $transactionLogService
      * @param CsvService $csvService
      * @param ShipmentService $shipmentService
+     * @param LoggerInterface $logger
      */
     public function __construct(
         string $kernelProjectDir,
@@ -87,7 +91,8 @@ class BatteryController extends CRUDController
         PdfService $pdfService,
         TransactionLogService $transactionLogService,
         CsvService $csvService,
-        ShipmentService $shipmentService
+        ShipmentService $shipmentService,
+        LoggerInterface $logger
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -101,6 +106,7 @@ class BatteryController extends CRUDController
         $this->kernelProjectDir = $kernelProjectDir;
         $this->csvService = $csvService;
         $this->shipmentService = $shipmentService;
+        $this->logger = $logger;
     }
 
     /**
@@ -137,12 +143,14 @@ class BatteryController extends CRUDController
                 $file = $file['bulk_import_battery_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
+                    $stopwatch = new Stopwatch();
+                    $stopwatch->start('BulkImport');
                     if (empty($manufacturer)) {
                         $isAdmin = false;
                         $manufacturer = $user->getManufacturer();
                     }
 
-                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturer->getId(), $user->getId());
+                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturer, $user->getId());
 
                     if (!empty($createBattery) && !empty($createBattery['error'])) {
                         $this->addFlash('error', $this->translator->trans($createBattery['message']));
@@ -160,7 +168,6 @@ class BatteryController extends CRUDController
                                         ]
                                     )
                                 );
-
                             }
 
                             if ($createBattery['total'] !== $createBattery['failure']) {
@@ -179,6 +186,14 @@ class BatteryController extends CRUDController
                             }
                         }
                     }
+
+                    $event = $stopwatch->stop('BulkImport');
+
+                    $this->logger->notice('DebugInformation', [
+                        'event' => 'BulkImport',
+                        'duration' => ($event->getDuration() / 1000) . 's',
+                        'memory' => $event->getMemory()
+                    ]);
 
                     if ($isAdmin) {
                         return $this->redirectToRoute('battery-intermediate_battery_list', [
@@ -991,13 +1006,12 @@ class BatteryController extends CRUDController
                     $manufacturer = $submittedObject->getManufacturer() ?? $user->getManufacturer();
                     // Battery with similar serial number
                     $battery = $this->batteryService->batteryRepository->findOneBy([
-                        'serialNumber' => $submittedObject->getSerialNumber()
+                        'serialNumber' => $submittedObject->getSerialNumber(),
+                        'manufacturer' => $manufacturer
                     ]);
 
-                    // If battery exists and manufacturer matches then do not create new Battery
-                    if (!empty($battery) &&
-                        $battery->getManufacturer()->getId() === $manufacturer->getId()
-                    ) {
+                    // If battery exists
+                    if (!empty($battery)) {
                         $this->addFlash(
                             'sonata_flash_error',
                             $this->trans(
@@ -1007,24 +1021,9 @@ class BatteryController extends CRUDController
                             )
                         );
                     } else {
-                        // If battery exists and manufacturer does not matches then create new Battery after appending postfix
-                        if (!empty($battery)) {
-                            $submittedObject->setSerialNumber(
-                                $submittedObject->getSerialNumber() . '-' . time()
-                            );
-                            $this->addFlash(
-                                'sonata_flash_info',
-                                $this->trans(
-                                    'flash_create_info_exist',
-                                    [
-                                        '%exist%' => $battery->getSerialNumber(),
-                                        '%name%' => $this->escapeHtml($this->admin->toString($newObject))
-                                    ],
-                                    'messages'
-                                )
-                            );
-                        }
-
+                        $submittedObject->setInternalSerialNumber(
+                            $manufacturer->getId() . '-' . $submittedObject->getSerialNumber()
+                        );
                         $newObject = $this->admin->create($submittedObject);
 
                         if ($this->isXmlHttpRequest($request)) {
@@ -1132,11 +1131,16 @@ class BatteryController extends CRUDController
                 $this->admin->setSubject($submittedObject);
 
                 try {
+                    /** @var User $user */
+                    $user = $this->getUser();
+                    $manufacturer = $submittedObject->getManufacturer() ?? $user->getManufacturer();
                     // If any manufacturer has battery with similar serial number
                     $battery = $this->batteryService->batteryRepository->findOneBy([
-                        'serialNumber' => $submittedObject->getSerialNumber()
+                        'serialNumber' => $submittedObject->getSerialNumber(),
+                        'manufacturer' => $manufacturer
                     ]);
 
+                    // Battery exist and Skip itself
                     if (!empty($battery) && $battery->getId() !== $submittedObject->getId()) {
                         $this->addFlash(
                             'sonata_flash_error',
@@ -1147,6 +1151,9 @@ class BatteryController extends CRUDController
                             )
                         );
                     } else {
+                        $submittedObject->setInternalSerialNumber(
+                            $manufacturer->getId() . '-' . $submittedObject->getSerialNumber()
+                        );
                         $existingObject = $this->admin->update($submittedObject);
 
                         if ($this->isXmlHttpRequest($request)) {

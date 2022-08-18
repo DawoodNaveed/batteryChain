@@ -115,6 +115,9 @@ class CustomHelper
     public const PDF_LOGO_URL = 'resources/pdf_logo.png';
     public const PDF_TITLE = 'Battery Passport';
 
+    public const YES = 'Yes';
+    public const NO = 'No';
+
     /**
      * @param array $filters
      * @return array

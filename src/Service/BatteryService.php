@@ -80,13 +80,13 @@ class BatteryService
 
     /**
      * @param UploadedFile $file
-     * @param $manufacturerId
+     * @param Manufacturer $manufacturer
      * @param $currentPossessorId
      * @return array
      * @throws DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    public function extractCsvAndCreateBatteries(UploadedFile $file, $manufacturerId, $currentPossessorId): array
+    public function extractCsvAndCreateBatteries(UploadedFile $file, Manufacturer $manufacturer, $currentPossessorId): array
     {
         $error = [];
 
@@ -107,8 +107,6 @@ class BatteryService
             $totalFailures = 0;
             $values = '';
 
-            //Disable SoftDelete Filter to Check is Exist
-            $this->batteryRepository->disableFilter('softdeleteable');
             while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
                 if (count($csvData) !== count(CustomHelper::CSV_HEADERS)) {
                     $error = ['error' => CustomHelper::ERROR, 'message' => 'service.error.invalid_csv'];
@@ -126,31 +124,22 @@ class BatteryService
                     $totalFailures++;
                     continue;
                 }
-                // Battery with similar serial number
+
+                // Battery with similar serial number and manufacturer
                 $battery = $this->batteryRepository->findOneBy([
-                    'serialNumber' => (string) $row['serial_number']
+                    'serialNumber' => (string) $row['serial_number'],
+                    'manufacturer' => $manufacturer
                 ]);
 
-                // If battery exists and manufacturer matches then do not create new Battery
-                if (!empty($battery) &&
-                    $battery->getManufacturer()->getId() === $manufacturerId
-                ) {
+                // If battery exists then do not create new Battery
+                if (!empty($battery)) {
                     $errors['same_serial_number']++;
                     $totalFailures++;
                     continue;
                 }
 
-                // If battery exists and manufacturer does not matches then create new Battery after appending postfix
-                if (!empty($battery)) {
-                    $serialNumber = (string) $row['serial_number'] . '-' . time();
-                    $info[] = [
-                        'serial_number' => (string) $row['serial_number'],
-                        'new_serial_number' => $serialNumber
-                    ];
-                } else {
-                    $serialNumber = (string) $row['serial_number'];
-                }
-
+                $internalSerialNumber = $manufacturer->getId() . '-' . (string) $row['serial_number'];
+                $serialNumber = (string) $row['serial_number'];
                 $batteryType = (string) $row['battery_type'];
                 $cellType = (string) $row['cell_type'] ?? null;
                 $moduleType = (string) $row['module_type'] ?? null;
@@ -172,12 +161,12 @@ class BatteryService
 
                 $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
                 $deliveryDate = (new \DateTime($deliveryDate))->format('Y-m-d H:i:s');
-                $values .= "( '" . $serialNumber . "', '" . $batteryType . "', '" . $cellType .
+                $values .= "( '" . $serialNumber . "', '" . $internalSerialNumber . "', '" . $batteryType . "', '" . $cellType .
                     "', '" . $moduleType . "', '" . $trayNumber . "', '" . $date .
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
                     "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $isInsured . "', '" . $isClimateNeutral
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
-                    . "', '" . $manufacturerId . "', '" . $currentPossessorId . "', '" . $deliveryDate . "', now(), now()), ";
+                    . "', '" . $manufacturer->getId() . "', '" . $currentPossessorId . "', '" . $deliveryDate . "', now(), now()), ";
 
                 $rowCount++;
 
@@ -195,9 +184,6 @@ class BatteryService
         }
 
         fclose($handle);
-
-        //Enable SoftDelete Filter
-        $this->batteryRepository->enableFilter('softdeleteable');
 
         return array_merge($error, [
             'total' => ($rowCount - 1) + $totalFailures,
