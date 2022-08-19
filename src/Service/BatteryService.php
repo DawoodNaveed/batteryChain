@@ -138,7 +138,7 @@ class BatteryService
                     continue;
                 }
 
-                $internalSerialNumber = $manufacturer->getId() . '-' . (string) $row['serial_number'];
+                $internalSerialNumber = $manufacturer->getIdentifier() . '-' . (string) $row['serial_number'];
                 $serialNumber = (string) $row['serial_number'];
                 $batteryType = (string) $row['battery_type'];
                 $cellType = (string) $row['cell_type'] ?? null;

@@ -1022,7 +1022,7 @@ class BatteryController extends CRUDController
                         );
                     } else {
                         $submittedObject->setInternalSerialNumber(
-                            $manufacturer->getId() . '-' . $submittedObject->getSerialNumber()
+                            $manufacturer->getIdentifier() . '-' . $submittedObject->getSerialNumber()
                         );
                         $newObject = $this->admin->create($submittedObject);
 
@@ -1152,7 +1152,7 @@ class BatteryController extends CRUDController
                         );
                     } else {
                         $submittedObject->setInternalSerialNumber(
-                            $manufacturer->getId() . '-' . $submittedObject->getSerialNumber()
+                            $manufacturer->getIdentifier() . '-' . $submittedObject->getSerialNumber()
                         );
                         $existingObject = $this->admin->update($submittedObject);
 
