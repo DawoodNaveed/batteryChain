@@ -12,12 +12,14 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class UserController
  * @package App\Controller
  * @property LoggerInterface $logger
  * @property EntityManagerInterface entityManager
+ * @property TranslatorInterface translator
  */
 class UserController extends AbstractController
 {
@@ -25,11 +27,13 @@ class UserController extends AbstractController
      * UserController constructor.
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
+     * @param TranslatorInterface $translator
      */
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, TranslatorInterface $translator)
     {
         $this->logger = $logger;
         $this->entityManager = $entityManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -82,6 +86,9 @@ class UserController extends AbstractController
             $user->setLastName($lastname);
             $this->entityManager->persist($formData);
             $this->entityManager->flush();
+            $this->addFlash('sonata_flash_success',
+                $this->translator->trans('Profile Updated Successfully!')
+            );
 
             return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
         }

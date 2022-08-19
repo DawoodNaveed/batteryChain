@@ -33,7 +33,7 @@ class BatteryRepository extends ServiceEntityRepository
     public function createNewBattery($values)
     {
         $query = "INSERT INTO battery" .
-            "(serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
+            "(serial_number, internal_serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
             " nominal_voltage, nominal_capacity, nominal_energy, acid_volume," .
             " co2, is_bulk_import, is_insured, is_climate_neutral, height, width, length, mass, status," .
             "manufacturer_id, current_possessor_id, delivery_date, created, updated)" .
