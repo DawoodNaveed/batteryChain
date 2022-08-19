@@ -34,18 +34,6 @@ vich_uploader:
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
             delete_on_update:   false
-        co2_icons:
-            uri_prefix:         ''
-            upload_destination: 'logos_co2'
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     true
-            delete_on_update:   false
-        insurance_icons:
-            uri_prefix:         ''
-            upload_destination: 'logos_insurance'
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     true
-            delete_on_update:   false
 
 when@test:
     doctrine:

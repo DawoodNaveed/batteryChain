@@ -103,30 +103,6 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $logoFile;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string|null
-     */
-    private $co2Logo;
-
-    /**
-     * @Vich\UploadableField(mapping="co2_icons", fileNameProperty="co2Logo")
-     * @var File|null
-     */
-    private $co2LogoFile;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string|null
-     */
-    private $insuranceLogo;
-
-    /**
-     * @Vich\UploadableField(mapping="insurance_icons", fileNameProperty="insuranceLogo")
-     * @var File|null
-     */
-    private $insuranceLogoFile;
-
-    /**
      * @var string|null
      * @ORM\Column(name="identifier", type="string", length=255, nullable="true")
      */
@@ -157,70 +133,6 @@ class Manufacturer extends AbstractEntity implements \Serializable
     }
 
     /**
-     * @param File|null $logo
-     */
-    public function setInsuranceLogoFile(File $logo = null)
-    {
-        $this->insuranceLogoFile = $logo;
-
-        // VERY IMPORTANT:
-        // It is required that at least one field changes if you are using Doctrine,
-        // otherwise the event listeners won't be called and the file is lost
-        if ($logo) {
-            // if 'updatedAt' is not defined in your entity, use another property
-            $this->updated = new \DateTime('now');
-        }
-    }
-
-    /**
-     * @param File|null $logo
-     */
-    public function setCo2LogoFile(File $logo = null)
-    {
-        $this->co2LogoFile = $logo;
-
-        // VERY IMPORTANT:
-        // It is required that at least one field changes if you are using Doctrine,
-        // otherwise the event listeners won't be called and the file is lost
-        if ($logo) {
-            // if 'updatedAt' is not defined in your entity, use another property
-            $this->updated = new \DateTime('now');
-        }
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCo2Logo(): ?string
-    {
-        return $this->co2Logo;
-    }
-
-    /**
-     * @param string|null $co2Logo
-     */
-    public function setCo2Logo(?string $co2Logo): void
-    {
-        $this->co2Logo = $co2Logo;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getInsuranceLogo(): ?string
-    {
-        return $this->insuranceLogo;
-    }
-
-    /**
-     * @param string|null $insuranceLogo
-     */
-    public function setInsuranceLogo(?string $insuranceLogo): void
-    {
-        $this->insuranceLogo = $insuranceLogo;
-    }
-
-    /**
      * @return string|null
      */
     public function getLogo(): ?string
@@ -242,22 +154,6 @@ class Manufacturer extends AbstractEntity implements \Serializable
     public function getLogoFile(): ?File
     {
         return $this->logoFile;
-    }
-
-    /**
-     * @return File|null
-     */
-    public function getCo2LogoFile(): ?File
-    {
-        return $this->co2LogoFile;
-    }
-
-    /**
-     * @return File|null
-     */
-    public function getInsuranceLogoFile(): ?File
-    {
-        return $this->insuranceLogoFile;
     }
 
     /**
