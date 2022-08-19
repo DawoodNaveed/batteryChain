@@ -91,7 +91,7 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $deletedAt;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
     private $logo;
@@ -103,7 +103,7 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $logoFile;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
     private $co2Logo;
@@ -115,7 +115,7 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $co2LogoFile;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
     private $insuranceLogo;
@@ -125,6 +125,12 @@ class Manufacturer extends AbstractEntity implements \Serializable
      * @var File|null
      */
     private $insuranceLogoFile;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="identifier", type="string", length=255, nullable="true")
+     */
+    private $identifier;
 
     /**
      * Manufacturer constructor.
@@ -484,5 +490,21 @@ class Manufacturer extends AbstractEntity implements \Serializable
     public function unserialize($serialized)
     {
         $this->logoFile = base64_decode($this->logoFile);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param string|null $identifier
+     */
+    public function setIdentifier(?string $identifier): void
+    {
+        $this->identifier = $identifier;
     }
 }

@@ -44,6 +44,10 @@ class ManufacturerRepository extends ServiceEntityRepository
         $manufacturer->setUser($user);
         $manufacturer->setUpdated(new DateTime('now'));
         $manufacturer->setName($user->getFullName());
+        $manufacturer->setIdentifier(
+            base64_encode($user->getId()) . '-' .
+            preg_replace('#[ -]+#', '_', (strtolower(trim($user->getFullName()))))
+        );
 
         if ($isNew) {
             $this->_em->persist($manufacturer);
