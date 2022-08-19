@@ -114,8 +114,10 @@ class ReturnController extends AbstractController
         }
 
         /** @var Battery|null $battery */
-        $battery = $this->batteryService
-            ->fetchBatteryBySerialNumber($decryptedNumber);
+        $battery = $this
+            ->batteryService
+            ->batteryRepository
+            ->findBatteryByInternalSerialNumber($decryptedNumber);
 
         if (empty($battery)) {
             $this->addFlash('danger', 'Kindly provide valid url query!');
