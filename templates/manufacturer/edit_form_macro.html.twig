@@ -30,22 +30,6 @@
                                 {% if form_field_name == 'logoFile' and (form.vars.value.logo is null or form.vars.value.logo == '') %}
                                     <img style="object-fit: contain;  height: 100px;" src="{{ asset(no_image_path) }}" width="100" height="100" alt="{{ 'No Image Path' | trans }}" class="manufacturer_logo">
                                 {% endif %}
-                                {% if form_field_name == 'co2LogoFile' and form.vars.value.co2Logo is not null and form.vars.value.co2Logo != '' %}
-                                    <br>
-                                    <img style="object-fit: contain;  height: 100px;" src="{{ form.vars.value.co2Logo | preSignedUrl(co2_aws_path) }}" width="100" height="100" alt="" class="manufacturer_logo">
-                                {% endif %}
-                                {% if form_field_name == 'co2LogoFile' and (form.vars.value.co2Logo is null or form.vars.value.co2Logo == '') %}
-                                    <br>
-                                    <img src="{{ asset(no_image_path) }}" width="100" height="100" alt="{{ 'No Image Path' | trans }}" class="manufacturer_logo">
-                                {% endif %}
-                                {% if form_field_name == 'insuranceLogoFile' and form.vars.value.insuranceLogo is not null  and form.vars.value.insuranceLogo != '' %}
-                                    <br>
-                                    <img style="object-fit: contain;  height: 100px;" src="{{ form.vars.value.insuranceLogo | preSignedUrl(insurance_aws_path) }}" width="100" height="100" alt="" class="manufacturer_logo">
-                                {% endif %}
-                                {% if form_field_name == 'insuranceLogoFile' and (form.vars.value.insuranceLogo is null or form.vars.value.insuranceLogo == '') %}
-                                    <br>
-                                    <img src="{{ asset(no_image_path) }}" width="100" height="100" alt="{{ 'No Image Path' | trans }}" class="manufacturer_logo">
-                                {% endif %}
                                 {{ form_row(form[form_field_name]) }}
                             {% else %}
                                 {% if form_group.empty_message != false %}

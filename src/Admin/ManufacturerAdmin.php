@@ -43,26 +43,6 @@ class ManufacturerAdmin extends AbstractAdmin
                     'display' => 'inline-block !important'
                 ]
             ))
-            ->add('co2LogoFile', VichFileType::class, array(
-                'required'      => false,
-                'allow_delete'  => false,
-                'download_link' => false,
-                'label' => 'Climate Neutral Logo',
-                'attr' => [
-                    'style' => 'margin-top:10px',
-                    'display' => 'inline-block !important'
-                ]
-            ))
-            ->add('insuranceLogoFile', VichFileType::class, array(
-                'required'      => false,
-                'allow_delete'  => false,
-                'download_link' => false,
-                'label' => 'Insurance Logo',
-                'attr' => [
-                    'style' => 'margin-top:10px',
-                    'display' => 'inline-block !important'
-                ]
-            ))
             ->add('name', TextType::class);
 
         if ($manufacturer->getId() === null) {
@@ -113,12 +93,6 @@ class ManufacturerAdmin extends AbstractAdmin
         $show
             ->add('logo', null,  [
                 'template' => 'manufacturer/show_logo_field.html.twig',
-            ])
-            ->add('co2Logo', null,  [
-                'template' => 'manufacturer/show_co2_logo_field.html.twig',
-            ])
-            ->add('insuranceLogo', null,  [
-                'template' => 'manufacturer/show_insurance_logo_field.html.twig',
             ])
             ->add('name')
             ->add('user.email', EmailType::class, [
