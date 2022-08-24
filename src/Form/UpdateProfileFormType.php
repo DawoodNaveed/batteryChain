@@ -27,24 +27,6 @@ class UpdateProfileFormType extends AbstractType
                     'style' => 'margin-top:10px'
                 ]
             ))
-            ->add('co2LogoFile', VichFileType::class, array(
-                'required'      => false,
-                'allow_delete'  => false,
-                'download_link' => false,
-                'label' => 'Climate Neutral Logo',
-                'attr' => [
-                    'style' => 'margin-top:10px'
-                ]
-            ))
-            ->add('insuranceLogoFile', VichFileType::class, array(
-                'required'      => false,
-                'allow_delete'  => false,
-                'download_link' => false,
-                'label' => 'Insurance Logo',
-                'attr' => [
-                    'style' => 'margin-top:10px'
-                ]
-            ))
             ->add('firstname', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',

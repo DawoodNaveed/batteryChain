@@ -7,13 +7,10 @@ twig:
         defaultLocale: '%env(DEFAULT_LOCALE)%'
         locales: '%env(APP_LOCALES)%'
         etherscan_url: '%env(ETHERSCAN_URL)%'
-        logo_path: '%app.path.manufacturer_logos%'
-        co2_path: '%app.path.co2_icons%'
-        insurance_path: '%app.path.insurance_icons%'
         no_image_path: '%app.path.no_image%'
         logo_aws_path: '%app.path.manufacturer_aws_logos%'
-        co2_aws_path: '%app.path.co2_aws_icons%'
-        insurance_aws_path: '%app.path.insurance_aws_icons%'
+        co2_neutral_seal: '/%app.path.co2_neutral_seal%'
+        insurance_seal: '/%app.path.insurance_seal%'
 when@test:
     twig:
         strict_variables: true

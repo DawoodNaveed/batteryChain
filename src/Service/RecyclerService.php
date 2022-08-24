@@ -67,7 +67,7 @@ class RecyclerService
     }
 
     /**
-     * @param mixed $recyclers
+     * @param mixed|null $recyclers
      * @param bool $fetchFullObject
      * @return array|null
      */
@@ -75,31 +75,33 @@ class RecyclerService
     {
         $result = [];
 
-        foreach ($recyclers as $recycler) {
-            if ($recycler instanceof Recycler) {
-                $key = $recycler->getName();
+        if ($recyclers) {
+            foreach ($recyclers as $recycler) {
+                if ($recycler instanceof Recycler) {
+                    $key = $recycler->getName();
 
-                if (key_exists($key, $result)) {
-                    $key = $recycler->getName() . ' | ' . $recycler->getEmail();
-                }
+                    if (key_exists($key, $result)) {
+                        $key = $recycler->getName() . ' | ' . $recycler->getEmail();
+                    }
 
-                if ($fetchFullObject) {
-                    $result[$key] = $recycler;
+                    if ($fetchFullObject) {
+                        $result[$key] = $recycler;
+                    } else {
+                        $result[$key] = $recycler->getId();
+                    }
                 } else {
-                    $result[$key] = $recycler->getId();
-                }
-            } else {
-                $key = $recycler->name;
+                    $key = $recycler->name;
 
-                if (key_exists($key, $result)) {
-                    $key = $recycler->name . ' | ' . $recycler->email;
-                }
+                    if (key_exists($key, $result)) {
+                        $key = $recycler->name . ' | ' . $recycler->email;
+                    }
 
-                // for fallback - we got PHP Objects rather than Recycler Objects
-                if ($fetchFullObject) {
-                    $result[$key] = $recycler;
-                } else {
-                    $result[$key] = $recycler->id;
+                    // for fallback - we got PHP Objects rather than Recycler Objects
+                    if ($fetchFullObject) {
+                        $result[$key] = $recycler;
+                    } else {
+                        $result[$key] = $recycler->id;
+                    }
                 }
             }
         }

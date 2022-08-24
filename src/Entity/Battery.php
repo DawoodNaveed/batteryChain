@@ -36,6 +36,12 @@ class Battery extends AbstractEntity
     private $serialNumber;
 
     /**
+     * @var string|null
+     * @ORM\Column(name="internal_serial_number", type="string", nullable="true", length=255)
+     */
+    private $internalSerialNumber;
+
+    /**
      * @var BatteryType|null
      * @ManyToOne(targetEntity="App\Entity\BatteryType", inversedBy="batteries")
      * @JoinColumn(name="battery_type_id", referencedColumnName="id")
@@ -262,6 +268,22 @@ class Battery extends AbstractEntity
     public function setSerialNumber(?string $serialNumber): void
     {
         $this->serialNumber = $serialNumber;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getInternalSerialNumber(): ?string
+    {
+        return $this->internalSerialNumber;
+    }
+
+    /**
+     * @param string|null $internalSerialNumber
+     */
+    public function setInternalSerialNumber(?string $internalSerialNumber): void
+    {
+        $this->internalSerialNumber = $internalSerialNumber;
     }
 
     /**
@@ -521,9 +543,9 @@ class Battery extends AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function __toString(): ?string
+    public function __toString(): string
     {
         return $this->serialNumber;
     }

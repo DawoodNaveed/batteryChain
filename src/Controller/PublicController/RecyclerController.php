@@ -67,7 +67,7 @@ class RecyclerController extends AbstractController
         $isFallback = false;
         $serialNumber = $request->request->get('serial_number');
         $battery = $this->batteryService->batteryRepository->findOneBy([
-            'serialNumber' => $serialNumber
+            'internalSerialNumber' => $serialNumber
         ]);
         /** @var Country|null $country */
         $country = $this->countryService->countryRepository->findOneBy(['id' => $id]);

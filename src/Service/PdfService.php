@@ -19,8 +19,8 @@ use Twig\Error\SyntaxError;
  * @property TranslatorInterface translator
  * @property AwsService awsService
  * @property $awsLogoFolder
- * @property $awsCo2Folder
- * @property $awsInsuranceFolder
+ * @property $co2NeutralSeal
+ * @property $insuranceSeal
  */
 class PdfService
 {
@@ -32,23 +32,23 @@ class PdfService
      * @param TranslatorInterface $translator
      * @param AwsService $awsService
      * @param $awsLogoFolder
-     * @param $awsCo2Folder
-     * @param $awsInsuranceFolder
+     * @param $co2NeutralSeal
+     * @param $insuranceSeal
      */
     public function __construct(
         Environment $twig,
         TranslatorInterface $translator,
         AwsService $awsService,
         $awsLogoFolder,
-        $awsCo2Folder,
-        $awsInsuranceFolder
+        $co2NeutralSeal,
+        $insuranceSeal
     ) {
         $this->twig = $twig;
         $this->translator = $translator;
         $this->awsService = $awsService;
         $this->awsLogoFolder = $awsLogoFolder;
-        $this->awsCo2Folder = $awsCo2Folder;
-        $this->awsInsuranceFolder = $awsInsuranceFolder;
+        $this->co2NeutralSeal = $co2NeutralSeal;
+        $this->insuranceSeal = $insuranceSeal;
     }
 
     /**
@@ -71,20 +71,8 @@ class PdfService
                     $this->awsLogoFolder
                 )
             ) : '';
-        $co2NeutralLogo = ($battery->getManufacturer()->getCo2Logo() && $battery->getIsClimateNeutral())
-            ?  $this->getEncodedImage(
-                $this->awsService->getPreSignedUrl(
-                    $battery->getManufacturer()->getCo2Logo(),
-                    $this->awsCo2Folder
-                )
-            ) : '';
-        $insuranceLogo = ($battery->getManufacturer()->getInsuranceLogo() && $battery->getIsInsured())
-            ?  $this->getEncodedImage(
-                $this->awsService->getPreSignedUrl(
-                    $battery->getManufacturer()->getInsuranceLogo(),
-                    $this->awsInsuranceFolder
-                )
-            ) : '';
+        $co2NeutralSeal = $battery->getIsClimateNeutral() ?  $this->getEncodedImage($this->co2NeutralSeal) : '';
+        $insuranceSeal = $battery->getIsInsured() ?  $this->getEncodedImage($this->insuranceSeal) : '';
         $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
@@ -99,8 +87,8 @@ class PdfService
             'transaction' => array_pop($transaction) ?? null,
             'transactions' => $battery->getTransactionLogs()->toArray(),
             'manufacturerLogo' => $manufacturerLogo,
-            'co2NeutralLogo' => $co2NeutralLogo,
-            'insuranceLogo' => $insuranceLogo,
+            'co2NeutralLogo' => $co2NeutralSeal,
+            'insuranceLogo' => $insuranceSeal,
         ]);
 
         $domPdf->loadHtml($html);

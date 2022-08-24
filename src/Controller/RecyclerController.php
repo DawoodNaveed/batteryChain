@@ -242,42 +242,4 @@ class RecyclerController extends CRUDController
 
         return $this->redirectToList();
     }
-
-//Will remove it in future
-//    /**
-//     * @param Request $request
-//     * @return Response
-//     * @throws NotFoundExceptionInterface
-//     * @throws ContainerExceptionInterface
-//     */
-//    public function deleteAction(Request $request): Response
-//    {
-//        /** @var FlashBagInterface $flashBag */
-//        $flashBag = $this->container->get('session')->getFlashBag();
-//        $id = $request->get($this->admin->getIdParameter());
-//        /** @var Recycler $recycler */
-//        $recycler = $this->admin->getObject($id);
-//        /** @var User $user */
-//        $user = $this->security->getUser();
-//
-//        // In-Case Super Admin
-//        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true)) {
-//            $recycler->removeAllManufacturers();
-//            $flashBag->set(
-//                'sonata_flash_success',
-//                'Recycler De-attached with All Manufacturer!'
-//            );
-//        } else {
-//            $recycler->removeManufacturer($user->getManufacturer());
-//            $flashBag->set(
-//                'sonata_flash_success',
-//                'Recycler De-attached Successfully!'
-//            );
-//        }
-//
-//        $this->entityManager->remove($recycler);
-//        $this->entityManager->flush();
-//
-//        return new RedirectResponse($this->admin->generateUrl('list'));
-//    }
 }
