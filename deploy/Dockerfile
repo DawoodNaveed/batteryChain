@@ -1,4 +1,4 @@
-FROM richarvey/nginx-php-fpm:1.9.1
+FROM richarvey/nginx-php-fpm:2.1.2
 
 MAINTAINER Battery Chain Team <saad.haroon@coeus-solutions.de>
 
@@ -13,15 +13,12 @@ ENV SKIP_CHOWN=1
 ENV RUN_SCRIPTS=1
 
 RUN apk update && \
-      apk add imagemagick python ghostscript-fonts ghostscript py-pip groff && \
+      apk add python3 ghostscript-fonts ghostscript py-pip groff && \
   pip install awscli
 
 RUN set -ex \
-    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
+    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS libtool \
     && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
-    && pecl install imagick-3.4.3 \
-    && docker-php-ext-enable imagick \
-    && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
     && apk del .phpize-deps
 
 WORKDIR "/var/www/html"

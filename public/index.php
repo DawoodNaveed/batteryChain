@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-if ($_SERVER['APP_DEBUG']) {
+if (isset($_SERVER['APP_DEBUG']) && $_SERVER['APP_DEBUG']) {
     umask(0000);
 
     Debug::enable();

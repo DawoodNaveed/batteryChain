@@ -262,7 +262,7 @@ class ReturnController extends AbstractController
             'public_templates/battery_return/add_battery_return.html.twig',
             array(
                 'form' => $form->createView(),
-                'serialNumber' => $battery->getSerialNumber(),
+                'serialNumber' => $battery->getInternalSerialNumber(),
                 'recycler' => (!empty($recyclers[0]) && $isFallback === true) ? $recyclers[0] : null,
                 'fallBack' => $isFallback
             )
