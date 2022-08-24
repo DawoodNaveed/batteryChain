@@ -10,7 +10,8 @@ initialize_system() {
       php bin/console doctrine:fixtures:load --append
   else
       echo "Prod Container ..."
-      composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
+      composer dump-autoload
+      composer install --no-dev --working-dir=/var/www/html
   fi
 
   # Run Migrations
