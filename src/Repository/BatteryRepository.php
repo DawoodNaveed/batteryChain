@@ -33,7 +33,7 @@ class BatteryRepository extends ServiceEntityRepository
     public function createNewBattery($values)
     {
         $query = "INSERT INTO battery" .
-            "(serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
+            "(serial_number, internal_serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
             " nominal_voltage, nominal_capacity, nominal_energy, acid_volume," .
             " co2, is_bulk_import, is_insured, is_climate_neutral, height, width, length, mass, status," .
             "manufacturer_id, current_possessor_id, delivery_date, created, updated)" .
@@ -115,5 +115,36 @@ class BatteryRepository extends ServiceEntityRepository
             ->setParameter('manufacturer', $manufacturer)
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @param string $decryptedNumber
+     * @return int|mixed|string
+     */
+    public function findBatteriesByBothSerialNumber(string $decryptedNumber)
+    {
+        $qb = $this->createQueryBuilder('battery');
+
+        return
+            $qb
+                ->where($qb->expr()->orX(
+                    $qb->expr()->eq('battery.serialNumber', ':serialNumber'),
+                    $qb->expr()->eq('battery.internalSerialNumber', ':serialNumber')
+                ))
+                ->andWhere('battery.blockchainSecured = 1')
+                ->setParameter('serialNumber', $decryptedNumber)
+                ->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $decryptedNumber
+     * @return Battery|null
+     */
+    public function findBatteryByInternalSerialNumber(string $decryptedNumber): ?Battery
+    {
+        return $this->findOneBy([
+            'internalSerialNumber' => $decryptedNumber,
+            'blockchainSecured' => true
+        ]);
     }
 }

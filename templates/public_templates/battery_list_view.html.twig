@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .status-div span {
+            font-size: 1.25rem;
+        }
+        .intro {
+            font-weight: 100;
+            font-size: 0.9rem;
+        }
+        .icon-div img {
+            margin-right: 15px;
+        }
+        .inner-box {
+            border-bottom: 1px;
+        }
+
+        table thead {
+            background-color: #55bc5e;
+            color: white;
+        }
+        table tbody tr td {
+            padding: 0 20px;
+            height: 90px;
+            vertical-align: middle;
+            border-bottom: 1px solid gray;
+        }
+        table tbody tr td .event-img img {
+            width: 75px;
+            max-width: 75px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <body class="bg-light d-flex flex-column min-vh-100">
+    <div id="flash-messages">
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">
+                    {{ message|raw }}
+                    <i class="fa fa-close float-right close-flash-message"></i>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="container p-tb-5 mb-5">
+        <div class="row">
+            <div class="col-md-10 offset-md-1 ps-6 pb-2 pt-5 text-left">
+                <a href="{{ path('homepage') }}" class="homepage-link">
+                    <div style="display: inline-block">
+                        <img class="mt-3" src="{{ asset('resources/batterychain_logo.png') }}" alt="" width="72" height="72">
+                    </div>
+                    <div style="display: inline-block">
+                        <h1 class="m-0 lh-1">{{ "Battery" | trans }}</h1>
+                        <h1 class="m-0 float-left lh-1">{{ "Chain" | trans }}</h1>
+                    </div>
+                </a>
+                <div class="page-heading pe-5" style="display: inline-block; float: right; padding-top: 1rem">
+                    <h2 class="m-0 float-right lh-1">{{ "Select" | trans | upper }}</h2><br>
+                    <h2 class="m-0 float-right lh-1">{{ "Relevant" | trans | upper }}</h2><br>
+                    <h2 class="m-0 float-right lh-1">{{ "Battery" | trans | upper }}</h2><br>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="p-3 card-body ps-5 pe-5 pb-3 pt-5">
+                    <div class="row text-left pb-5 intro">
+                        <span>
+                            {{ "Kindly select the relevant Battery to find an overview of all information about your battery." | trans }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="w-100 bg-white">
+                                <thead class="p-3">
+                                <tr>
+                                    <th class="p-3">{{ "Manufacturer Logo" | trans }}</th>
+                                    <th class="p-3">{{ "Manufacturer Name" | trans }}</th>
+                                    <th class="p-3">{{ "Serial Number" | trans }}</th>
+                                    <th class="p-3">{{ "" | trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody class="p-3">
+                                {% for battery in batteries %}
+                                    <tr class="inner-box p-3">
+                                        <td>
+                                            <div class="event-img">
+                                                {% if battery.manufacturer.logo is not null and battery.manufacturer.logo != '' %}
+                                                    <img src="{{ battery.manufacturer.logo | preSignedUrl(logo_aws_path) }}" alt="">
+                                                {% else %}
+                                                    <img src="{{ no_image_path }}" alt="">
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>{{ battery.manufacturer.name }}</td>
+                                        <td>{{ battery.serialNumber }}</td>
+                                        <td>
+                                            <a class="btn btn-green" href="{{ path('battery_detail_id', {
+                                                'id' : battery.internalSerialNumber
+                                            }) }}">
+                                                {{ "See details" | trans }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html.twig' %}
+    </body>
+{% endblock %}

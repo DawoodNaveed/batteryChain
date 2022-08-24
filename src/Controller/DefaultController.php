@@ -132,7 +132,10 @@ class DefaultController extends AbstractController
         }
 
         /** @var Battery|null $battery */
-        $battery = $this->batteryService->fetchBatteryBySerialNumber($serialNumber);
+        $battery = $this
+            ->batteryService
+            ->batteryRepository
+            ->findBatteryByInternalSerialNumber($serialNumber);
 
         if (empty($battery)) {
             $this->addFlash('danger', 'Battery does not exist!');

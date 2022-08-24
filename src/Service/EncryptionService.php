@@ -28,18 +28,19 @@ class EncryptionService
     }
 
     /**
+     * Using Base 64 encode to prevent "encrypted text" having forward slashes '/'
      * @param string $string
      * @return false|string
      */
     public function encryptString(string $string)
     {
-        return openssl_encrypt(
+        return base64_encode(openssl_encrypt(
             $string . self::BATTERY_ENCRYPTION,
             $this->openssl_cipher,
             $this->openssl_password,
             0,
             $this->openssl_iv
-        );
+        ));
     }
 
     /**
@@ -49,7 +50,7 @@ class EncryptionService
     public function decryptString(?string $string)
     {
         return openssl_decrypt(
-            $string,
+            base64_decode($string),
             $this->openssl_cipher,
             $this->openssl_password,
             0,
