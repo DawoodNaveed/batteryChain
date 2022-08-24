@@ -88,13 +88,26 @@ class BatteryController extends AbstractController
         );
 
         if ($decryptedNumber !== false) {
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService
-                ->fetchBatteryBySerialNumber($decryptedNumber);
+            /** @var Battery[]|null $battery */
+            $batteries = $this->batteryService
+                ->batteryRepository->findBatteriesByBothSerialNumber($decryptedNumber);
 
-            if (empty($battery)) {
+            if (empty($batteries)) {
                 $this->addFlash('danger', 'Kindly provide valid url query!');
                 return new RedirectResponse('/');
+            }
+
+            if (count($batteries) > 1) {
+                return $this->render(
+                    'public_templates/battery_list_view.html.twig', [
+                        'batteries' => $batteries
+                    ]
+                );
+            }
+
+            if (count($batteries) == 1 && isset($batteries[0])) {
+                /** @var Battery $battery */
+                $battery = $batteries[0];
             }
 
             return $this->render(
@@ -103,7 +116,7 @@ class BatteryController extends AbstractController
                     'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         : null,
-                    'slug' => $request->get('search'),
+                    'slug' => $this->encryptionService->encryptString($battery->getInternalSerialNumber()),
                     'transactions' => $battery->getTransactionLogs()->toArray()
                 ]
             );
@@ -152,8 +165,10 @@ class BatteryController extends AbstractController
 
         if ($decryptedNumber !== false) {
             /** @var Battery|null $battery */
-            $battery = $this->batteryService
-                ->fetchBatteryBySerialNumber($decryptedNumber);
+            $battery = $this
+                ->batteryService
+                ->batteryRepository
+                ->findBatteryByInternalSerialNumber($decryptedNumber);
 
             if (empty($battery)) {
                 $this->addFlash('danger', $this->translator->trans('Kindly provide valid url!'));

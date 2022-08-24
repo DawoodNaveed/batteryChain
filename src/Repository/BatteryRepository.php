@@ -116,4 +116,35 @@ class BatteryRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    /**
+     * @param string $decryptedNumber
+     * @return int|mixed|string
+     */
+    public function findBatteriesByBothSerialNumber(string $decryptedNumber)
+    {
+        $qb = $this->createQueryBuilder('battery');
+
+        return
+            $qb
+                ->where($qb->expr()->orX(
+                    $qb->expr()->eq('battery.serialNumber', ':serialNumber'),
+                    $qb->expr()->eq('battery.internalSerialNumber', ':serialNumber')
+                ))
+                ->andWhere('battery.blockchainSecured = 1')
+                ->setParameter('serialNumber', $decryptedNumber)
+                ->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $decryptedNumber
+     * @return Battery|null
+     */
+    public function findBatteryByInternalSerialNumber(string $decryptedNumber): ?Battery
+    {
+        return $this->findOneBy([
+            'internalSerialNumber' => $decryptedNumber,
+            'blockchainSecured' => true
+        ]);
+    }
 }

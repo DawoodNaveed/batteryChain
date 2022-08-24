@@ -173,7 +173,7 @@ class RecyclerRepository extends ServiceEntityRepository
             'ON (r.id = manufacturers_recyclers.recycler_id) ' .
             'WHERE manufacturers_recyclers.manufacturer_id is null and r.country_id = ' . $country->getId() .' and r.deleted_at is null';
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
-        $stmt->executeQuery();
+        $stmt = $stmt->executeQuery();
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
