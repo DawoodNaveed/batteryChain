@@ -1,6 +1,6 @@
 FROM richarvey/nginx-php-fpm:2.1.2
 
-MAINTAINER Battery Chain Team <saad.haroon@coeus-solutions.de>
+MAINTAINER Battery Chain Team <saad.haroon@coeus-solutions.com>
 
 # EXPOSE 443 80
 
