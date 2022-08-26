@@ -85,6 +85,12 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $batteries;
 
     /**
+     * One Manufacturer has many bulk imports.
+     * @OneToMany(targetEntity="App\Entity\Import", mappedBy="manufacturer")
+     */
+    private $imports;
+
+    /**
      * @var \DateTime|null
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
@@ -114,6 +120,7 @@ class Manufacturer extends AbstractEntity implements \Serializable
     public function __construct() {
         $this->recyclers = new ArrayCollection();
         $this->batteries = new ArrayCollection();
+        $this->imports = new ArrayCollection();
     }
 
     /**
@@ -402,5 +409,37 @@ class Manufacturer extends AbstractEntity implements \Serializable
     public function setIdentifier(?string $identifier): void
     {
         $this->identifier = $identifier;
+    }
+
+    /**
+     * @return Collection|Import[]
+     */
+    public function getImports(): Collection
+    {
+        return $this->imports;
+    }
+
+    /**
+     * @param Import $import
+     * @return $this
+     */
+    public function addImport(Import $import): self
+    {
+        if (!$this->imports->contains($import)) {
+            $this->imports[] = $import;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Import $import
+     * @return $this
+     */
+    public function removeImport(Import $import): self
+    {
+        $this->imports->removeElement($import);
+
+        return $this;
     }
 }
