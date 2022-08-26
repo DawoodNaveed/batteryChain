@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Import;
+use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,5 +20,22 @@ class ImportRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Import::class);
+    }
+
+    /**
+     * @param Manufacturer $manufacturer
+     * @param string $status
+     * @return array|null
+     */
+    public function findOneByFilter(Manufacturer $manufacturer, string $status = 'complete'): ?array
+    {
+        return $this->createQueryBuilder('import')
+            ->where('import.manufacturer = :manufacturer')
+            ->andWhere('import.status != :status')
+            ->setParameter('manufacturer', $manufacturer)
+            ->setParameter('status', $status)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getArrayResult();
     }
 }

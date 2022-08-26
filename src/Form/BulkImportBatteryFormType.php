@@ -3,12 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Battery;
+use App\Entity\Import;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
  * Class BulkImportBatteryFormType
@@ -32,7 +34,22 @@ class BulkImportBatteryFormType extends AbstractType
             );
         }
 
-        $builder->add('csv', FileType::class, ['required' => true, 'label' => 'CSV']);
+        $builder
+            ->add('csvFile', VichFileType::class, array(
+                'required'      => false,
+                'allow_delete'  => false,
+                'download_link' => false,
+                'label' => 'Bulk Csv',
+                'label_attr' => [
+                    'style' => 'margin-top:10px',
+                    'display' => 'inline-block !important'
+                ],
+                'attr' => [
+                    'class' => 'inline-block',
+                    'style' => 'margin-top:10px',
+                    'display' => 'inline-block !important'
+                ]
+            ));
         $builder->add(
             'save',
             SubmitType::class,
@@ -46,6 +63,7 @@ class BulkImportBatteryFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class' => Import::class,
             'manufacturer' => null,
         ]);
     }

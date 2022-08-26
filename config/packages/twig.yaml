@@ -11,6 +11,7 @@ twig:
         logo_aws_path: '%app.path.manufacturer_aws_logos%'
         co2_neutral_seal: '/%app.path.co2_neutral_seal%'
         insurance_seal: '/%app.path.insurance_seal%'
+        csv_aws_path: '%app.path.import_aws_csv%'
 when@test:
     twig:
         strict_variables: true

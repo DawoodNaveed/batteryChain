@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Battery;
-use App\Entity\Manufacturer;
 use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\BatteryDetailFormType;
@@ -12,14 +11,14 @@ use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
 use App\Service\CsvService;
+use App\Service\ImportService;
 use App\Service\ManufacturerService;
 use App\Service\PdfService;
 use App\Service\ShipmentService;
 use App\Service\TransactionLogService;
 use App\Service\UserService;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Exception;
 use Doctrine\Inflector\InflectorFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
@@ -27,7 +26,6 @@ use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
 use Sonata\AdminBundle\Exception\LockException;
 use Sonata\AdminBundle\Exception\ModelManagerException;
 use Sonata\AdminBundle\Exception\ModelManagerThrowable;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -37,7 +35,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -59,6 +56,8 @@ use Twig\Error\SyntaxError;
  * @property CsvService csvService
  * @property ShipmentService shipmentService
  * @property LoggerInterface logger
+ * @property EntityManagerInterface entityManager
+ * @property ImportService importService
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -78,6 +77,8 @@ class BatteryController extends CRUDController
      * @param CsvService $csvService
      * @param ShipmentService $shipmentService
      * @param LoggerInterface $logger
+     * @param EntityManagerInterface $entityManager
+     * @param ImportService $importService
      */
     public function __construct(
         string $kernelProjectDir,
@@ -92,7 +93,9 @@ class BatteryController extends CRUDController
         TransactionLogService $transactionLogService,
         CsvService $csvService,
         ShipmentService $shipmentService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EntityManagerInterface $entityManager,
+        ImportService $importService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -107,12 +110,13 @@ class BatteryController extends CRUDController
         $this->csvService = $csvService;
         $this->shipmentService = $shipmentService;
         $this->logger = $logger;
+        $this->entityManager = $entityManager;
+        $this->importService = $importService;
     }
 
     /**
      * @param Request $request
      * @return Response
-     * @throws Exception|DBALException
      */
     public function importAction(Request $request): Response
     {
@@ -131,87 +135,31 @@ class BatteryController extends CRUDController
         ]);
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
-            /** @var Manufacturer $manufacturer */
-            $manufacturer = $formData['manufacturer'] ?? null;
-            $file = $request->files->all();
+            $formData->setManufacturer($formData->getManufacturer() ?? $user->getManufacturer());
+            $manufacturer = $formData->getManufacturer();
 
-            if (!empty($file) && isset($file['bulk_import_battery_form']['csv'])) {
-                $isAdmin = true;
-                /** @var UploadedFile $file */
-                $file = $file['bulk_import_battery_form']['csv'];
-                $validCsv = $this->batteryService->isValidCsv($file);
-                if ($validCsv['error'] == 0) {
-                    $stopwatch = new Stopwatch();
-                    $stopwatch->start('BulkImport');
-                    if (empty($manufacturer)) {
-                        $isAdmin = false;
-                        $manufacturer = $user->getManufacturer();
-                    }
-
-                    $createBattery = $this->batteryService->extractCsvAndCreateBatteries($file, $manufacturer, $user->getId());
-
-                    if (!empty($createBattery) && !empty($createBattery['error'])) {
-                        $this->addFlash('error', $this->translator->trans($createBattery['message']));
-                        return $this->redirectToRoute('admin_app_battery_import');
-                    } else {
-                        if (isset($createBattery['total']) && isset($createBattery['failure'])) {
-                            if ($createBattery['failure'] !== 0) {
-                                $this->addFlash(
-                                    'error',
-                                    $this->translator->trans(
-                                        'service.error.battery_import_status',
-                                        [
-                                            '%failure_batteries%' => $createBattery['failure'],
-                                            '%total_batteries%' => $createBattery['total']
-                                        ]
-                                    )
-                                );
-                            }
-
-                            if ($createBattery['total'] !== $createBattery['failure']) {
-                                $this->addFlash('success', $this->translator->trans('service.success.battery_added_successfully'));
-                            }
-
-                            if (isset($createBattery['info']) && !empty($createBattery['info'])) {
-                                $this->addFlash(
-                                    'sonata_flash_info',
-                                    $this->translator->trans('service.info.flash_bulk_create_info_exist',
-                                        [
-                                            '%count%' => count($createBattery['info'])
-                                        ]
-                                    )
-                                );
-                            }
-                        }
-                    }
-
-                    $event = $stopwatch->stop('BulkImport');
-
-                    $this->logger->notice('DebugInformation', [
-                        'event' => 'BulkImport',
-                        'duration' => ($event->getDuration() / 1000) . 's',
-                        'memory' => $event->getMemory()
-                    ]);
-
-                    if ($isAdmin) {
-                        return $this->redirectToRoute('battery-intermediate_battery_list', [
-                            'filter' => [
-                                'manufacturer__name' => [
-                                    'value' => $manufacturer->getName()
-                                ]
-                            ]
-                        ]);
-                    } else {
-                        return $this->redirectToRoute('battery-intermediate_battery_list');
-                    }
-                } else {
-                    $this->addFlash('error', $this->translator->trans($validCsv['message']));
-                }
+            /** if already in process, notify */
+            if (!empty($this->importService->findOneByFilter($manufacturer))) {
+                $this->addFlash('sonata_flash_error',
+                    $this->translator->trans("Import is already in process. Please wait for a while until it completes.")
+                );
 
                 return $this->redirectToRoute('admin_app_battery_import');
             }
+
+            $formData->setCreated(new \DateTime('now'));
+            $formData->setUpdated(new \DateTime('now'));
+            $formData->setStatus('pending');
+            $this->entityManager->persist($formData);
+            $this->entityManager->flush();
+            $this->addFlash('sonata_flash_success',
+                $this->translator->trans("Csv is submitted for Bulk Import. You'll be notified soon.")
+            );
+
+            return $this->redirectToRoute('admin_app_import_list');
         }
 
         return $this->render(
