@@ -11,6 +11,7 @@ use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
 use App\Service\CsvService;
+use App\Service\ImportQueueService;
 use App\Service\ImportService;
 use App\Service\ManufacturerService;
 use App\Service\PdfService;
@@ -58,6 +59,7 @@ use Twig\Error\SyntaxError;
  * @property LoggerInterface logger
  * @property EntityManagerInterface entityManager
  * @property ImportService importService
+ * @property ImportQueueService importQueueService
  * @property string kernelProjectDir
  */
 class BatteryController extends CRUDController
@@ -79,6 +81,7 @@ class BatteryController extends CRUDController
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      * @param ImportService $importService
+     * @param ImportQueueService $importQueueService
      */
     public function __construct(
         string $kernelProjectDir,
@@ -95,7 +98,8 @@ class BatteryController extends CRUDController
         ShipmentService $shipmentService,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        ImportService $importService
+        ImportService $importService,
+        ImportQueueService $importQueueService
     ) {
         $this->batteryService = $batteryService;
         $this->translator = $translator;
@@ -112,6 +116,7 @@ class BatteryController extends CRUDController
         $this->logger = $logger;
         $this->entityManager = $entityManager;
         $this->importService = $importService;
+        $this->importQueueService = $importQueueService;
     }
 
     /**
@@ -158,6 +163,12 @@ class BatteryController extends CRUDController
             $this->addFlash('sonata_flash_success',
                 $this->translator->trans("Csv is submitted for Bulk Import. You'll be notified soon.")
             );
+            /** Send Message to Queue for Csv validation */
+            $this->importQueueService->dispatchValidateBulkImportRequest([
+                'data' => [
+                    'import_id' => $formData->getId()
+                ]
+            ]);
 
             return $this->redirectToRoute('admin_app_import_list');
         }

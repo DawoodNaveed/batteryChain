@@ -55,9 +55,11 @@ class ImportService
 
     /**
      * @param $data
+     * @return bool
      */
-    public function validateImport($data)
+    public function validateImport($data): bool
     {
+        $isValidated = false;
         $importObj = $this->importRepository->find($data['import_id']);
         $this->importRepository->updateStatus($importObj, BulkImportEnum::VALIDATING);
 
@@ -71,6 +73,7 @@ class ImportService
             if ($response[BulkImportEnum::ERROR] === CustomHelper::NO_ERROR) {
                 $importObj->setStatus(BulkImportEnum::VALIDATED);
                 $importObj->setReason(null);
+                $isValidated = true;
             } else {
                 $importObj->setStatus(BulkImportEnum::ERROR);
                 $importObj->setReason($response[BulkImportEnum::MESSAGE]);
@@ -85,6 +88,8 @@ class ImportService
         }
 
         $this->importRepository->flush();
+
+        return $isValidated;
     }
 
     /**
@@ -94,8 +99,8 @@ class ImportService
      */
     private function validateBulkImportCsv($file, Manufacturer $manufacturer): array
     {
-        if (($handle = fopen($file, "r")) !== false) {
-            $csvHeaders = fgetcsv($handle, 1000, ",");
+        if (($handle = fopen($file, BulkImportEnum::READ_MODE)) !== false) {
+            $csvHeaders = fgetcsv($handle, 1000, BulkImportEnum::CSV_SEPARATOR);
 
             if ($csvHeaders !== CustomHelper::CSV_HEADERS) {
                 fclose($handle);
@@ -106,7 +111,7 @@ class ImportService
                 ];
             }
 
-            while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+            while (($csvData = fgetcsv($handle, 1000, BulkImportEnum::CSV_SEPARATOR)) !== false) {
                 if (count($csvData) !== count(CustomHelper::CSV_HEADERS)) {
                     fclose($handle);
 
@@ -186,5 +191,7 @@ class ImportService
                 $importObj->setReason($response[BulkImportEnum::MESSAGE]);
             }
         }
+
+        $this->importRepository->flush();
     }
 }

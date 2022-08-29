@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Import;
 use App\Entity\Manufacturer;
+use App\Enum\BulkImportEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,7 +28,7 @@ class ImportRepository extends ServiceEntityRepository
      * @param string $status
      * @return array|null
      */
-    public function findOneByFilter(Manufacturer $manufacturer, string $status = 'complete'): ?array
+    public function findOneByFilter(Manufacturer $manufacturer, string $status = BulkImportEnum::COMPLETE): ?array
     {
         return $this->createQueryBuilder('import')
             ->where('import.manufacturer = :manufacturer')

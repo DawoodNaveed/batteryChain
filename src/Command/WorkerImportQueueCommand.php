@@ -65,11 +65,18 @@ class WorkerImportQueueCommand extends Command
                 $this->logger->info(self::$defaultName . ' | Received message.', [$data]);
 
                 if ($data['type'] === ImportQueueService::VALIDATE_BULK_IMPORT) {
-                    $this->importService->validateImport($data["data"]);
+                    $isValidated = $this->importService->validateImport($data['data']);
+
+                    if ($isValidated === true) {
+                        /** Send Message to Queue for Csv bulk import */
+                        $this->importQueueService->dispatchBulkImportRequest([
+                            'data' => $data['data']
+                        ]);
+                    }
                 }
 
                 if ($data['type'] === ImportQueueService::BULK_IMPORT) {
-                    $this->importService->bulkImport($data["data"]);
+                    $this->importService->bulkImport($data['data']);
                 }
             }
         }

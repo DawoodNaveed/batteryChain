@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 
 /**
@@ -48,8 +49,18 @@ class BulkImportBatteryFormType extends AbstractType
                     'class' => 'inline-block',
                     'style' => 'margin-top:10px',
                     'display' => 'inline-block !important'
-                ]
-            ));
+                ],
+                'constraints' => [
+                    new File([
+                        'maxSize' => 10485760,
+                        'mimeTypes' => [
+                            'text/plain',
+                            'text/csv',
+                            'text/x-csv'
+                        ]
+                    ])
+                ])
+            );
         $builder->add(
             'save',
             SubmitType::class,
