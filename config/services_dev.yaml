@@ -9,3 +9,14 @@ services:
         credentials:
           key: '%env(AWS_KEY)%'
           secret: '%env(AWS_SECRET)%'
+
+  bc.aws_sqs.client:
+    class: Aws\Sqs\SqsClient
+    factory: [Aws\Sqs\SqsClient, 'factory']
+    arguments:
+      -
+        version: 'latest'
+        region: '%env(AWS_REGION)%'
+        credentials:
+          key: '%env(AWS_KEY)%'
+          secret: '%env(AWS_SECRET)%'

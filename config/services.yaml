@@ -36,7 +36,7 @@ services:
             $awsLogoFolder: '%app.path.manufacturer_aws_logos%'
             $co2NeutralSeal: '%app.path.co2_neutral_seal%'
             $insuranceSeal: '%app.path.insurance_seal%'
-            $awsCsvFolder: '%app.path.import_aws_csv%'
+            $awsCsvFolder: '%app.path.import_aws_csv%/'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -163,6 +163,20 @@ services:
             -
                 version: 'latest'
                 region: '%env(AWS_REGION)%'
+
+    App\Service\ImportQueueService:
+        arguments:
+            - '@bc.aws_sqs.client'
+            - '%env(IMPORT_QUEUE_URL)%'
+
+    bc.aws_sqs.client:
+        class: Aws\Sqs\SqsClient
+        factory: [Aws\Sqs\SqsClient, 'factory']
+        arguments:
+            -
+                version: 'latest'
+                region: '%env(AWS_REGION)%'
+
 knp_gaufrette:
     adapters:
         logo_adapter:

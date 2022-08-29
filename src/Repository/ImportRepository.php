@@ -38,4 +38,22 @@ class ImportRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    /**
+     * Preventing from injecting Entity manager in service
+     */
+    public function flush()
+    {
+        $this->_em->flush();
+    }
+
+    /**
+     * @param Import $importObject
+     * @param string $status
+     */
+    public function updateStatus(Import $importObject, $status = 'pending')
+    {
+        $importObject->setStatus($status);
+        $this->flush();
+    }
 }

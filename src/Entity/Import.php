@@ -61,6 +61,12 @@ class Import extends AbstractEntity
     private $deletedAt;
 
     /**
+     * @var string|null
+     * @ORM\Column(name="reason", type="text", nullable="true")
+     */
+    private $reason;
+
+    /**
      * Import constructor.
      */
     public function __construct()
@@ -213,5 +219,21 @@ class Import extends AbstractEntity
     public function unserialize($serialized)
     {
         $this->csvFile = base64_decode($this->csvFile);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReason(): ?string
+    {
+        return $this->reason;
+    }
+
+    /**
+     * @param string|null $reason
+     */
+    public function setReason(?string $reason): void
+    {
+        $this->reason = $reason;
     }
 }
