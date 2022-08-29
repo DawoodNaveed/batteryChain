@@ -45,10 +45,10 @@ class ImportService
 
     /**
      * @param Manufacturer $manufacturer
-     * @param string $status
+     * @param array $status
      * @return Import|array|null
      */
-    public function findOneByFilter(Manufacturer $manufacturer, string $status = BulkImportEnum::COMPLETE)
+    public function findOneByFilter(Manufacturer $manufacturer, array $status = [BulkImportEnum::COMPLETE, BulkImportEnum::ERROR])
     {
         return $this->importRepository->findOneByFilter($manufacturer, $status);
     }

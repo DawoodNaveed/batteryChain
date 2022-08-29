@@ -25,14 +25,16 @@ class ImportRepository extends ServiceEntityRepository
 
     /**
      * @param Manufacturer $manufacturer
-     * @param string $status
+     * @param array $status
      * @return array|null
      */
-    public function findOneByFilter(Manufacturer $manufacturer, string $status = BulkImportEnum::COMPLETE): ?array
-    {
+    public function findOneByFilter(
+        Manufacturer $manufacturer,
+        array $status = [BulkImportEnum::COMPLETE, BulkImportEnum::ERROR]
+    ): ?array {
         return $this->createQueryBuilder('import')
             ->where('import.manufacturer = :manufacturer')
-            ->andWhere('import.status != :status')
+            ->andWhere('import.status NOT IN (:status)')
             ->setParameter('manufacturer', $manufacturer)
             ->setParameter('status', $status)
             ->setMaxResults(1)
