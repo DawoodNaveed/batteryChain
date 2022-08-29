@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Battery;
+use App\Entity\Import;
 use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
@@ -101,16 +102,16 @@ class BatteryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Manufacturer $manufacturer
+     * @param Import $import
      * @return int|mixed|string
      */
-    public function updateBulkImportField(Manufacturer $manufacturer)
+    public function updateBulkImportField(Import $import)
     {
         return $this->createQueryBuilder('battery')
             ->update()
             ->set('battery.isBulkImport', 0)
-            ->where('battery.manufacturer = :manufacturer')
-            ->setParameter('manufacturer', $manufacturer)
+            ->where('battery.import = :import')
+            ->setParameter('import', $import)
             ->getQuery()
             ->execute();
     }

@@ -472,6 +472,12 @@ class BatteryController extends CRUDController
         $selectedModels = $selectedModelQuery->execute();
         $failure = 0;
         $ids = null;
+        $importId = null;
+        $fromIntermediate = false;
+        /** If request came from intermediate screen */
+        if (strpos($_SERVER['REQUEST_URI'], "battery-intermediate") !== false){
+            $fromIntermediate = true;
+        }
 
         try {
             foreach ($selectedModels as $selectedModel) {
@@ -481,6 +487,17 @@ class BatteryController extends CRUDController
                 if (!empty($battery)
                     && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
+
+                    /** Once register/deliver from intermediate screen, we'll hide it  */
+                    if (empty($importId) && $fromIntermediate) {
+                        $importObj = $battery->getImport() ?? null;
+                        /** updated implementation */
+                        if ($importObj) {
+                            $this->batteryService->updateBulkImportField($importObj);
+                            $importObj->setDeletedAt(new \DateTime('now'));
+                        }
+                    }
+
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setIsBulkImport(false);
                     $battery->setUpdated(new \DateTime('now'));
@@ -598,6 +615,13 @@ class BatteryController extends CRUDController
     public function registerAction(Request $request): RedirectResponse
     {
         try {
+            $importId = null;
+            $fromIntermediate = false;
+            /** If request came from intermediate screen */
+            if (strpos($_SERVER['REQUEST_URI'], "battery-intermediate") !== false){
+                $fromIntermediate = true;
+            }
+
             $manufacturer = null;
             $ids = $request->get('ids');
             $failure = 0;
@@ -617,6 +641,17 @@ class BatteryController extends CRUDController
                 if (!empty($battery)
                     && $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED
                     && !($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_REGISTERED))) {
+
+                    if (empty($importId) && $fromIntermediate) {
+                        $importObj = $battery->getImport() ?? null;
+
+                        /** updated implementation */
+                        if ($importObj) {
+                            $this->batteryService->updateBulkImportField($importObj);
+                            $importObj->setDeletedAt(new \DateTime('now'));
+                        }
+                    }
+
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_REGISTERED);
                     $battery->setIsBulkImport(false);
                     $battery->setUpdated(new \DateTime('now'));

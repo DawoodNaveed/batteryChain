@@ -556,17 +556,17 @@ class BatteryService
     }
 
     /**
-     * @param Manufacturer|null $manufacturer
+     * @param Import $import
      * @return int|mixed|string|null
      */
-    public function updateBulkImportField(?Manufacturer $manufacturer)
+    public function updateBulkImportField(Import $import)
     {
         try {
-            if (empty($manufacturer)) {
+            if (empty($import)) {
                 return null;
             }
 
-            return $this->batteryRepository->updateBulkImportField($manufacturer);
+            return $this->batteryRepository->updateBulkImportField($import);
         } catch (\Exception $exception) {
             $this->logger->error('[ERROR][UPDATE BATTERY FIELD]' . $exception->getMessage());
         }
