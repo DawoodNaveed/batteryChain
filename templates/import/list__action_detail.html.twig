@@ -1,4 +1,8 @@
-{% if object.status != 'complete' %}
+{% if object.status == 'error' %}
+    <span readonly style="float: left; text-align: left">
+        {{ object.reason | trans | capitalize }}
+    </span>
+{% elseif object.status != 'complete' %}
     <a class="btn btn-green disabled">
         {{ "See Details" | trans }}
     </a>

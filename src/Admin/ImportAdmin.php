@@ -34,8 +34,12 @@ class ImportAdmin extends AbstractAdmin
             ->addIdentifier('manufacturer.name', TextType::class, [
                 'label' => 'Manufacturer'
             ])
-            ->addIdentifier('status')
+            ->addIdentifier('status', TextType::class, [
+                'template' => 'import/list__status_field.html.twig'
+            ])
             ->addIdentifier(ListMapper::NAME_ACTIONS, null, [
+                'header_style' => 'width: 30%;',
+                'row_align' => 'center',
                 'actions' => [
                     'details' => [
                         'template' => 'import/list__action_detail.html.twig',
