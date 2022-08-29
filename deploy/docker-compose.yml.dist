@@ -24,7 +24,9 @@ services:
       SENDER_NAME: ${SENDER_NAME}
       SERVER_URL: ${SERVER_URL}
       DATABASE_VERSION: ${DATABASE_VERSION}
-
+      CSV_FILE_UPLOAD_SIZE: ${CSV_FILE_UPLOAD_SIZE}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     build:
       context: ../
       dockerfile: deploy/Dockerfile
@@ -36,7 +38,13 @@ services:
       - bc_db
     depends_on:
       - bc_db
+      - bc_redis
     restart: on-failure:2
     container_name: bc_web
+  bc_redis:
+    image: redis:5.0.3-alpine
+    hostname: redis
+    restart: always
+    container_name: bc_redis
 volumes:
   bc_db:
