@@ -3,12 +3,13 @@
 namespace App\Service;
 
 use App\Entity\Battery;
+use App\Entity\Import;
 use App\Entity\Manufacturer;
 use App\Entity\Recycler;
 use App\Entity\User;
+use App\Enum\BulkImportEnum;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -79,67 +80,28 @@ class BatteryService
     }
 
     /**
-     * @param UploadedFile $file
+     * @param Import $importObj
      * @param Manufacturer $manufacturer
-     * @param $currentPossessorId
+     * @param null $currentPossessorId
      * @return array
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
-    public function extractCsvAndCreateBatteries(UploadedFile $file, Manufacturer $manufacturer, $currentPossessorId): array
+    public function extractCsvAndCreateBatteries(Import $importObj, Manufacturer $manufacturer, $currentPossessorId = null): array
     {
-        $error = [];
-
-        if (($handle = fopen($file, "r")) !== false) {
-            $csvHeaders = fgetcsv($handle, 1000, ",");
-
-            if ($csvHeaders !== CustomHelper::CSV_HEADERS) {
-                $error = ['error' => CustomHelper::ERROR, 'message' => 'service.error.invalid_csv_headers'];
-                return $error;
-            }
-
+        if (($handle = fopen($importObj->getCsvFile(), BulkImportEnum::READ_MODE)) !== false) {
+            $csvHeaders = fgetcsv($handle, 1000, BulkImportEnum::CSV_SEPARATOR);
             $rowCount = 1;
-            $errors = [
-                'no_serial_number' => 0,
-                'same_serial_number' => 0
-            ];
-            $info = [];
-            $totalFailures = 0;
             $values = '';
 
-            while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
-                if (count($csvData) !== count(CustomHelper::CSV_HEADERS)) {
-                    $error = ['error' => CustomHelper::ERROR, 'message' => 'service.error.invalid_csv'];
-                    return $error;
-                }
-
+            while (($csvData = fgetcsv($handle, 1000, BulkImportEnum::CSV_SEPARATOR)) !== false) {
                 $row = [];
 
                 for ($headerIndex = 0; $headerIndex < count($csvHeaders); $headerIndex++) {
                     $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
                 }
 
-                if (empty((string) $row['serial_number'])) {
-                    $errors['no_serial_number']++;
-                    $totalFailures++;
-                    continue;
-                }
-
-                // Battery with similar serial number and manufacturer
-                $battery = $this->batteryRepository->findOneBy([
-                    'serialNumber' => (string) $row['serial_number'],
-                    'manufacturer' => $manufacturer
-                ]);
-
-                // If battery exists then do not create new Battery
-                if (!empty($battery)) {
-                    $errors['same_serial_number']++;
-                    $totalFailures++;
-                    continue;
-                }
-
-                $internalSerialNumber = $manufacturer->getIdentifier() . '-' . (string) $row['serial_number'];
-                $serialNumber = (string) $row['serial_number'];
+                $serialNumber = trim((string) $row['serial_number']);
+                $internalSerialNumber = $manufacturer->getIdentifier() . '-' . $serialNumber;
                 $batteryType = (string) $row['battery_type'];
                 $cellType = (string) $row['cell_type'] ?? null;
                 $moduleType = (string) $row['module_type'] ?? null;
@@ -158,6 +120,7 @@ class BatteryService
                 $isInsured = (int) $row['is_insured'] ?? 0;
                 $isClimateNeutral = (int) $row['is_climate_neutral'] ?? 0;
                 $status = CustomHelper::BATTERY_STATUS_PRE_REGISTERED;
+                $currentPossessorId = $currentPossessorId ?? $manufacturer->getUser()->getId();
 
                 $date = (new \DateTime($productionDate))->format('Y-m-d H:i:s');
                 $deliveryDate = (new \DateTime($deliveryDate))->format('Y-m-d H:i:s');
@@ -166,11 +129,12 @@ class BatteryService
                     "', '" . $nominalVoltage . "', '" . $nominalCapacity . "', '" . $nominalEnergy .
                     "', '" . $acidVolume . "', '" . $co2 . "', '" . 1 . "', '" . $isInsured . "', '" . $isClimateNeutral
                     . "', '" . $height . "', '" . $width  . "', '" . $length . "', '" . $mass . "', '" . $status
-                    . "', '" . $manufacturer->getId() . "', '" . $currentPossessorId . "', '" . $deliveryDate . "', now(), now()), ";
+                    . "', '" . $manufacturer->getId() . "', '" . $currentPossessorId . "', '" . $importObj->getId() .
+                    "', '" . $deliveryDate . "', now(), now()), ";
 
                 $rowCount++;
 
-                if ($rowCount % 20 === 0) {
+                if ($rowCount % 25 === 0) {
                     $values = rtrim($values, ', ');
                     $error = $this->createBatteryEntries($values);
                     $values = '';
@@ -185,18 +149,17 @@ class BatteryService
 
         fclose($handle);
 
-        return array_merge($error, [
-            'total' => ($rowCount - 1) + $totalFailures,
-            'failure' => $totalFailures,
-            'info' => $info
-        ]);
+        if (!empty($error) && $error[CustomHelper::ERROR]) {
+            return $error;
+        }
+
+        return [ BulkImportEnum::ERROR => CustomHelper::NO_ERROR ];
     }
 
     /**
      * @param $values
      * @return array
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     public function createBatteryEntries($values): array
     {
@@ -204,7 +167,11 @@ class BatteryService
         try {
             $this->batteryRepository->createNewBattery($values);
         } catch (Exception $e) {
-            $error = ['error' => CustomHelper::ERROR, 'message' => 'service.error.something_went_wrong'];
+            $this->logger->error('[ERROR][BULK IMPORT]:' . $e->getMessage());
+            $error = [
+                BulkImportEnum::ERROR => CustomHelper::ERROR,
+                BulkImportEnum::MESSAGE => 'service.error.something_went_wrong'
+            ];
         }
 
         return $error;
@@ -589,17 +556,17 @@ class BatteryService
     }
 
     /**
-     * @param Manufacturer|null $manufacturer
+     * @param Import $import
      * @return int|mixed|string|null
      */
-    public function updateBulkImportField(?Manufacturer $manufacturer)
+    public function updateBulkImportField(Import $import)
     {
         try {
-            if (empty($manufacturer)) {
+            if (empty($import)) {
                 return null;
             }
 
-            return $this->batteryRepository->updateBulkImportField($manufacturer);
+            return $this->batteryRepository->updateBulkImportField($import);
         } catch (\Exception $exception) {
             $this->logger->error('[ERROR][UPDATE BATTERY FIELD]' . $exception->getMessage());
         }

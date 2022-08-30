@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -28,6 +27,14 @@ class Battery extends AbstractEntity
      * @JoinColumn(name="manufacturer_id", referencedColumnName="id")
      */
     private $manufacturer;
+
+    /**
+     * Many batteries exists in one Bulk Import. This is the owning side.
+     * @ManyToOne(targetEntity="App\Entity\Import", inversedBy="batteries")
+     * @JoinColumn(name="import_id", referencedColumnName="id")
+     * @var Import|null
+     */
+    private $import;
 
     /**
      * @var string|null
@@ -252,6 +259,22 @@ class Battery extends AbstractEntity
         $this->manufacturer = $manufacturer;
 
         return $this;
+    }
+
+    /**
+     * @return Import|null
+     */
+    public function getImport(): ?Import
+    {
+        return $this->import;
+    }
+
+    /**
+     * @param Import|null $import
+     */
+    public function setImport(?Import $import): void
+    {
+        $this->import = $import;
     }
 
     /**

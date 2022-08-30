@@ -34,6 +34,12 @@ vich_uploader:
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     true
             delete_on_update:   false
+        bulk_import_file:
+            uri_prefix:         ''
+            upload_destination: csvs_import
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     true
+            delete_on_update:   false
 
 when@test:
     doctrine:

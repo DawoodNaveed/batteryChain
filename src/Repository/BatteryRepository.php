@@ -3,11 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Battery;
+use App\Entity\Import;
 use App\Entity\Manufacturer;
-use App\Entity\TransactionLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,7 +27,7 @@ class BatteryRepository extends ServiceEntityRepository
 
     /**
      * @param $values
-     * @throws DBALException|Exception
+     * @throws Exception
      */
     public function createNewBattery($values)
     {
@@ -36,7 +35,7 @@ class BatteryRepository extends ServiceEntityRepository
             "(serial_number, internal_serial_number, battery_type_id, cell_type, module_type, tray_number, production_date," .
             " nominal_voltage, nominal_capacity, nominal_energy, acid_volume," .
             " co2, is_bulk_import, is_insured, is_climate_neutral, height, width, length, mass, status," .
-            "manufacturer_id, current_possessor_id, delivery_date, created, updated)" .
+            "manufacturer_id, current_possessor_id, import_id, delivery_date, created, updated)" .
             " VALUES " . $values;
         $connection = $this->getEntityManager()->getConnection();
         $stmt = $connection->prepare($query);
@@ -103,16 +102,16 @@ class BatteryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Manufacturer $manufacturer
+     * @param Import $import
      * @return int|mixed|string
      */
-    public function updateBulkImportField(Manufacturer $manufacturer)
+    public function updateBulkImportField(Import $import)
     {
         return $this->createQueryBuilder('battery')
             ->update()
             ->set('battery.isBulkImport', 0)
-            ->where('battery.manufacturer = :manufacturer')
-            ->setParameter('manufacturer', $manufacturer)
+            ->where('battery.import = :import')
+            ->setParameter('import', $import)
             ->getQuery()
             ->execute();
     }

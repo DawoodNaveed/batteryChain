@@ -11,6 +11,7 @@ parameters:
     app.path.manufacturer_aws_logos: upload/logos/
     app.path.co2_neutral_seal: resources/logos/co2_seal_neutral.png
     app.path.insurance_seal: resources/logos/insurance_seal.png
+    app.path.import_aws_csv: upload/csvs
 
 services:
     # default configuration for services in *this* file
@@ -35,6 +36,7 @@ services:
             $awsLogoFolder: '%app.path.manufacturer_aws_logos%'
             $co2NeutralSeal: '%app.path.co2_neutral_seal%'
             $insuranceSeal: '%app.path.insurance_seal%'
+            $awsCsvFolder: '%app.path.import_aws_csv%/'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -133,6 +135,14 @@ services:
             - [ setTemplate, [ 'layout', 'delivery/list.html.twig' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Delivery, group: Delivery }
+
+    admin.import:
+        class: App\Admin\ImportAdmin
+        arguments: [~, App\Entity\Import, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "Import Details", group: Import }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     gedmo.listener.softdeleteable:
@@ -141,6 +151,18 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+    Redis:
+        # you can also use \RedisArray, \RedisCluster or \Predis\Client classes
+        class: Redis
+        calls:
+            - connect:
+                  - '%env(REDIS_HOST)%'
+                  - '%env(REDIS_PORT)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            - '@Redis'
+            - { 'prefix': 'batterychain_', 'ttl': 14400 } #4 hours in seconds
 
     App\Service\AwsService:
         arguments:
@@ -153,6 +175,20 @@ services:
             -
                 version: 'latest'
                 region: '%env(AWS_REGION)%'
+
+    App\Service\ImportQueueService:
+        arguments:
+            - '@bc.aws_sqs.client'
+            - '%env(IMPORT_QUEUE_URL)%'
+
+    bc.aws_sqs.client:
+        class: Aws\Sqs\SqsClient
+        factory: [Aws\Sqs\SqsClient, 'factory']
+        arguments:
+            -
+                version: 'latest'
+                region: '%env(AWS_REGION)%'
+
 knp_gaufrette:
     adapters:
         logo_adapter:
@@ -163,8 +199,18 @@ knp_gaufrette:
                 options:
                     directory: 'upload/logos'
                     create: true
+        csv_adapter:
+            aws_s3:
+                service_id: 'bc.aws_s3.client'
+                bucket_name: '%env(AWS_BUCKET)%'
+                detect_content_type: true
+                options:
+                    directory: '%app.path.import_aws_csv%'
+                    create: true
 
     filesystems:
         logos:
             adapter: logo_adapter
+        csvs_import:
+            adapter: csv_adapter
     stream_wrapper: ~
