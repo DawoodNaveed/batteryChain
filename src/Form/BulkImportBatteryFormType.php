@@ -37,7 +37,7 @@ class BulkImportBatteryFormType extends AbstractType
 
         $builder
             ->add('csvFile', VichFileType::class, array(
-                'required'      => false,
+                'required'      => true,
                 'allow_delete'  => false,
                 'download_link' => false,
                 'label' => 'Bulk Csv',
@@ -52,7 +52,7 @@ class BulkImportBatteryFormType extends AbstractType
                 ],
                 'constraints' => [
                     new File([
-                        'maxSize' => 10485760,
+                        'maxSize' => '5M',
                         'mimeTypes' => [
                             'text/plain',
                             'text/csv',
