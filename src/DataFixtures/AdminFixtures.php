@@ -28,7 +28,7 @@ class AdminFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $user = $manager->getRepository('App:User')->findBy(['email' => 'admin@battery-chain.info']);
+        $user = $manager->getRepository(User::class)->findBy(['email' => 'admin@battery-chain.info']);
 
         if (empty($user)) {
             $user = new User();
