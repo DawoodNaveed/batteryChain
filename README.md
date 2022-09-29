@@ -30,6 +30,7 @@ php bin/console doctrine:fixtures:load --append
 ```
 docker exec -it bc_web sh
 composer install
+php bin/console assets:install
 
 for migrations, use below command after ssh to the web container
 
