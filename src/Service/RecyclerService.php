@@ -90,17 +90,17 @@ class RecyclerService
                         $result[$key] = $recycler->getId();
                     }
                 } else {
-                    $key = $recycler->name;
+                    $key = $recycler['name'];
 
                     if (key_exists($key, $result)) {
-                        $key = $recycler->name . ' | ' . $recycler->email;
+                        $key = $recycler['name'] . ' | ' . $recycler['email'];
                     }
 
                     // for fallback - we got PHP Objects rather than Recycler Objects
                     if ($fetchFullObject) {
                         $result[$key] = $recycler;
                     } else {
-                        $result[$key] = $recycler->id;
+                        $result[$key] = $recycler['id'];
                     }
                 }
             }
