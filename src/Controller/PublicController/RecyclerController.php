@@ -86,14 +86,14 @@ class RecyclerController extends AbstractController
 
         //only for fallback recycler if available
         if (!empty($recyclers[0]) && $isFallback) {
-            $id = $recyclers[0]->id;
+            $id = $recyclers[0]['id'];
             $details = [
-                'email' => $recyclers[0]->email,
-                'name' => $recyclers[0]->name,
-                'contact' => $recyclers[0]->contact,
-                'address' => $recyclers[0]->address,
-                'postalCode' => $recyclers[0]->postal_code,
-                'city' => $recyclers[0]->city,
+                'email' => $recyclers[0]['email'],
+                'name' => $recyclers[0]['name'],
+                'contact' => $recyclers[0]['contact'],
+                'address' => $recyclers[0]['address'],
+                'postalCode' => $recyclers[0]['postal_code'],
+                'city' => $recyclers[0]['city'],
             ];
         } elseif (!empty($recyclers[0]) && $isFallback === false) {
             $id = $recyclers[0]->getId();

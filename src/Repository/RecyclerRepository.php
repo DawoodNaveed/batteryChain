@@ -175,7 +175,7 @@ class RecyclerRepository extends ServiceEntityRepository
         $stmt = $this->getEntityManager()->getConnection()->prepare($query);
         $stmt = $stmt->executeQuery();
 
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $stmt->fetchAllAssociative();
     }
 
     /**
