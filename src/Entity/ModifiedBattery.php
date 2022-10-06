@@ -107,4 +107,12 @@ class ModifiedBattery extends AbstractEntity
     {
         $this->modifiedBy = $modifiedBy;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString(): string
+    {
+        return $this->battery->getSerialNumber();
+    }
 }
