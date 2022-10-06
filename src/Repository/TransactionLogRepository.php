@@ -48,13 +48,13 @@ class TransactionLogRepository extends ServiceEntityRepository
      * @param TransactionLog|null $log
      * @param string|null $status
      * @param string|null $transactionHash
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @param string|null $metadata
      */
     public function updateTransactionLog(
         ?TransactionLog $log,
         ?string $status = null,
-        ?string $transactionHash = null
+        ?string $transactionHash = null,
+        ?string $metadata = null
     ) {
         if (!empty($log)) {
             if (!empty($status)) {
@@ -69,6 +69,10 @@ class TransactionLogRepository extends ServiceEntityRepository
 
             if (!empty($transactionHash)) {
                 $log->setTransactionHash($transactionHash);
+            }
+
+            if (!empty($metadata)) {
+                $log->setMetaData($metadata);
             }
 
             $log->setUpdated(new DateTime('now'));

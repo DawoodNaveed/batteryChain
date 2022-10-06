@@ -66,12 +66,14 @@ class CreateTransactionHashCommand extends Command
             $log = $log[0];
             $response = $this->blockchainService->createTransactionHash($log);
 
-            if ($response[CustomHelper::STATUS] === CustomHelper::STATUS_SUCCESS) {
+            if ($response[CustomHelper::RESULT][CustomHelper::STATUS] === CustomHelper::STATUS_SUCCESS) {
                 $this->transactionLogRepository
                     ->updateTransactionLog(
                         $log,
                         null,
-                        $response[CustomHelper::DATA][CustomHelper::TRANSACTION_HASH]);
+                        $response[CustomHelper::RESULT][CustomHelper::DATA][CustomHelper::TRANSACTION_HASH],
+                        serialize($response[CustomHelper::FIELDS])
+                    );
             } else {
                 $this->logger->error('[ERROR:CREATE TRANSACTION HASH]:', $response);
             }
