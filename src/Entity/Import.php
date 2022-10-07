@@ -32,7 +32,7 @@ class Import extends AbstractEntity
 
     /**
      * One Bulk Import has many batteries.
-     * @OneToMany(targetEntity="App\Entity\Battery", mappedBy="manufacturer")
+     * @OneToMany(targetEntity="App\Entity\Battery", mappedBy="import")
      */
     private $batteries;
 

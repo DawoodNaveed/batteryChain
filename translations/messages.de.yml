@@ -104,3 +104,7 @@ Who operates the BatteryChain?: "Wer betreibt die BatteryChain?"
 The BatteryChain is operated by BatteryChain AG in cooperation with leading battery manufacturers.: "Die BatteryChain wird von der BatteryChain AG in Zusammenarbeit mit führenden Batterieherstellern betrieben."
 
 Post Code: "Postleitzahl"
+
+Battery: "Battery"
+Chain: "Chain"
+<p id="battery_detail_form_battery_help" class="mt-2 help-text"><i class="fa fa-info-circle mr-1"></i>Die Seriennummer oder ID ist auf dem Etikett der Batterie zu finden</p>: "<p id='battery_detail_form_battery_help' class='mt-2 help-text'><i class='fa fa-info-circle mr-1'></i>Die Seriennummer oder ID ist auf dem Etikett der Batterie zu finden</p>"

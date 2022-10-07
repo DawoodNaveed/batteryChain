@@ -29,7 +29,7 @@ class Battery extends AbstractEntity
     private $manufacturer;
 
     /**
-     * Many batteries exists in one Bulk Import. This is the owning side.
+     * Many batteries exist in one Bulk Import. This is the owning side.
      * @ManyToOne(targetEntity="App\Entity\Import", inversedBy="batteries")
      * @JoinColumn(name="import_id", referencedColumnName="id")
      * @var Import|null
