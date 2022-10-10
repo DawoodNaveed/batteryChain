@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Battery;
 use App\Entity\Manufacturer;
 use App\Entity\User;
+use App\Enum\BatteryEnum;
 use App\Enum\RoleEnum;
 use App\Form\BatteryDetailFormType;
 use App\Form\BulkImportBatteryFormType;
@@ -37,6 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -205,30 +207,42 @@ class BatteryController extends CRUDController
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
 
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+            /** @var Battery|null $manufacturerBattery */
+            $manufacturerBattery = $this->batteryService->fetchBatteryBySerialNumber(
                 $serialNumber,
                 $user->getManufacturer() ?? null,
                 $user->getManufacturer() ? false : true);
-
-            if (empty($battery)) {
+            $otherManufacturerBatteries = $this->batteryService->findBy(['serialNumber' => $serialNumber]);
+            
+            if ($manufacturerBattery && count($otherManufacturerBatteries) === BatteryEnum::MANUFACTURER_BATTERY_COUNT) {
+                return $this->render(
+                    'battery/detail_view.html.twig', [
+                        'battery' => $manufacturerBattery,
+                        'path' => $this->admin->generateUrl('detail'),
+                        'downloadPath' => $this->admin->generateUrl('download', [
+                            'serialNumber' => $manufacturerBattery->getSerialNumber()
+                        ]),
+                        'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$manufacturerBattery->getStatus()])
+                            ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$manufacturerBattery->getStatus()])
+                            : null,
+                        'transactions' => $manufacturerBattery->getTransactionLogs()->toArray()
+                    ]
+                );
+            }
+            
+            if (count($otherManufacturerBatteries) > BatteryEnum::MANUFACTURER_BATTERY_COUNT) {
+                return $this->render(
+                    'battery/battery_list_view.html.twig', [
+                        'manufacturerBattery' => $manufacturerBattery,
+                        'batteries' => $otherManufacturerBatteries
+                    ]
+                );
+            }
+    
+            if (empty($manufacturerBattery)) {
                 $this->addFlash('sonata_flash_error', 'Battery does not exist!');
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
-
-            return $this->render(
-                'battery/detail_view.html.twig', [
-                    'battery' => $battery,
-                    'path' => $this->admin->generateUrl('detail'),
-                    'downloadPath' => $this->admin->generateUrl('download', [
-                        'serialNumber' => $battery->getSerialNumber()
-                    ]),
-                    'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                        ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
-                        : null,
-                    'transactions' => $battery->getTransactionLogs()->toArray()
-                ]
-            );
         }
 
         return $this->render(
@@ -1308,5 +1322,24 @@ class BatteryController extends CRUDController
 
         $this->pdfService->createBatteryLabelPdf($battery);
         exit();
+    }
+
+    public function getBatteryDetailsByIdAction(Request $request): Response
+    {
+        $battery = $this->batteryService->find((int)$request->get('id'));
+    
+        return $this->render(
+            'battery/detail_view.html.twig', [
+                'battery' => $battery,
+                'path' => $this->admin->generateUrl('detail'),
+                'downloadPath' => $this->admin->generateUrl('download', [
+                    'serialNumber' => $battery->getSerialNumber()
+                ]),
+                'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
+                    : null,
+                'transactions' => $battery->getTransactionLogs()->toArray()
+            ]
+        );
     }
 }

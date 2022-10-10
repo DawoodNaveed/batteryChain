@@ -1,0 +1,140 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .status-div span {
+            font-size: 1.25rem;
+        }
+        .bg-white {
+            background-color: white;
+        }
+        .icon-div img {
+            margin-right: 15px;
+        }
+        .inner-box {
+            border-bottom: 1px;
+        }
+        table thead {
+            color: black;
+            height: 60px;
+        }
+        table tbody tr td {
+            padding: 0 20px;
+            height: 90px;
+            vertical-align: middle;
+            border-bottom: 1px solid gray;
+        }
+        table tbody tr td .event-img img {
+            width: 75px;
+            max-width: 75px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        table tbody td, table thead th {
+            text-align: center;
+        }
+        .helpTextContainer {
+            margin: 30px 20px 20px 0;
+        }
+        .helpTextContainer strong {
+            font-size: 20px;
+        }
+        table tbody, table thead {
+            border: solid 1px black;
+        }
+    </style>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    <div class="container col-md-12">
+        {% if app.user.manufacturer and manufacturerBattery %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="bg-white col-md-12">
+                            <thead class="p-3">
+                            <tr>
+                                <th class="p-3">{{ "Manufacturer Logo" | trans }}</th>
+                                <th class="p-3">{{ "Manufacturer Name" | trans }}</th>
+                                <th class="p-3">{{ "Serial Number" | trans }}</th>
+                                <th class="p-3">{{ "" | trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody class="p-3">
+                                <tr class="inner-box p-3">
+                                <td>
+                                    <div class="event-img">
+                                        {% if manufacturerBattery.manufacturer.logo is not null and manufacturerBattery.manufacturer.logo != '' %}
+                                            <img src="{{ manufacturerBattery.manufacturer.logo | preSignedUrl(logo_aws_path) }}" alt="">
+                                        {% else %}
+                                            <img src="{{ no_image_path }}" alt="">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ manufacturerBattery.manufacturer.name }}</td>
+                                <td>{{ manufacturerBattery.serialNumber }}</td>
+                                <td>
+                                    <a class="btn btn-green" href="{{ path('admin_app_battery_getBatteryDetailsById', {
+                                        'id' : manufacturerBattery.id
+                                    }) }}">
+                                        {{ "See details" | trans }}
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="helpTextContainer">
+                <strong>
+                    Following batteries didn't belong to you but you can download the details:
+                </strong>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="bg-white col-md-12">
+                        <thead class="p-3">
+                        <tr>
+                            <th class="p-3">{{ "Manufacturer Logo" | trans }}</th>
+                            <th class="p-3">{{ "Manufacturer Name" | trans }}</th>
+                            <th class="p-3">{{ "Serial Number" | trans }}</th>
+                            <th class="p-3">{{ "" | trans }}</th>
+                            <th class="p-3">{{ "" | trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody class="p-3">
+                        {% for battery in batteries %}
+                            {% if not app.user.manufacturer or battery.manufacturer.id != app.user.manufacturer.id %}
+                                <tr class="inner-box p-3">
+                                    <td>
+                                        <div class="event-img">
+                                            {% if battery.manufacturer.logo is not null and battery.manufacturer.logo != '' %}
+                                                <img src="{{ battery.manufacturer.logo | preSignedUrl(logo_aws_path) }}" alt="">
+                                            {% else %}
+                                                <img src="{{ no_image_path }}" alt="">
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ battery.manufacturer.name }}</td>
+                                    <td>{{ battery.serialNumber }}</td>
+                                    <td>
+                                        <a class="btn btn-green" href="{{ path('admin_app_battery_getBatteryDetailsById', {
+                                            'id' : battery.id
+                                        }) }}">
+                                            {{ "See details" | trans }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

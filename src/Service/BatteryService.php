@@ -898,4 +898,22 @@ class BatteryService
 
         return [];
     }
+    
+    /**
+     * @param array $criteria
+     * @return null|Battery[]
+     */
+    public function findBy(array $criteria)
+    {
+        return $this->batteryRepository->findBy($criteria);
+    }
+    
+    /**
+     * @param int $id
+     * @return Battery|null
+     */
+    public function find(int $id)
+    {
+        return $this->batteryRepository->find($id);
+    }
 }
