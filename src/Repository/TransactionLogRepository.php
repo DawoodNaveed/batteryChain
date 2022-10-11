@@ -124,8 +124,6 @@ class TransactionLogRepository extends ServiceEntityRepository
      * @param string $status
      * @param DateTime|null $deliveryDate
      * @return TransactionLog
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function createDeliveryTransactionLog(
         Battery $battery,
