@@ -32,7 +32,7 @@ class ShipmentFormType extends AbstractType
                 'manufacturer',
                 ChoiceType::class,
                 [
-                    'required' => false,
+                    'required' => $options['is_admin'],
                     'label' => 'Battery\'s Manufacturer',
                     'choices' => $options['manufacturer']
                 ]
@@ -49,6 +49,7 @@ class ShipmentFormType extends AbstractType
             'batteries' => null,
             'csrf_protection' => false,
             'manufacturer' => null,
+            'is_admin' => false,
         ]);
     }
 }

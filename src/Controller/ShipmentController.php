@@ -75,18 +75,21 @@ class ShipmentController extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $manufacturer = $manufacturers = null;
+        $manufacturer = null;
         $modification = false;
+        $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
+        $isAdmin = true;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $manufacturer = $user->getManufacturer();
-            $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
+            $isAdmin = false;
         }
 
         $form = $this->createForm(ShipmentFormType::class, null, [
-            'manufacturer' => $this->manufacturerService->toChoiceArray($manufacturers)
+            'manufacturer' => $this->manufacturerService->toChoiceArray($manufacturers),
+            'is_admin' => $isAdmin
         ]);
 
         $form->handleRequest($request);
@@ -103,7 +106,7 @@ class ShipmentController extends CRUDController
                 return new RedirectResponse($this->admin->generateUrl('shipment'));
             }
 
-            if (!empty($batteryManufacturer) && $batteryManufacturer->getId() !== $manufacturer->getId()) {
+            if (!empty($batteryManufacturer) && !$isAdmin && $batteryManufacturer->getId() !== $manufacturer->getId()) {
                 /** @var Battery|null $battery */
                 $battery = $this->batteryService->fetchBatteryBySerialNumber(
                     $serialNumber,
@@ -111,6 +114,13 @@ class ShipmentController extends CRUDController
                     false
                 );
                 $modification = true;
+            } elseif (!empty($batteryManufacturer) && $isAdmin) {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $batteryManufacturer,
+                    true
+                );
             } else {
                 /** @var Battery|null $battery */
                 $battery = $this->batteryService->fetchBatteryBySerialNumber(
