@@ -277,7 +277,7 @@ class BatteryService
                     } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
                         $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
                         $modification = true;
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                    } elseif (!empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
                         $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
                     }
 
