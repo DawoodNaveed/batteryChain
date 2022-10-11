@@ -228,6 +228,24 @@ class BatteryService
 
         return $this->batteryRepository->findOneBy($params);
     }
+    
+    /**
+     * @param $serialNumber
+     * @param bool $isAdmin
+     * @return null|Battery[]
+     */
+    public function fetchBatteriesBySerialNumber($serialNumber, ?bool $isAdmin = false)
+    {
+        $params = [
+            'serialNumber' => $serialNumber,
+        ];
+        
+        if (!$isAdmin) {
+            $params['blockchainSecured'] = true;
+        }
+        
+        return $this->batteryRepository->findBy($params);
+    }
 
     /**
      * @param UploadedFile $file
@@ -897,15 +915,6 @@ class BatteryService
         }
 
         return [];
-    }
-    
-    /**
-     * @param array $criteria
-     * @return null|Battery[]
-     */
-    public function findBy(array $criteria)
-    {
-        return $this->batteryRepository->findBy($criteria);
     }
     
     /**

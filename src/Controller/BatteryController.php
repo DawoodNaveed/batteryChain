@@ -208,11 +208,11 @@ class BatteryController extends CRUDController
             }
 
             /** @var Battery|null $manufacturerBattery */
-            $manufacturerBattery = $this->batteryService->fetchBatteryBySerialNumber(
+            $manufacturerBattery = $user->getManufacturer() ? $this->batteryService->fetchBatteryBySerialNumber(
                 $serialNumber,
                 $user->getManufacturer() ?? null,
-                $user->getManufacturer() ? false : true);
-            $otherManufacturerBatteries = $this->batteryService->findBy(['serialNumber' => $serialNumber]);
+                $user->getManufacturer() ? false : true) : null;
+            $otherManufacturerBatteries = $this->batteryService->fetchBatteriesBySerialNumber($serialNumber, !$user->getManufacturer());
             
             if ($manufacturerBattery && count($otherManufacturerBatteries) === BatteryEnum::MANUFACTURER_BATTERY_COUNT) {
                 return $this->render(
