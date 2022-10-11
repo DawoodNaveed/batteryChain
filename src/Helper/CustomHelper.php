@@ -58,7 +58,8 @@ class CustomHelper
 
     /** @var array */
     const DELIVERY_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier',
     ];
 
     /** @var array */

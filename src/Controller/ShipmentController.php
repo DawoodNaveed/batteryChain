@@ -11,6 +11,7 @@ use App\Form\BulkDeliveryFormType;
 use App\Form\ShipmentFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
+use App\Service\CsvService;
 use App\Service\ManufacturerService;
 use App\Service\ModifiedBatteryService;
 use App\Service\TransactionLogService;
@@ -40,6 +41,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ShipmentController extends CRUDController
 {
     /**
+     * @var CsvService
+     */
+    private $csvService;
+
+    /**
      * RecyclerController constructor.
      * @param Security $security
      * @param EntityManagerInterface $entityManager
@@ -48,6 +54,7 @@ class ShipmentController extends CRUDController
      * @param TranslatorInterface $translator
      * @param TransactionLogService $transactionLogService
      * @param ModifiedBatteryService $modifiedBatteryService
+     * @param CsvService $csvService
      */
     public function __construct(
         Security $security,
@@ -56,7 +63,8 @@ class ShipmentController extends CRUDController
         BatteryService $batteryService,
         TranslatorInterface $translator,
         TransactionLogService $transactionLogService,
-        ModifiedBatteryService $modifiedBatteryService
+        ModifiedBatteryService $modifiedBatteryService,
+        CsvService $csvService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
@@ -65,6 +73,7 @@ class ShipmentController extends CRUDController
         $this->translator = $translator;
         $this->transactionLogService = $transactionLogService;
         $this->modifiedBatteryService = $modifiedBatteryService;
+        $this->csvService = $csvService;
     }
 
     /**
@@ -213,27 +222,10 @@ class ShipmentController extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $manufacturers = null;
-
-        // In-Case of Admin / Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
-            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
-            $manufacturers = $this->manufacturerService->getManufactures($user);
-        }
-
-        $form = $this->createForm(BulkDeliveryFormType::class, null, [
-            'manufacturer' => $manufacturers
-        ]);
+        $form = $this->createForm(BulkDeliveryFormType::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('cancel')->isClicked()) {
-                return new RedirectResponse($this->generateUrl('sonata_admin_dashboard'));
-            }
-
-            $formData = $form->getData();
-            /** @var Manufacturer $manufacturer */
-            $manufacturer = $formData['manufacturer'] ?? null;
             $file = $request->files->all();
 
             if (!empty($file) && isset($file['bulk_delivery_form']['csv'])) {
@@ -241,10 +233,6 @@ class ShipmentController extends CRUDController
                 $file = $file['bulk_delivery_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
-                    if (!empty($manufacturer)) {
-                        $user = $manufacturer->getUser();
-                    }
-
                     $addDelivery = $this->batteryService->extractCsvAndAddDeliveries($file, $user);
 
                     if (!empty($addDelivery) && !empty($addDelivery['error'])) {
@@ -266,5 +254,16 @@ class ShipmentController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function downloadManufacturerAction(Request $request): RedirectResponse
+    {
+        $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
+        $this->csvService->downloadManufacturerCsv($manufacturers);
+        exit();
     }
 }

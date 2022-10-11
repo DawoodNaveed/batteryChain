@@ -159,6 +159,7 @@ class ShipmentAdmin extends AbstractAdmin
         $collection->add('bulkDelivery');
         $collection->remove('delete');
         $collection->remove('edit');
+        $collection->add('downloadManufacturer');
     }
 
     /**

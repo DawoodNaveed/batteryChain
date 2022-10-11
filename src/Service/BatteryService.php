@@ -8,6 +8,7 @@ use App\Entity\Manufacturer;
 use App\Entity\Recycler;
 use App\Entity\User;
 use App\Enum\BulkImportEnum;
+use App\Enum\RoleEnum;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
 use Doctrine\ORM\Query\Expr\Join;
@@ -22,6 +23,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @property ShipmentService shipmentService
  * @property BatteryReturnService returnService
  * @property TransactionLogService transactionLogService
+ * @property ManufacturerService manufacturerService
+ * @property ModifiedBatteryService modifiedBatteryService
  * @property LoggerInterface logger
  * @property $csvFileUploadSize
  */
@@ -33,6 +36,8 @@ class BatteryService
      * @param ShipmentService $shipmentService
      * @param BatteryReturnService $returnService
      * @param TransactionLogService $transactionLogService
+     * @param ManufacturerService $manufacturerService
+     * @param ModifiedBatteryService $modifiedBatteryService
      * @param LoggerInterface $logger
      * @param $csvFileUploadSize
      */
@@ -41,6 +46,8 @@ class BatteryService
         ShipmentService $shipmentService,
         BatteryReturnService $returnService,
         TransactionLogService $transactionLogService,
+        ManufacturerService $manufacturerService,
+        ModifiedBatteryService $modifiedBatteryService,
         LoggerInterface $logger,
         $csvFileUploadSize
     ) {
@@ -48,6 +55,8 @@ class BatteryService
         $this->shipmentService = $shipmentService;
         $this->returnService = $returnService;
         $this->transactionLogService = $transactionLogService;
+        $this->manufacturerService = $manufacturerService;
+        $this->modifiedBatteryService = $modifiedBatteryService;
         $this->logger = $logger;
         $this->csvFileUploadSize = $csvFileUploadSize;
     }
@@ -243,6 +252,8 @@ class BatteryService
                 $alreadyDeliveredCount = 0;
 
                 while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    $modification = false;
+                    $manufacturerIdentifier = null;
                     if (count($csvData) !== count(CustomHelper::DELIVERY_CSV_HEADERS)) {
                         $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
                         return $error;
@@ -255,9 +266,25 @@ class BatteryService
                     }
 
                     $rowCount++;
+
+                    /* If user is admin, it is mandatory to have identifier */
+                    if (empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
+                        continue;
+                    }
+
+                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                        $modification = true;
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
+                    }
+
+                    $batteryManufacturer = $this->manufacturerService->getManufactureByIdentifier($manufacturerIdentifier);
                     $battery = $this->fetchBatteryBySerialNumber(
                         (string) $row['serial_number'],
-                        $user->getManufacturer() ?? null,
+                        $batteryManufacturer,
                         $user->getManufacturer() ? false : true);
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
@@ -266,24 +293,41 @@ class BatteryService
                         continue;
                     }
 
-                    if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED] ||
-                        ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_DELIVERED))) {
+                    if (CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >
+                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_DELIVERED]) {
                         $alreadyDeliveredCount++;
-                        $error['error']['already_delivered_error'] = ['message' => $alreadyDeliveredCount . ' Battery(s) already delivered!'];
+                        $error['error']['already_delivered_error'] = ['message' => $alreadyDeliveredCount . ' Battery(s) in returned/recycled state!'];
                         continue;
+                    }
+
+                    /* If Admin / Super Admin - we will use battery's manufacturer's User */
+                    if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+                        in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+                        $user = $battery->getManufacturer()->getUser();
                     }
 
                     $transactionLog = $this->transactionLogService
                         ->createDeliveryTransactionLog(
                             $battery,
-                            $user,
+                            $modification ? $batteryManufacturer->getUser() : $user,
                             null
                         );
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_DELIVERED);
                     $battery->setUpdated(new \DateTime('now'));
-                    $battery->setCurrentPossessor($user);
-                    $shipment = $this->shipmentService->createShipment($user, $battery, $transactionLog);
+                    $battery->setCurrentPossessor($modification ? $batteryManufacturer->getUser() : $user);
+                    $shipment = $this->shipmentService->createShipment($modification ? $batteryManufacturer->getUser() : $user, $battery, $transactionLog);
+
+                    /* Create Modification Log */
+                    if ($modification) {
+                        $shipment->setShipmentTo($user);
+                        $this->modifiedBatteryService
+                            ->createModifiedBattery(
+                                $battery,
+                                $batteryManufacturer,
+                                $user,
+                                CustomHelper::BATTERY_STATUS_DELIVERED
+                            );
+                    }
                 }
             }
 

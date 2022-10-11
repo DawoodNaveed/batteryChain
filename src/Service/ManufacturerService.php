@@ -94,4 +94,13 @@ class ManufacturerService
             $this->logger->error('[Error][Update Manufacturer] ' . $exception->getMessage());
         }
     }
+
+    /**
+     * @param string|null $manufacturerIdentifier
+     * @return Manufacturer|null
+     */
+    public function getManufactureByIdentifier(?string $manufacturerIdentifier): ?Manufacturer
+    {
+        return $this->manufacturerRepository->findOneBy(['identifier' => $manufacturerIdentifier]);
+    }
 }
