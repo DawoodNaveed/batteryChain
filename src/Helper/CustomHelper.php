@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CustomHelper
 {
+    const RANDOM_STRING_DEFAULT_LENGTH = 6;
+    const RANDOM_STRING_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // Bulk Import CSV Params
     /** constant for Csv extension */
     const CSV_TEXT = 'csv';
@@ -282,5 +284,22 @@ class CustomHelper
         } catch (\Exception $exception) {
             return false;
         }
+    }
+
+    /**
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomString(int $length = self::RANDOM_STRING_DEFAULT_LENGTH): string
+    {
+        $characters = self::RANDOM_STRING_CHARS . time();
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
     }
 }
