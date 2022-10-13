@@ -113,6 +113,7 @@ class CustomHelper
 
     public const LOGO_URL = 'https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png';
     public const PDF_LOGO_URL = 'resources/pdf_logo.png';
+    public const HIGH_VOLTAGE_URL = 'resources/icons/high_voltage.png';
     public const PDF_TITLE = 'Battery Passport';
 
     public const YES = 'Yes';

@@ -155,6 +155,7 @@ class PdfService
                 )
             ) : '';
         $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
+        $highVoltageIcon = $this->getEncodedImage(CustomHelper::HIGH_VOLTAGE_URL);
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/label_download.html.twig', [
@@ -162,6 +163,7 @@ class PdfService
             'createdDate' => date('d.m.Y'),
             'poweredByLogo' => $poweredByLogo,
             'manufacturerLogo' => $manufacturerLogo,
+            'highVoltageIcon' => $highVoltageIcon,
         ]);
 
         $domPdf->loadHtml($html);
