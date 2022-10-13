@@ -169,7 +169,7 @@ class PdfService
         $domPdf->loadHtml($html);
         $domPdf->setPaper('A5', 'portrait');
         $domPdf->render();
-        $domPdf->stream('battery.pdf', [
+        $domPdf->stream('label.pdf', [
             "Attachment" => true
         ]);
     }
