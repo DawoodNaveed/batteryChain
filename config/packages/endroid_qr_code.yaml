@@ -1,0 +1,11 @@
+endroid_qr_code:
+    default:
+        writer: Endroid\QrCode\Writer\PngWriter
+        size: 150
+        margin: 10
+        encoding: 'UTF-8'
+        errorCorrectionLevel: 'low'
+        roundBlockSizeMode: 'margin'
+        validateResult: false
+        logoPath: '%kernel.project_dir%/public/resources/pdf_logo.png'
+        logoResizeToWidth: 25

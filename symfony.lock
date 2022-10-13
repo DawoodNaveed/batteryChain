@@ -98,6 +98,9 @@
     "egulias/email-validator": {
         "version": "3.1.2"
     },
+    "endroid/qr-code-bundle": {
+        "version": "4.1.1"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.12"
     },
