@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Battery;
+use App\Entity\Manufacturer;
 use App\Entity\User;
 use App\Enum\RoleEnum;
 use App\Form\BatteryDetailFormType;
 use App\Form\BulkImportBatteryFormType;
+use App\Form\GenerateLabelFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\BatteryTypeService;
@@ -1217,5 +1219,68 @@ class BatteryController extends CRUDController
             'object' => $existingObject,
             'objectId' => $objectId,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function labelAction(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
+        $isAdmin = true;
+
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
+            !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
+            in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
+            $isAdmin = false;
+        }
+
+        $form = $this->createForm(GenerateLabelFormType::class, null, [
+            'manufacturer' => $this->manufacturerService->toChoiceArray($manufacturers),
+            'is_admin' => $isAdmin
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            /** @var Manufacturer $batteryManufacturer */
+            $batteryManufacturer = $formData['manufacturer'] ?? null;
+            $serialNumber = $formData['battery'] ?? null;
+
+            if (empty($serialNumber)) {
+                $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
+                return new RedirectResponse($this->admin->generateUrl('label'));
+            }
+
+            /** @var Battery|null $battery */
+            $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                $serialNumber,
+                $batteryManufacturer,
+                !$user->getManufacturer()
+            );
+
+            if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
+                $this->addFlash('sonata_flash_error', 'Battery may not exist or registered!');
+                return new RedirectResponse($this->admin->generateUrl('label'));
+            }
+
+            return $this->render(
+                'battery/label.html.twig', [
+                    'battery' => $battery,
+                    'path' => $this->admin->generateUrl('label'),
+                ]
+            );
+        }
+
+        return $this->render(
+            'battery/generateLabel.html.twig',
+            array(
+                'form' => $form->createView(),
+            )
+        );
     }
 }

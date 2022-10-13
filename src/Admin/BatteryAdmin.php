@@ -328,6 +328,7 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('getScanResult');
         $collection->add('register');
         $collection->add('downloadBatchPdf');
+        $collection->add('label');
     }
 
     /**
@@ -353,6 +354,12 @@ class BatteryAdmin extends AbstractAdmin
             'translation_domain' => 'SonataAdminBundle',
             'url' => $this->generateUrl('report'),
             'icon' => 'fa fa-info-circle',
+        ];
+        $actions['label'] = [
+            'label' => 'Generate Label',
+            'translation_domain' => 'SonataAdminBundle',
+            'url' => $this->generateUrl('label'),
+            'icon' => 'fa fa-tags',
         ];
 
         return $actions;

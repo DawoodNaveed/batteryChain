@@ -35,6 +35,12 @@
                      {{ "Bulk Import" | trans }}
                  </a>
              </li>
+             <li class="dropdown sonata-actions">
+                 <a class="btn btn-link btn-flat" style="padding-left: 0" href="{{ admin.generateUrl('label')}}">
+                     <i class="fa fa-tags" aria-hidden="true"></i>
+                     {{ "Generate Label" | trans }}
+                 </a>
+             </li>
          </ul>
      {% endif  %}
  {% endblock sonata_admin_content_actions_wrappers %}
