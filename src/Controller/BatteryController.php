@@ -1272,6 +1272,9 @@ class BatteryController extends CRUDController
                 'battery/label.html.twig', [
                     'battery' => $battery,
                     'path' => $this->admin->generateUrl('label'),
+                    'downloadPath' => $this->admin->generateUrl('downloadLabel', [
+                        'serialNumber' => $battery->getInternalSerialNumber()
+                    ])
                 ]
             );
         }
@@ -1282,5 +1285,28 @@ class BatteryController extends CRUDController
                 'form' => $form->createView(),
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function downloadLabelAction(Request $request): RedirectResponse
+    {
+        $serialNumber = $request->get('serialNumber');
+
+        if (empty($serialNumber)) {
+            $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
+            return new RedirectResponse($this->admin->generateUrl('list'));
+        }
+
+        /** @var Battery|null $battery */
+        $battery = $this->batteryService->batteryRepository->findOneBy(['internalSerialNumber' => $serialNumber]);
+
+        $this->pdfService->createBatteryLabelPdf($battery);
+        exit();
     }
 }

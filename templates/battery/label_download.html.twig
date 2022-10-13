@@ -1,0 +1,187 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+        * {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: normal;
+            font-style: normal;
+        }
+        b,strong{
+            font-weight: bold;
+        }
+        #footer {
+            font-size: 21px;
+            position: fixed;
+            bottom:-40px;
+            height: 85px;
+            margin-top: 24px;
+            width: 100%;
+        }
+        #footer .page:after { content: counter(page); }
+        .heading-title, .heading-title a {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            font-style: normal;
+            font-size: medium;
+        }
+        .heading-span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: lighter;
+            font-size: 12px;
+        }
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        .row-div {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-around;
+            height: 37px;
+        }
+        .h-auto {
+            height: auto !important;
+        }
+        .m-0 {
+            margin: 0;
+        }
+        .lh-1 {
+            line-height: 1;
+        }
+        .f-bold {
+            font-weight: bold;
+        }
+        a {
+            text-decoration: none;
+            color: #55bc5e;
+        }
+        .text-center {
+            align-items: center;
+        }
+        @media (max-aspect-ratio: 3/2) {
+            .logos-div {
+                text-align: center !important; /* cyan */
+            }
+        }
+    </style>
+</head>
+<body>
+{% set divAlignment = 'left' %}
+{% set positionType = 'relative' %}
+{% if manufacturerLogo != '' %}
+    {% set divAlignment = 'center' %}
+    {% set positionType = 'absolute' %}
+{% endif %}
+<div class="py-5 text-center" style="display: inline-block; text-align: {{ divAlignment }}; width: 100%; position: relative">
+    <div style="display: inline-block; position: {{ positionType }}; left: 0;">
+        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="50" height="50">
+        <div style="display: inline-block">
+            <h2 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h2>
+            <h2 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h2>
+        </div>
+    </div>
+    <div style="display: inline-block; text-align: center">
+        <img class="mt-3" style="object-fit: contain;" src="{{ manufacturerLogo }}" alt="" width="125" height="50">
+    </div>
+    <div style="display: inline;  position: {{ positionType }}; right: 0;">
+        {% if battery.isClimateNeutral %}
+            <img class="mt-3" style="margin-right: 15px; max-width: 75px; width: 75px;" src="{{ co2NeutralLogo }}" alt="">
+        {% endif %}
+        {% if battery.isInsured %}
+            <img class="mt-3" style="max-width: 60px; width: 60px;" src="{{ insuranceLogo }}" alt="">
+        {% endif %}
+    </div>
+</div>
+<hr>
+<div id="footer" class="h-auto">
+    <hr>
+    <div class="row-div">
+        <span class="heading-span page"> {{ createdDate }} | Pg. </span>
+        <span style="float: right" class="heading-span">{{ "batterychain.info" }}</span>
+    </div>
+</div>
+<div id="content">
+    <div style="margin: 5px; text-align: right; font-size: 12px">
+        <span>
+            {{ battery.manufacturer.address ~ ' * ' }}
+        </span>
+        <span class="ml-1">
+            <b>
+                {{ 'Tel.:' | trans }}
+            </b>
+            {{ battery.manufacturer.contact ~ ' * ' }}
+        </span>
+        <span class="ml-1">
+            <b>
+                {{ 'Email:' | trans }}
+            </b>
+            {{ battery.manufacturer.user.email }}
+        </span>
+    </div>
+    <hr>
+    <div>
+        <div class="mb-10 row-div">
+            <div style="display: inline; float: left">
+                <span class="heading-span">{{ "Battery Type" | trans }}</span><br>
+                <span class="heading-title">{{ battery.batteryType.type }}</span>
+            </div>
+            <div style="display: inline; float: right">
+                <span class="heading-span">{{ "Serial Number" | trans }}</span><br>
+                <span class="heading-title">{{ battery.serialNumber }}</span>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="mb-10 row-div">
+            <div style="display: inline; float: left">
+                <span class="heading-span">{{ "Nominal Voltage" | trans }}</span><br>
+                <span class="heading-title">{{ battery.nominalVoltage ~ ' V' }}</span>
+            </div>
+            <div style="display: inline; float: right">
+                <span class="heading-span">{{ "Internal Serial Number" | trans }}</span><br>
+                <span class="heading-title">{{ battery.internalSerialNumber }}</span>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="mb-10 row-div">
+            <div style="display: inline; float: left">
+                <span class="heading-span">{{ "Module Type" | trans }}</span><br>
+                <span class="heading-title">{{ battery.moduleType }}</span>
+            </div>
+            <div style="display: inline; float: right">
+                <span class="heading-span">{{ "Nominal Energy" | trans }}</span><br>
+                <span class="heading-title">{{ battery.nominalEnergy ~ ' kWh' }}</span>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="mb-10 row-div">
+            <div style="display: inline; float: left">
+                <span class="heading-span">{{ "Production Date" | trans }}</span><br>
+                <span class="heading-title">{{ battery.productionDate | date('Y-m-d') }}</span>
+            </div>
+            <div style="display: inline; float: right">
+                <span class="heading-span">{{ "Nominal Capacity" | trans }}</span><br>
+                <span class="heading-title">{{ battery.nominalCapacity ~ ' Ah' }}</span>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="mb-10 row-div">
+            <div style="display: inline; float: left">
+                <span class="heading-span">{{ "Tray Number" | trans }}</span><br>
+                <span class="heading-title">{{ battery.trayNumber }}</span>
+            </div>
+            <div style="display: inline; float: right">
+                <span class="heading-span">{{ "Weight" | trans }}</span><br>
+                <span class="heading-title">{{ battery.mass ~ ' kg' }}</span>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <hr>
+    <div>
+        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="72" height="72">
+    </div>
+</div>
+</body>
+
+</html>

@@ -329,6 +329,7 @@ class BatteryAdmin extends AbstractAdmin
         $collection->add('register');
         $collection->add('downloadBatchPdf');
         $collection->add('label');
+        $collection->add('downloadLabel');
     }
 
     /**

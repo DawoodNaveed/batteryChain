@@ -136,4 +136,39 @@ class PdfService
             "Attachment" => true
         ]);
     }
+
+    /**
+     * @param Battery $battery
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function createBatteryLabelPdf(Battery $battery)
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('isRemoteEnabled', true);
+        $manufacturerLogo = $battery->getManufacturer()->getLogo()
+            ? $this->getEncodedImage(
+                $this->awsService->getPreSignedUrl(
+                    $battery->getManufacturer()->getLogo(),
+                    $this->awsLogoFolder
+                )
+            ) : '';
+        $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
+        /* get barcode images base64 encoding */
+        $domPdf = new Dompdf($pdfOptions);
+        $html = $this->twig->render('battery/label_download.html.twig', [
+            'battery' => $battery,
+            'createdDate' => date('d.m.Y'),
+            'poweredByLogo' => $poweredByLogo,
+            'manufacturerLogo' => $manufacturerLogo,
+        ]);
+
+        $domPdf->loadHtml($html);
+        $domPdf->setPaper('A5', 'portrait');
+        $domPdf->render();
+        $domPdf->stream('battery.pdf', [
+            "Attachment" => true
+        ]);
+    }
 }
