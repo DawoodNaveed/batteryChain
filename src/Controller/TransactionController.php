@@ -15,6 +15,7 @@ use App\Form\ReturnFormType;
 use App\Helper\CustomHelper;
 use App\Service\BatteryService;
 use App\Service\ManufacturerService;
+use App\Service\ModifiedBatteryService;
 use App\Service\RecyclerService;
 use App\Service\TransactionLogService;
 use DateTime;
@@ -40,6 +41,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @property RecyclerService recyclerService
  * @property TranslatorInterface translator
  * @property TransactionLogService transactionLogService
+ * @property ModifiedBatteryService modifiedBatteryService
  */
 class TransactionController  extends CRUDController
 {
@@ -52,6 +54,7 @@ class TransactionController  extends CRUDController
      * @param RecyclerService $recyclerService
      * @param TranslatorInterface $translator
      * @param TransactionLogService $transactionLogService
+     * @property ModifiedBatteryService modifiedBatteryService
      */
     public function __construct(
         Security $security,
@@ -60,7 +63,8 @@ class TransactionController  extends CRUDController
         BatteryService $batteryService,
         RecyclerService $recyclerService,
         TranslatorInterface $translator,
-        TransactionLogService $transactionLogService
+        TransactionLogService $transactionLogService,
+        ModifiedBatteryService $modifiedBatteryService
     ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
@@ -69,6 +73,7 @@ class TransactionController  extends CRUDController
         $this->recyclerService = $recyclerService;
         $this->translator = $translator;
         $this->transactionLogService = $transactionLogService;
+        $this->modifiedBatteryService = $modifiedBatteryService;
     }
 
     /**
@@ -80,12 +85,15 @@ class TransactionController  extends CRUDController
         /** @var User $user */
         $user = $this->security->getUser();
         $manufacturer = null;
+        $isAdmin = true;
+        $modification = false;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
             $manufacturer = $user->getManufacturer();
+            $isAdmin = false;
             $recyclers = array_merge([
                 $manufacturer->getName() => $manufacturer
             ], $recyclers);
@@ -93,9 +101,12 @@ class TransactionController  extends CRUDController
             $recyclers = $this->recyclerService->getAllRecyclers();
             $recyclers = $this->recyclerService->toChoiceArray($recyclers, true);
         }
+        $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
 
         $form = $this->createForm(ReturnFormType::class, null, [
-            'recyclers' => $recyclers
+            'recyclers' => $recyclers,
+            'manufacturer' => $this->manufacturerService->toChoiceArray($manufacturers),
+            'is_admin' => $isAdmin
         ]);
         $form->handleRequest($request);
 
@@ -109,18 +120,37 @@ class TransactionController  extends CRUDController
             $serialNumber = $formData['battery'] ?? null;
             /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
+            /** @var Manufacturer $batteryManufacturer */
+            $batteryManufacturer = $formData['manufacturer'] ?? null;
 
             if (empty($serialNumber)) {
                 $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
-
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber(
-                $serialNumber,
-                $manufacturer,
-                $user->getManufacturer() ? false : true
-            );
+    
+            if (!empty($batteryManufacturer) && !$isAdmin && $batteryManufacturer->getId() !== $manufacturer->getId()) {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $batteryManufacturer,
+                    false
+                );
+                $modification = true;
+            } elseif (!empty($batteryManufacturer) && $isAdmin) {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $batteryManufacturer,
+                    true
+                );
+            } else {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $manufacturer,
+                    $user->getManufacturer() ? false : true
+                );
+            }
 
             if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                 $this->addFlash('sonata_flash_error', 'Battery may not exist or registered!');
@@ -139,6 +169,11 @@ class TransactionController  extends CRUDController
             /** If Admin / Super Admin - we will use battery's manufacturer's User */
             if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
                 $user = $battery->getManufacturer()->getUser();
+            }
+    
+            /* If return added for someone's battery, we'll use that manufacturer's user for logs */
+            if ($modification) {
+                $user = $batteryManufacturer->getUser();
             }
 
             $transactionLog = $this->transactionLogService
@@ -163,6 +198,19 @@ class TransactionController  extends CRUDController
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
             $battery->setUpdated(new DateTime('now'));
             $battery->setCurrentPossessor($user);
+    
+            /* Create Modification Log */
+            if ($modification) {
+                /** @var User $currentUser */
+                $currentUser = $this->security->getUser();
+                $this->modifiedBatteryService
+                    ->createModifiedBattery(
+                        $battery,
+                        $batteryManufacturer,
+                        $currentUser,
+                        CustomHelper::BATTERY_STATUS_RETURNED
+                    );
+            }
 
             $this->entityManager->persist($return);
             $this->entityManager->flush();
@@ -188,13 +236,6 @@ class TransactionController  extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $manufacturers = null;
-
-        // In-Case of Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
-            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
-            $manufacturers = $this->manufacturerService->getManufactures($user, true);
-        }
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
@@ -209,7 +250,6 @@ class TransactionController  extends CRUDController
         }
 
         $form = $this->createForm(BulkReturnFormType::class, null, [
-            'manufacturer' => $manufacturers,
             'recyclers' => $recyclers
         ]);
 
@@ -220,14 +260,7 @@ class TransactionController  extends CRUDController
             }
 
             $formData = $form->getData();
-            /** @var Manufacturer $manufacturer */
-            $manufacturer = $formData['manufacturer'] ?? null;
-
-            if (!empty($manufacturer)) {
-                $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy([
-                    'id' => $manufacturer
-                ]);
-            }
+            
             /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
 
@@ -252,9 +285,6 @@ class TransactionController  extends CRUDController
                 $file = $file['bulk_return_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
-                    if (!empty($manufacturer)) {
-                        $user = $manufacturer->getUser();
-                    }
 
                     $addReturns = $this->batteryService->extractCsvAndAddReturns($file, $user, $recycler);
 
@@ -307,12 +337,16 @@ class TransactionController  extends CRUDController
         /** @var User $user */
         $user = $this->security->getUser();
         $manufacturer = null;
+        $modification = false;
+        $manufacturers = $this->manufacturerService->manufacturerRepository->findAll();
+        $isAdmin = true;
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
             in_array(RoleEnum::ROLE_MANUFACTURER, $user->getRoles(), true) ) {
             $recyclers = $this->recyclerService->toChoiceArray($user->getManufacturer()->getRecyclers(), true);
             $manufacturer = $user->getManufacturer();
+            $isAdmin = false;
             $recyclers = array_merge([
                 $manufacturer->getName() => $manufacturer
             ], $recyclers);
@@ -322,7 +356,9 @@ class TransactionController  extends CRUDController
         }
 
         $form = $this->createForm(RecycleFormType::class, null, [
-            'recyclers' => $recyclers
+            'recyclers' => $recyclers,
+            'manufacturer' => $this->manufacturerService->toChoiceArray($manufacturers),
+            'is_admin' => $isAdmin
         ]);
         $form->handleRequest($request);
 
@@ -332,18 +368,37 @@ class TransactionController  extends CRUDController
             $serialNumber = $formData['battery'] ?? null;
             /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
+            /** @var Manufacturer $batteryManufacturer */
+            $batteryManufacturer = $formData['manufacturer'] ?? null;
 
             if (empty($serialNumber)) {
                 $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
                 return new RedirectResponse($this->admin->generateUrl('list'));
             }
-
-            /** @var Battery|null $battery */
-            $battery = $this->batteryService->fetchBatteryBySerialNumber(
-                $serialNumber,
-                $manufacturer,
-                $user->getManufacturer() ? false : true
-            );
+    
+            if (!empty($batteryManufacturer) && !$isAdmin && $batteryManufacturer->getId() !== $manufacturer->getId()) {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $batteryManufacturer,
+                    false
+                );
+                $modification = true;
+            } elseif (!empty($batteryManufacturer) && $isAdmin) {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $batteryManufacturer,
+                    true
+                );
+            } else {
+                /** @var Battery|null $battery */
+                $battery = $this->batteryService->fetchBatteryBySerialNumber(
+                    $serialNumber,
+                    $manufacturer,
+                    $user->getManufacturer() ? false : true
+                );
+            }
 
             if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                 $this->addFlash('sonata_flash_error', 'Battery may not exist or registered!');
@@ -363,6 +418,11 @@ class TransactionController  extends CRUDController
             if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)) {
                 $user = $battery->getManufacturer()->getUser();
             }
+    
+            /* If recycle added for someone's battery, we'll use that manufacturer's user for logs */
+            if ($modification) {
+                $user = $batteryManufacturer->getUser();
+            }
 
             $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
             $battery->setUpdated(new DateTime('now'));
@@ -375,6 +435,20 @@ class TransactionController  extends CRUDController
                     null,
                     CustomHelper::BATTERY_STATUS_RECYCLED
                 );
+    
+            /* Create Modification Log */
+            if ($modification) {
+                /** @var User $currentUser */
+                $currentUser = $this->security->getUser();
+                $this->modifiedBatteryService
+                    ->createModifiedBattery(
+                        $battery,
+                        $batteryManufacturer,
+                        $currentUser,
+                        CustomHelper::BATTERY_STATUS_RECYCLED
+                    );
+            }
+            
             $this->addFlash('sonata_flash_success', 'Recycle Added Successfully!');
 
             return new RedirectResponse($this->admin->generateUrl('list'));
@@ -396,13 +470,6 @@ class TransactionController  extends CRUDController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-        $manufacturers = null;
-
-        // In-Case of Super Admin
-        if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $this->getUser()->getRoles(), true) ||
-            in_array(RoleEnum::ROLE_ADMIN, $this->getUser()->getRoles(), true)) {
-            $manufacturers = $this->manufacturerService->getManufactures($user, true);
-        }
 
         if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) &&
             !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true) &&
@@ -417,21 +484,12 @@ class TransactionController  extends CRUDController
         }
 
         $form = $this->createForm(BulkRecycleFormType::class, null, [
-            'manufacturer' => $manufacturers,
             'recyclers' => $recyclers
         ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
-            /** @var Manufacturer $manufacturer */
-            $manufacturer = $formData['manufacturer'] ?? null;
-
-            if (!empty($manufacturer)) {
-                $manufacturer = $this->manufacturerService->manufacturerRepository->findOneBy([
-                    'id' => $manufacturer
-                ]);
-            }
             /** @var Recycler|null $recycler */
             $recycler = $formData['recycler'] ?? null;
 
@@ -456,10 +514,6 @@ class TransactionController  extends CRUDController
                 $file = $file['bulk_recycle_form']['csv'];
                 $validCsv = $this->batteryService->isValidCsv($file);
                 if ($validCsv['error'] == 0) {
-                    if (!empty($manufacturer)) {
-                        $user = $manufacturer->getUser();
-                    }
-
                     $addRecycles = $this->batteryService->extractCsvAndAddRecycles($file, $user, $recycler);
 
                     if (!empty($addRecycles) && !empty($addRecycles['error'])) {

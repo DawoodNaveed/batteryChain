@@ -64,12 +64,14 @@ class CustomHelper
 
     /** @var array */
     const RETURN_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier'
     ];
 
     /** @var array */
     const RECYCLE_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier'
     ];
 
     const BATTERY_STATUS_PRE_REGISTERED = 'pre-registered';

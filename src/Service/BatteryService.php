@@ -342,7 +342,7 @@ class BatteryService
 
         return [];
     }
-
+    
     /**
      * @param UploadedFile $file
      * @param User $user
@@ -354,74 +354,109 @@ class BatteryService
         try {
             $error = [];
             $rowCount = 1;
-
+            
             if (($handle = fopen($file, "r")) !== false) {
                 $csvHeaders = fgetcsv($handle, 1000, ",");
-
+                
                 if ($csvHeaders !== CustomHelper::RETURN_CSV_HEADERS) {
                     $error['error']['invalid_csv_header'] = ['message' => 'service.error.invalid_csv_headers'];
                     return $error;
                 }
-
+                
                 $notExistCount = 0;
                 $alreadyReturnedCount = 0;
-
+                
                 while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    $modification = false;
+                    $manufacturerIdentifier = null;
                     if (count($csvData) !== count(CustomHelper::RETURN_CSV_HEADERS)) {
                         $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
                         return $error;
                     }
-
+                    
                     $row = [];
-
+                    
                     for ($headerIndex = 0; $headerIndex < count($csvHeaders); $headerIndex++) {
                         $row[trim($csvHeaders[$headerIndex])] = $csvData[$headerIndex];
                     }
-
+                    
                     $rowCount++;
+    
+                    /* If user is admin, it is mandatory to have identifier */
+                    if (empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
+                        continue;
+                    }
+    
+                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                        $modification = true;
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
+                    }
+                    
+                    $batteryManufacturer = $this->manufacturerService->getManufactureByIdentifier($manufacturerIdentifier);
                     $battery = $this->fetchBatteryBySerialNumber(
                         (string) $row['serial_number'],
-                        $user->getManufacturer() ?? null,
+                        $batteryManufacturer,
                         $user->getManufacturer() ? false : true);
-
+                    
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
                         $notExistCount++;
                         $error['error']['not_exist_error'] = ['message' => $notExistCount . ' Battery may not exist or registered!'];
                         continue;
                     }
-
+                    
                     if ((CustomHelper::BATTERY_STATUSES[$battery->getStatus()] >=
-                        CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) ||
+                            CustomHelper::BATTERY_STATUSES[CustomHelper::BATTERY_STATUS_RETURNED]) ||
                         ($this->transactionLogService->isExist($battery, CustomHelper::BATTERY_STATUS_RETURNED))) {
                         $alreadyReturnedCount++;
                         $error['error']['already_delivered_error'] = ['message' => $alreadyReturnedCount . ' Battery(s) already returned!'];
                         continue;
                     }
-
-                    $transactionLog = $this->transactionLogService
-                        ->createReturnTransactionLog(
-                            $battery,
-                            $user,
-                            $recycler instanceof Recycler ? $recycler : null,
-                            null,
-                            CustomHelper::BATTERY_STATUS_RETURNED
-                        );
+    
+                    /* If Admin / Super Admin - we will use battery's manufacturer's User */
+                    if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+                        in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+                        $user = $battery->getManufacturer()->getUser();
+                    }
+    
+                    $transactionLog = $this->transactionLogService->createReturnTransactionLog(
+                        $battery,
+                        $modification ? $batteryManufacturer->getUser() : $user,
+                        $recycler instanceof Recycler ? $recycler : null,
+                        null,
+                        CustomHelper::BATTERY_STATUS_RETURNED
+                    );
+                    
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RETURNED);
                     $battery->setUpdated(new \DateTime('now'));
-                    $battery->setCurrentPossessor($user);
-                    $return = $this->returnService->createReturn($user, $battery, $recycler, $transactionLog);
+                    $battery->setCurrentPossessor($modification ? $batteryManufacturer->getUser() : $user);
+                    $return = $this->returnService->createReturn($modification ? $batteryManufacturer->getUser() : $user, $battery, $recycler, $transactionLog);
+    
+                    /* Create Modification Log */
+                    if ($modification) {
+                        $this->modifiedBatteryService
+                            ->createModifiedBattery(
+                                $battery,
+                                $batteryManufacturer,
+                                $user,
+                                CustomHelper::BATTERY_STATUS_RETURNED
+                            );
+                    }
                 }
             }
-
+            
             fclose($handle);
-
+            
             return array_merge($error, [
                 'total' => ($rowCount - 1)
             ]);
         } catch (\Exception $exception) {
             $this->logger->error('[Bulk Return]' . $exception->getMessage());
         }
-
+        
         return [];
     }
 
@@ -777,6 +812,8 @@ class BatteryService
                 $alreadyRecycledCount = 0;
 
                 while (($csvData = fgetcsv($handle, 1000, ",")) !== false) {
+                    $modification = false;
+                    $manufacturerIdentifier = null;
                     if (count($csvData) !== count(CustomHelper::RECYCLE_CSV_HEADERS)) {
                         $error['error']['invalid_csv'] = ['message' => 'service.error.invalid_csv'];
                         return $error;
@@ -789,9 +826,25 @@ class BatteryService
                     }
 
                     $rowCount++;
+    
+                    /* If user is admin, it is mandatory to have identifier */
+                    if (empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
+                        continue;
+                    }
+    
+                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
+                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
+                        $modification = true;
+                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
+                    }
+    
+                    $batteryManufacturer = $this->manufacturerService->getManufactureByIdentifier($manufacturerIdentifier);
                     $battery = $this->fetchBatteryBySerialNumber(
                         (string) $row['serial_number'],
-                        $user->getManufacturer() ?? null,
+                        $batteryManufacturer,
                         $user->getManufacturer() ? false : true);
 
                     if (empty($battery) || $battery->getStatus() === CustomHelper::BATTERY_STATUS_PRE_REGISTERED) {
@@ -807,18 +860,35 @@ class BatteryService
                         $error['error']['already_delivered_error'] = ['message' => $alreadyRecycledCount . ' Battery(s) already recycled!'];
                         continue;
                     }
+    
+                    /* If Admin / Super Admin - we will use battery's manufacturer's User */
+                    if (in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true) ||
+                        in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+                        $user = $battery->getManufacturer()->getUser();
+                    }
 
                     $battery->setStatus(CustomHelper::BATTERY_STATUS_RECYCLED);
                     $battery->setUpdated(new \DateTime('now'));
-                    $battery->setCurrentPossessor($user);
+                    $battery->setCurrentPossessor($modification ? $batteryManufacturer->getUser() : $user);
                     $this->transactionLogService
                         ->createReturnTransactionLog(
                             $battery,
-                            $user,
+                            $modification ? $batteryManufacturer->getUser() : $user,
                             $recycler instanceof Recycler ? $recycler : null,
                             null,
                             CustomHelper::BATTERY_STATUS_RECYCLED
                         );
+    
+                    /* Create Modification Log */
+                    if ($modification) {
+                        $this->modifiedBatteryService
+                            ->createModifiedBattery(
+                                $battery,
+                                $batteryManufacturer,
+                                $user,
+                                CustomHelper::BATTERY_STATUS_RECYCLED
+                            );
+                    }
                 }
             }
 
