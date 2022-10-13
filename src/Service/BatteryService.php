@@ -271,13 +271,11 @@ class BatteryService
                     if (empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
                         continue;
                     }
-
-                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+    
+                    if (!empty($row['manufacturer_identifier'])) {
                         $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
-                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                        $modification = true;
-                    } elseif (!empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
+                        $modification = (!empty($user->getManufacturer())) && ($user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']);
+                    } else {
                         $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
                     }
 
@@ -387,12 +385,10 @@ class BatteryService
                         continue;
                     }
     
-                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                    if (!empty($row['manufacturer_identifier'])) {
                         $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
-                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                        $modification = true;
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $modification = (!empty($user->getManufacturer())) && ($user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']);
+                    } else {
                         $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
                     }
                     
@@ -831,13 +827,11 @@ class BatteryService
                     if (empty($user->getManufacturer()) && empty($row['manufacturer_identifier'])) {
                         continue;
                     }
-    
-                    if (empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                    
+                    if (!empty($row['manufacturer_identifier'])) {
                         $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier']) && $user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']) {
-                        $manufacturerIdentifier = (string) $row['manufacturer_identifier'];
-                        $modification = true;
-                    } elseif (!empty($user->getManufacturer()) && !empty($row['manufacturer_identifier'])) {
+                        $modification = (!empty($user->getManufacturer())) && ($user->getManufacturer()->getIdentifier() !== (string) $row['manufacturer_identifier']);
+                    } else {
                         $manufacturerIdentifier = $user->getManufacturer()->getIdentifier();
                     }
     

@@ -8,6 +8,7 @@ use App\Helper\CustomHelper;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
@@ -19,6 +20,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 /**
  * Class ModifiedBatteryAdmin
  * @package App\Admin
+ * @property $tokenStorage
  */
 class ModifiedBatteryAdmin extends AbstractAdmin
 {
@@ -203,5 +205,33 @@ class ModifiedBatteryAdmin extends AbstractAdmin
     {
         $collection->remove('create');
         $collection->remove('delete');
+    }
+    
+    /**
+     * @param $tokenStorage
+     */
+    public function setTokenStorage($tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+    
+    /**
+     * @param ProxyQueryInterface $query
+     * @return ProxyQueryInterface
+     */
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $query = parent::configureQuery($query);
+        $user = $this->tokenStorage->getToken()->getUser();
+        $rootAlias = current($query->getRootAliases());
+        
+        if (!in_array(RoleEnum::ROLE_SUPER_ADMIN, $user->getRoles(), true)
+            && !in_array(RoleEnum::ROLE_ADMIN, $user->getRoles(), true)) {
+            $query->andWhere(
+                $query->expr()->eq($rootAlias . '.modifiedBy', $user->getId())
+            );
+        }
+        
+        return $query;
     }
 }

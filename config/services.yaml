@@ -91,6 +91,8 @@ services:
     admin.modifiedBattery:
         class: App\Admin\ModifiedBatteryAdmin
         arguments: [~, App\Entity\ModifiedBattery, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
         tags:
             - { name: sonata.admin, manager_type: orm, label: "Modified Battery", group: ModifiedBattery }
 
