@@ -30,14 +30,18 @@ sonata_admin:
         on-top: true
         roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER' ]
       "Return/Recycle":
-        icon: '<i class="fa fa-file"></i>'
+        icon: '<i class="fa fa-recycle"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]
       Delivery:
-        icon: '<i class="fa fa-file"></i>'
+        icon: '<i class="fa fa-truck"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]
       Import:
         icon: '<i class="fa fa-file-csv"></i>'
         on-top: true
         roles: [ 'ROLE_MANUFACTURER' ]
+      ModifiedBattery:
+        icon: '<i class="fa fa-gears"></i>'
+        on-top: true
+        roles: [ 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MANUFACTURER' ]

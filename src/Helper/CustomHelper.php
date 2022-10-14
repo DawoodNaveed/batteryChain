@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CustomHelper
 {
+    const RANDOM_STRING_DEFAULT_LENGTH = 6;
+    const RANDOM_STRING_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // Bulk Import CSV Params
     /** constant for Csv extension */
     const CSV_TEXT = 'csv';
@@ -56,17 +58,20 @@ class CustomHelper
 
     /** @var array */
     const DELIVERY_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier',
     ];
 
     /** @var array */
     const RETURN_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier'
     ];
 
     /** @var array */
     const RECYCLE_CSV_HEADERS = [
-        'serial_number'
+        'serial_number',
+        'manufacturer_identifier'
     ];
 
     const BATTERY_STATUS_PRE_REGISTERED = 'pre-registered';
@@ -110,6 +115,8 @@ class CustomHelper
     public const STATUS_SUCCESS = 'success';
     public const TRANSACTION_HASH = 'transaction_hash';
     public const DATA = 'data';
+    public const RESULT = 'result';
+    public const FIELDS = 'fields';
 
     public const LOGO_URL = 'https://4art-marketplace-thumb-prelive.s3.eu-central-1.amazonaws.com/thumbnail/batterychain/pdf_logo.png';
     public const PDF_LOGO_URL = 'resources/pdf_logo.png';
@@ -280,5 +287,22 @@ class CustomHelper
         } catch (\Exception $exception) {
             return false;
         }
+    }
+
+    /**
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomString(int $length = self::RANDOM_STRING_DEFAULT_LENGTH): string
+    {
+        $characters = self::RANDOM_STRING_CHARS . time();
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
     }
 }

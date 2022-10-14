@@ -90,6 +90,12 @@ class TransactionLog extends AbstractEntity
     protected $shipment;
 
     /**
+     * @var string|null
+     * @ORM\Column(type="text", unique=false, nullable=true, options={"default"=null})
+     */
+    private $metaData;
+
+    /**
      * @return BatteryReturn|null
      */
     public function getBatteryReturn(): ?BatteryReturn
@@ -343,5 +349,21 @@ class TransactionLog extends AbstractEntity
     public function __toString(): string
     {
         return $this->battery->getSerialNumber();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMetaData(): ?string
+    {
+        return $this->metaData;
+    }
+
+    /**
+     * @param string|null $metaData
+     */
+    public function setMetaData(?string $metaData): void
+    {
+        $this->metaData = $metaData;
     }
 }

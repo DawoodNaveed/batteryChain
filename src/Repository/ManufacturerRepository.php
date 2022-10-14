@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Manufacturer;
 use App\Entity\User;
+use App\Helper\CustomHelper;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -27,8 +28,6 @@ class ManufacturerRepository extends ServiceEntityRepository
 
     /**
      * @param User $user
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function createBasicManufacturer(User $user)
     {
@@ -45,7 +44,7 @@ class ManufacturerRepository extends ServiceEntityRepository
         $manufacturer->setUpdated(new DateTime('now'));
         $manufacturer->setName($user->getFullName());
         $manufacturer->setIdentifier(
-            $user->getId()
+            CustomHelper::generateRandomString()
         );
 
         if ($isNew) {

@@ -3,8 +3,7 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,60 +26,18 @@ class ShipmentFormType extends AbstractType
                 ],
                 'required' => true,
             ]);
-        $builder->add(
-            $builder->create('information', FormType::class, ['by_reference' => false,
-                'label_attr' => ['style' => 'font-size: medium'], 'required' => false, 'label' => 'Additional Information (optional)',
-            ])
-                ->add('name', TextType::class, [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'label' => 'Name or Company',
-                    'required' => false,
-                ])
-                ->add('address', TextType::class, [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'required' => false,
-                ])
-                ->add('postalCode', TextType::class, [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'label' => 'Post Code',
-                    'required' => false,
-                ])
-                ->add('city', TextType::class, [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'required' => false,
-                ])
-                ->add('country', TextType::class, [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'required' => false,
-                ])
-        );
 
-        $builder->add(
-            'submit',
-            SubmitType::class,
-            ['label' => 'Add Delivery', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
-        )
-        ->add('cancel',
-            SubmitType::class,
-            [
-                'label' => 'Cancel',
-                'attr' => [
-                    'class' => 'btn btn-outline-green',
-                    'style'=> 'margin-top:10px;',
-                    'formnovalidate'=>'formnovalidate'
+        if (!empty($options['manufacturer'])) {
+            $builder->add(
+                'manufacturer',
+                ChoiceType::class,
+                [
+                    'required' => $options['is_admin'],
+                    'label' => 'Battery\'s Manufacturer',
+                    'choices' => $options['manufacturer']
                 ]
-            ]
-        );
+            );
+        }
     }
 
     /**
@@ -91,6 +48,8 @@ class ShipmentFormType extends AbstractType
         $resolver->setDefaults([
             'batteries' => null,
             'csrf_protection' => false,
+            'manufacturer' => null,
+            'is_admin' => false,
         ]);
     }
 }

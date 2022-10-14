@@ -29,7 +29,7 @@ class Battery extends AbstractEntity
     private $manufacturer;
 
     /**
-     * Many batteries exists in one Bulk Import. This is the owning side.
+     * Many batteries exist in one Bulk Import. This is the owning side.
      * @ManyToOne(targetEntity="App\Entity\Import", inversedBy="batteries")
      * @JoinColumn(name="import_id", referencedColumnName="id")
      * @var Import|null
@@ -234,12 +234,19 @@ class Battery extends AbstractEntity
     private $transactionLogs;
 
     /**
+     * One Battery has many modifications.
+     * @OneToMany(targetEntity="App\Entity\ModifiedBattery", mappedBy="battery")
+     */
+    private $modifications;
+
+    /**
      * Battery constructor.
      */
     public function __construct() {
         $this->shipments = new ArrayCollection();
         $this->returns = new ArrayCollection();
         $this->transactionLogs = new ArrayCollection();
+        $this->modifications = new ArrayCollection();
     }
 
     /**
@@ -777,6 +784,38 @@ class Battery extends AbstractEntity
     public function removeTransactionLog(TransactionLog $transactionLog): self
     {
         $this->transactionLogs->removeElement($transactionLog);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ModifiedBattery[]
+     */
+    public function getModifications(): Collection
+    {
+        return $this->modifications;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function addModification(ModifiedBattery $modifiedBattery): self
+    {
+        if (!$this->modifications->contains($modifiedBattery)) {
+            $this->modifications[] = $modifiedBattery;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function removeModification(ModifiedBattery $modifiedBattery): self
+    {
+        $this->modifications->removeElement($modifiedBattery);
 
         return $this;
     }

@@ -158,7 +158,10 @@ class BlockchainService
                 'operation' => self::OPERATION[$log->getTransactionType()]
             ];
 
-            return $this->getResponseFromCurlRequest($url, Request::METHOD_POST, $postFields);
+            return [
+                CustomHelper::RESULT => $this->getResponseFromCurlRequest($url, Request::METHOD_POST, $postFields),
+                CustomHelper::FIELDS => $postFields
+            ];
         }
 
         return null;

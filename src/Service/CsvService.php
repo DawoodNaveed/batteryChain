@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Manufacturer;
 use App\Entity\Recycler;
 
 /**
@@ -91,6 +92,29 @@ class CsvService
                 $recycler['city'],
                 $recycler['country_name'],
                 (string) $recycler['contact'],
+            ];
+            fputcsv($f, $data, $delimiter);
+        }
+    }
+
+
+    /**
+     * @param Manufacturer[] $manufacturers
+     * @param string $filename
+     * @param string $delimiter
+     */
+    public function downloadManufacturerCsv($manufacturers, string $filename = "export.csv", string $delimiter = ",")
+    {
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        $f = fopen('php://output', 'w');
+        $header = ['Identifier', 'Name'];
+        fputcsv($f, $header);
+        /** @var Manufacturer $recycler */
+        foreach ($manufacturers as $manufacturer) {
+            $data = [
+                $manufacturer->getIdentifier(),
+                $manufacturer->getName(),
             ];
             fputcsv($f, $data, $delimiter);
         }

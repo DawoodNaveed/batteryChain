@@ -39,5 +39,37 @@
                 {{ " Sample CSV" | trans }}
         </a>
     </div>
-    {{ form(form) }}
+    <div class="alert alert-light">
+        <span>
+            <i class="fa fa-info-circle margin-r-5"></i>
+            {{ "You can download and view csv file for existing manufacturer identifier to use." | trans }}
+        </span>
+        <a href="{{ path('admin_app_shipment_downloadManufacturer') }}" target="_blank"
+           class="sample-csv font-light label label-success">
+                {{ " Download CSV" | trans }}
+        </a>
+    </div>
+    {% if is_granted('ROLE_SUPER_ADMIN') and is_granted('ROLE_ADMIN') %}
+        <div class="alert alert-light">
+            <span>
+                <i class="fa fa-info-circle margin-r-5"></i>
+                {{ "Manufacture Identifier is <b>mandatory</b>. If not provide, we'll skip that battery." | trans | raw }}
+            </span>
+        </div>
+    {% endif %}
+    {% if is_granted('ROLE_MANUFACTURER') and not is_granted('ROLE_SUPER_ADMIN') and not is_granted('ROLE_ADMIN') %}
+        <div class="alert alert-light">
+            <span>
+                <i class="fa fa-info-circle margin-r-5"></i>
+                {{ "Manufacture Identifier is <b>optional</b>. If not provided, we'll add delivery for manufacturer's own battery(s)" | trans | raw }}
+            </span>
+        </div>
+    {% endif %}
+    {{ form_start(form) }}
+    {{ form_row(form.csv) }}
+    <div class="mt-10">
+        <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100 mr-5">{{ "Add Bulk Delivery" | trans }}</button>
+        <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+    </div>
+    {{ form_end(form) }}
 {% endblock %}
