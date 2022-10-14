@@ -1275,7 +1275,7 @@ class BatteryController extends CRUDController
             /** @var Battery|null $battery */
             $battery = $this->batteryService->fetchBatteryBySerialNumber(
                 $serialNumber,
-                $batteryManufacturer,
+                $batteryManufacturer ?: $user->getManufacturer(),
                 !$user->getManufacturer()
             );
 
