@@ -1312,7 +1312,7 @@ class BatteryController extends CRUDController
      */
     public function downloadLabelAction(Request $request): RedirectResponse
     {
-        $serialNumber = $request->get('serialNumber');
+        $serialNumber = $request->get('internalSerialNumber');
 
         if (empty($serialNumber)) {
             $this->addFlash('sonata_flash_error', 'Kindly Insert Valid Battery Serial Number!');
