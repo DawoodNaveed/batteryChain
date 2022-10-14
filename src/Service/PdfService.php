@@ -59,9 +59,7 @@ class PdfService
      */
     public function createBatteryPdf(Battery $battery)
     {
-        $transaction = array_filter(($battery->getTransactionLogs()->toArray()), function ($trans) {
-            return $trans->getTransactionType() === $trans->getBattery()->getStatus();
-        });
+        $transactionLogs = $battery->getTransactionLogs()->toArray();
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
         $manufacturerLogo = $battery->getManufacturer()->getLogo()
@@ -84,7 +82,7 @@ class PdfService
             'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 : null,
-            'transaction' => array_pop($transaction) ?? null,
+            'transaction' => end($transactionLogs) ?? null,
             'transactions' => $battery->getTransactionLogs()->toArray(),
             'manufacturerLogo' => $manufacturerLogo,
             'co2NeutralLogo' => $co2NeutralSeal,
