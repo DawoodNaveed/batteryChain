@@ -128,10 +128,16 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div style="margin-bottom: 10px">
+                                <img style="margin-right: 5px" src="{{ asset('resources/icons/manual.svg') }}" alt="" width="30" height="30">
+                                <img style="margin: 0 5px" src="{{ asset('resources/icons/warning.svg') }}" alt="" width="30" height="30">
+                                <img style="margin: 0 5px" src="{{ asset('resources/icons/high_voltage.svg') }}" alt="" width="30" height="30">
+                            </div>
                             <div>
-                                <img style="margin-right: 10px" src="{{ asset('resources/icons/high_voltage.png') }}" alt="" width="30" height="30">
-                                <img style="margin: 0 10px" src="{{ asset('resources/icons/high_voltage.png') }}" alt="" width="30" height="30">
-                                <img style="margin: 0 10px" src="{{ asset('resources/icons/high_voltage.png') }}" alt="" width="30" height="30">
+                                <img style="margin-right: 10px" src="{{ asset('resources/icons/garbage_can.png') }}" alt="" width="30" height="30">
+                                <p style="font-weight: bold; margin-left: 5px">
+                                    {{ battery.batteryType.identifier }}
+                                </p>
                             </div>
                         </div>
                     </div>

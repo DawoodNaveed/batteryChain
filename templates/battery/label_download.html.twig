@@ -177,15 +177,22 @@
         <div class="clearfix"></div>
     </div>
     <hr>
-    <div">
+    <div>
         <div class="mb-5 row-div">
             <div style="display: inline; float: left; width: 50%">
                 <img src="{{ qr_code_data_uri(url('battery_detail_id', {'id': battery.internalSerialNumber}), 'default') }}" alt="QR Code" />
             </div>
             <div style="display: inline">
+                <img style="margin-top: 10px; margin-right: 10px" src="{{ manualIcon }}" alt="" width="30" height="30">
+                <img style="margin-top: 10px; margin-right: 10px" src="{{ warningIcon }}" alt="" width="30" height="30">
                 <img style="margin-top: 10px; margin-right: 10px" src="{{ highVoltageIcon }}" alt="" width="30" height="30">
-                <img style="margin-top: 10px; margin-right: 10px" src="{{ highVoltageIcon }}" alt="" width="30" height="30">
-                <img style="margin-top: 10px; margin-right: 10px" src="{{ highVoltageIcon }}" alt="" width="30" height="30">
+            </div>
+            <br>
+            <div style="display: inline">
+                <img style="margin-top: 10px; margin-right: 10px" src="{{ garbageCanIcon }}" alt="" width="30" height="30">
+                <p style="font-weight: bold; margin-left: 5px">
+                    {{ battery.batteryType.identifier }}
+                </p>
             </div>
         </div>
     </div>

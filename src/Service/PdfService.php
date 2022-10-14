@@ -155,7 +155,10 @@ class PdfService
                 )
             ) : '';
         $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
-        $highVoltageIcon = $this->getEncodedImage(CustomHelper::HIGH_VOLTAGE_URL);
+        $highVoltageIcon = $this->getEncodedImage(CustomHelper::HIGH_VOLTAGE_ICON_URL);
+        $warningIcon = $this->getEncodedImage(CustomHelper::WARNING_ICON_URL);
+        $manualIcon = $this->getEncodedImage(CustomHelper::MANUAL_ICON_URL);
+        $garbageCanIcon = $this->getEncodedImage(CustomHelper::GARBAGE_CAN_ICON_URL);
         /* get barcode images base64 encoding */
         $domPdf = new Dompdf($pdfOptions);
         $html = $this->twig->render('battery/label_download.html.twig', [
@@ -164,6 +167,9 @@ class PdfService
             'poweredByLogo' => $poweredByLogo,
             'manufacturerLogo' => $manufacturerLogo,
             'highVoltageIcon' => $highVoltageIcon,
+            'warningIcon' => $warningIcon,
+            'manualIcon' => $manualIcon,
+            'garbageCanIcon' => $garbageCanIcon,
         ]);
 
         $domPdf->loadHtml($html);
