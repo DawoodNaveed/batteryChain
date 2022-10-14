@@ -11,6 +11,11 @@
     <link href="{{ asset('resources/css/style.css')}}" rel="stylesheet">
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src={{ asset('resources/js/admin.js')}}></script>
+{% endblock %}
+
 {% block sonata_top_nav_menu %}
     {% if app.user %}
         <div class="navbar-custom-menu">

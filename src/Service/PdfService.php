@@ -59,9 +59,7 @@ class PdfService
      */
     public function createBatteryPdf(Battery $battery)
     {
-        $transaction = array_filter(($battery->getTransactionLogs()->toArray()), function ($trans) {
-            return $trans->getTransactionType() === $trans->getBattery()->getStatus();
-        });
+        $transactionLogs = $battery->getTransactionLogs()->toArray();
         $pdfOptions = new Options();
         $pdfOptions->set('isRemoteEnabled', true);
         $manufacturerLogo = $battery->getManufacturer()->getLogo()
@@ -84,7 +82,7 @@ class PdfService
             'detail' => isset(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                 : null,
-            'transaction' => array_pop($transaction) ?? null,
+            'transaction' => end($transactionLogs) ?? null,
             'transactions' => $battery->getTransactionLogs()->toArray(),
             'manufacturerLogo' => $manufacturerLogo,
             'co2NeutralLogo' => $co2NeutralSeal,
@@ -133,6 +131,49 @@ class PdfService
         $domPdf->setPaper('A4', 'landscape');
         $domPdf->render();
         $domPdf->stream($filename, [
+            "Attachment" => true
+        ]);
+    }
+
+    /**
+     * @param Battery $battery
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function createBatteryLabelPdf(Battery $battery)
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('isRemoteEnabled', true);
+        $manufacturerLogo = $battery->getManufacturer()->getLogo()
+            ? $this->getEncodedImage(
+                $this->awsService->getPreSignedUrl(
+                    $battery->getManufacturer()->getLogo(),
+                    $this->awsLogoFolder
+                )
+            ) : '';
+        $poweredByLogo = $this->getEncodedImage(CustomHelper::PDF_LOGO_URL);
+        $highVoltageIcon = $this->getEncodedImage(CustomHelper::HIGH_VOLTAGE_ICON_URL);
+        $warningIcon = $this->getEncodedImage(CustomHelper::WARNING_ICON_URL);
+        $manualIcon = $this->getEncodedImage(CustomHelper::MANUAL_ICON_URL);
+        $garbageCanIcon = $this->getEncodedImage(CustomHelper::GARBAGE_CAN_ICON_URL);
+        /* get barcode images base64 encoding */
+        $domPdf = new Dompdf($pdfOptions);
+        $html = $this->twig->render('battery/label_download.html.twig', [
+            'battery' => $battery,
+            'createdDate' => date('d.m.Y'),
+            'poweredByLogo' => $poweredByLogo,
+            'manufacturerLogo' => $manufacturerLogo,
+            'highVoltageIcon' => $highVoltageIcon,
+            'warningIcon' => $warningIcon,
+            'manualIcon' => $manualIcon,
+            'garbageCanIcon' => $garbageCanIcon,
+        ]);
+
+        $domPdf->loadHtml($html);
+        $domPdf->setPaper('A5', 'portrait');
+        $domPdf->render();
+        $domPdf->stream('label.pdf', [
             "Attachment" => true
         ]);
     }

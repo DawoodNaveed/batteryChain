@@ -24,8 +24,15 @@
             <div class="col-md-12">
                 {{ form_start(form) }}
                 {{ form_row(form.battery) }}
-                <hr class="extra-info-separator">
-                {{ form_row(form.information) }}
+
+                {% if form.manufacturer is defined %}
+                    {{ form_row(form.manufacturer) }}
+                {% endif %}
+
+                <div class="mt-10">
+                    <button type="submit" class="btn btn-green m-r-1 px-5 mb-2 w-100 mr-5">{{ "Add Delivery" | trans }}</button>
+                    <a class="btn btn-outline-green" href="{{ path('sonata_admin_dashboard') }}">{{ "Cancel" }}</a>
+                </div>
                 {{ form_end(form) }}
             </div>
         </div>

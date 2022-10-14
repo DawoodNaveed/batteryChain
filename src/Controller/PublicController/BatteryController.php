@@ -109,6 +109,13 @@ class BatteryController extends AbstractController
                 /** @var Battery $battery */
                 $battery = $batteries[0];
             }
+            
+            $deliveryCounter = 0;
+            foreach ($battery->getTransactionLogs()->toArray() as $transaction) {
+                if ($transaction->getTransactionType() === CustomHelper::BATTERY_STATUS_DELIVERED) {
+                    $deliveryCounter++;
+                }
+            }
 
             return $this->render(
                 'public_templates/detail_view.html.twig', [
@@ -117,7 +124,8 @@ class BatteryController extends AbstractController
                         ? $this->translator->trans(CustomHelper::BATTERY_STATUSES_DETAILS[$battery->getStatus()])
                         : null,
                     'slug' => $this->encryptionService->encryptString($battery->getInternalSerialNumber()),
-                    'transactions' => $battery->getTransactionLogs()->toArray()
+                    'transactions' => $battery->getTransactionLogs()->toArray(),
+                    'deliveryCounter' => $deliveryCounter
                 ]
             );
         }

@@ -132,6 +132,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $shipmentsFrom;
 
     /**
+     * One User has modified many batteries.
+     * @OneToMany(targetEntity="App\Entity\ModifiedBattery", mappedBy="modifiedBy")
+     */
+    private $modifiedBatteries;
+
+    /**
      * One User has many returns From.
      * @OneToMany(targetEntity="App\Entity\BatteryReturn", mappedBy="returnFrom")
      */
@@ -158,6 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->returnsFrom = new ArrayCollection();
         $this->batteries = new ArrayCollection();
         $this->transactionFrom = new ArrayCollection();
+        $this->modifiedBatteries = new ArrayCollection();
     }
 
     /**
@@ -558,5 +565,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->getFullName();
+    }
+
+    /**
+     * @return Collection|ModifiedBattery[]
+     */
+    public function getModifiedBatteries(): Collection
+    {
+        return $this->modifiedBatteries;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function addModifiedBattery(ModifiedBattery $modifiedBattery): self
+    {
+        if (!$this->modifiedBatteries->contains($modifiedBattery)) {
+            $this->modifiedBatteries[] = $modifiedBattery;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function removeModifiedBattery(ModifiedBattery $modifiedBattery): self
+    {
+        $this->modifiedBatteries->removeElement($modifiedBattery);
+
+        return $this;
     }
 }

@@ -85,6 +85,12 @@ class Manufacturer extends AbstractEntity implements \Serializable
     private $batteries;
 
     /**
+     * One Manufacturer has many modified batteries.
+     * @OneToMany(targetEntity="App\Entity\ModifiedBattery", mappedBy="manufacturer")
+     */
+    private $modifiedBatteries;
+
+    /**
      * One Manufacturer has many bulk imports.
      * @OneToMany(targetEntity="App\Entity\Import", mappedBy="manufacturer")
      */
@@ -121,6 +127,7 @@ class Manufacturer extends AbstractEntity implements \Serializable
         $this->recyclers = new ArrayCollection();
         $this->batteries = new ArrayCollection();
         $this->imports = new ArrayCollection();
+        $this->modifiedBatteries = new ArrayCollection();
     }
 
     /**
@@ -439,6 +446,38 @@ class Manufacturer extends AbstractEntity implements \Serializable
     public function removeImport(Import $import): self
     {
         $this->imports->removeElement($import);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ModifiedBattery[]
+     */
+    public function getModifiedBatteries(): Collection
+    {
+        return $this->modifiedBatteries;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function addModifiedBattery(ModifiedBattery $modifiedBattery): self
+    {
+        if (!$this->modifiedBatteries->contains($modifiedBattery)) {
+            $this->modifiedBatteries[] = $modifiedBattery;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ModifiedBattery $modifiedBattery
+     * @return $this
+     */
+    public function removeModifiedBattery(ModifiedBattery $modifiedBattery): self
+    {
+        $this->modifiedBatteries->removeElement($modifiedBattery);
 
         return $this;
     }

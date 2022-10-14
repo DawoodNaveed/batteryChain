@@ -86,7 +86,15 @@ services:
             - [ setShipmentService, [ '@App\Service\ShipmentService' ] ]
             - [ setTemplate, [ 'layout', 'battery/list.html.twig' ] ]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery }
+            - { name: sonata.admin, manager_type: orm, label: Battery, group: Battery, default: true }
+
+    admin.modifiedBattery:
+        class: App\Admin\ModifiedBatteryAdmin
+        arguments: [~, App\Entity\ModifiedBattery, ~]
+        calls:
+            - [ setTokenStorage, [ '@security.token_storage' ] ]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "Modified Battery", group: ModifiedBattery }
 
     admin.battery.filtered:
         class: App\Admin\BatteryFilteredAdmin

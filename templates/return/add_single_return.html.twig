@@ -24,6 +24,9 @@
             <div class="col-md-12">
                 {{ form_start(form) }}
                 {{ form_row(form.battery) }}
+                {% if form.manufacturer is defined %}
+                    {{ form_row(form.manufacturer) }}
+                {% endif %}
                 {{ form_row(form.recycler) }}
                 <hr class="extra-info-separator">
                 {{ form_row(form.information) }}

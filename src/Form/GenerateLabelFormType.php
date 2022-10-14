@@ -4,15 +4,16 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class ShipmentFormType
+ * Class GenerateLabelFormType
  * @package App\Form
  */
-class ShipmentFormType extends AbstractType
+class GenerateLabelFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -25,19 +26,19 @@ class ShipmentFormType extends AbstractType
                     'placeholder' => 'Insert Serial Number'
                 ],
                 'required' => true,
-            ]);
-
-        if (!empty($options['manufacturer'])) {
-            $builder->add(
-                'manufacturer',
-                ChoiceType::class,
-                [
-                    'required' => $options['is_admin'],
-                    'label' => 'Battery\'s Manufacturer',
-                    'choices' => $options['manufacturer']
+           ])->add(
+               'manufacturer',
+            ChoiceType::class,
+               [
+                   'required' => $options['is_admin'],
+                   'label' => 'Manufacturer',
+                   'choices' => $options['manufacturer']
                 ]
-            );
-        }
+            )->add(
+            'generate',
+            SubmitType::class,
+            ['label' => 'Generate Label', 'attr' => ['class' => 'btn btn-green', 'style'=> 'margin-top:10px;']]
+        );
     }
 
     /**
@@ -46,8 +47,6 @@ class ShipmentFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'batteries' => null,
-            'csrf_protection' => false,
             'manufacturer' => null,
             'is_admin' => false,
         ]);

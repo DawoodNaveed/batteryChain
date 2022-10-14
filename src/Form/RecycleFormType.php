@@ -25,8 +25,19 @@ class RecycleFormType extends AbstractType
                     'placeholder' => 'Insert Serial Number'
                 ],
                 'required' => true,
-            ])
-            ->add('recycler', ChoiceType::class, [
+            ]);
+            if (!empty($options['manufacturer'])) {
+                $builder->add(
+                    'manufacturer',
+                    ChoiceType::class,
+                    [
+                        'required' => $options['is_admin'],
+                        'label' => 'Battery\'s Manufacturer',
+                        'choices' => $options['manufacturer']
+                    ]
+                );
+            }
+            $builder->add('recycler', ChoiceType::class, [
                 'choices' => $options['recyclers'],
                 'required' => true,
             ]);
@@ -39,7 +50,9 @@ class RecycleFormType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'recyclers' => null
+            'recyclers' => null,
+            'manufacturer' => null,
+            'is_admin' => false,
         ]);
     }
 }

@@ -1,0 +1,36 @@
+{% extends 'layout.html.twig' %}
+
+{% block sonata_breadcrumb %}
+    <div class="hidden-xs">
+        <ol class="nav navbar-top-links breadcrumb">
+            <li>
+                <a href="/admin">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li class="active">
+                <span>{{ "Generate Label" | trans }}</span>
+            </li>
+        </ol>
+    </div>
+{% endblock sonata_breadcrumb %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .alert-light {
+            background-color: #d1ecf1;
+        }
+        .sample-csv {
+            text-decoration: none !important;
+            text-underline: none !important;
+        }
+    </style>
+{% endblock %}
+
+{% block sonata_admin_content %}
+    {% block notice %}
+        {{ parent() }}
+    {% endblock notice %}
+    {{ form(form) }}
+{% endblock %}

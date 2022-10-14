@@ -20,10 +20,12 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
         "dompdf/dompdf": "^1.2",
+        "endroid/qr-code-bundle": "^4.1",
         "gedmo/doctrine-extensions": "^3.7",
         "google/recaptcha": "~1.1",
         "knplabs/knp-gaufrette-bundle": "^0.7.2",
         "mailjet/mailjet-bundle": "^2.0",
+        "mtdowling/jmespath.php": "^2.0",
         "sonata-project/admin-bundle": "^4.12",
         "sonata-project/doctrine-orm-admin-bundle": "^4.3",
         "stof/doctrine-extensions-bundle": "^1.7",
@@ -47,8 +49,7 @@
         "symfonycasts/verify-email-bundle": "^1.10",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "vich/uploader-bundle": "^1.21",
-        "mtdowling/jmespath.php": "^2.0"
+        "vich/uploader-bundle": "^1.21"
     },
     "require-dev": {
         "symfony/stopwatch": "5.4.*"
@@ -57,7 +58,8 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "endroid/installer": true
         },
         "optimize-autoloader": true,
         "preferred-install": {

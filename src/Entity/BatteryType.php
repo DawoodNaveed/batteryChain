@@ -36,6 +36,12 @@ class BatteryType extends AbstractEntity
     private $status = true;
 
     /**
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true, length=50, options={"default"=null})
+     */
+    private $identifier = true;
+
+    /**
      * @var \DateTime|null
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
@@ -134,5 +140,21 @@ class BatteryType extends AbstractEntity
     public function setDeletedAt(?\DateTime $deletedAt)
     {
         $this->deletedAt = $deletedAt;
+    }
+
+    /**
+     * @return bool|string|null
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param bool|string|null $identifier
+     */
+    public function setIdentifier($identifier): void
+    {
+        $this->identifier = $identifier;
     }
 }
