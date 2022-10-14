@@ -230,7 +230,7 @@ class BatteryController extends CRUDController
                 );
             }
             
-            if (count($otherManufacturerBatteries) > BatteryEnum::MANUFACTURER_BATTERY_COUNT) {
+            if ($otherManufacturerBatteries) {
                 return $this->render(
                     'battery/battery_list_view.html.twig', [
                         'manufacturerBattery' => $manufacturerBattery,
