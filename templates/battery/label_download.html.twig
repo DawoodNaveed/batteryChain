@@ -74,14 +74,14 @@
 {% endif %}
 <div class="py-5 text-center" style="display: inline-block; text-align: {{ divAlignment }}; width: 100%; position: relative">
     <div style="display: inline-block; position: {{ positionType }}; left: 0;">
-        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="50" height="50">
+        <img class="mt-3" src="{{ poweredByLogo }}" alt="" width="50">
         <div style="display: inline-block">
-            <h2 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h2>
-            <h2 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h2>
+            <h3 class="m-0 lh-1 f-bold">{{ "Battery" | trans }}</h3>
+            <h3 class="m-0 float-left lh-1 f-bold">{{ "Chain" | trans }}</h3>
         </div>
     </div>
-    <div style="display: inline-block; text-align: center">
-        <img class="mt-3" style="object-fit: contain;" src="{{ manufacturerLogo }}" alt="" width="125" height="50">
+    <div style="display: inline-block; text-align: center; vertical-align: bottom">
+        <img class="mt-3" style="object-fit: contain; vertical-align: bottom" src="{{ manufacturerLogo }}" alt="" width="200">
     </div>
 </div>
 <hr>
