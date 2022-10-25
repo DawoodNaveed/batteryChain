@@ -11,6 +11,7 @@ use App\Enum\BulkImportEnum;
 use App\Enum\RoleEnum;
 use App\Helper\CustomHelper;
 use App\Repository\BatteryRepository;
+use App\Repository\BatteryTypeRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -27,6 +28,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @property ModifiedBatteryService modifiedBatteryService
  * @property LoggerInterface logger
  * @property $csvFileUploadSize
+ * @property BatteryTypeRepository batteryTypeRepository
  */
 class BatteryService
 {
@@ -40,6 +42,7 @@ class BatteryService
      * @param ModifiedBatteryService $modifiedBatteryService
      * @param LoggerInterface $logger
      * @param $csvFileUploadSize
+     * @param BatteryTypeRepository $batteryTypeRepository
      */
     public function __construct(
         BatteryRepository $batteryRepository,
@@ -49,7 +52,8 @@ class BatteryService
         ManufacturerService $manufacturerService,
         ModifiedBatteryService $modifiedBatteryService,
         LoggerInterface $logger,
-        $csvFileUploadSize
+        $csvFileUploadSize,
+        BatteryTypeRepository $batteryTypeRepository
     ) {
         $this->batteryRepository = $batteryRepository;
         $this->shipmentService = $shipmentService;
@@ -59,6 +63,7 @@ class BatteryService
         $this->modifiedBatteryService = $modifiedBatteryService;
         $this->logger = $logger;
         $this->csvFileUploadSize = $csvFileUploadSize;
+        $this->batteryTypeRepository = $batteryTypeRepository;
     }
 
     /**
@@ -111,7 +116,8 @@ class BatteryService
 
                 $serialNumber = trim((string) $row['serial_number']);
                 $internalSerialNumber = $manufacturer->getIdentifier() . '-' . $serialNumber;
-                $batteryType = (string) $row['battery_type'];
+                $batteryType = $this->batteryTypeRepository->findOneBy(['identifier' => trim((string) $row['battery_type'])]);
+                $batteryType = $batteryType ? $batteryType->getId() : null;
                 $cellType = (string) $row['cell_type'] ?? null;
                 $moduleType = (string) $row['module_type'] ?? null;
                 $trayNumber = (string) $row['tray_number'] ?? null;
