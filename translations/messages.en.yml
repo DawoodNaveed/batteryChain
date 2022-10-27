@@ -128,3 +128,4 @@ Battery: "Battery"
 Chain: "Chain"
 <i class="fa fa-info-circle mr-1"></i>You can find the Serial Number or ID on the label of your battery: "<i class='fa fa-info-circle mr-1'></i>You can find the Serial Number or ID on the label of your battery"
 <p id="battery_detail_form_battery_help" class="mt-2 help-text"><i class='fa fa-info-circle mr-1'></i>You can find the Serial Number or ID on the label of your battery</p>: "<p id='battery_detail_form_battery_help' class='mt-2 help-text'><i class='fa fa-info-circle mr-1'></i>You can find the Serial Number or ID on the label of your battery</p>"
+service.error.must_contain_battery_type_identifier: 'Error! Csv must contain battery type identifier.'

@@ -160,6 +160,17 @@ class ImportService
                             )
                     ];
                 }
+    
+                $batteryTypeIdentifier = trim((string) $row['battery_type']);
+    
+                if (empty($batteryTypeIdentifier)) {
+                    fclose($handle);
+        
+                    return [
+                        BulkImportEnum::ERROR => CustomHelper::ERROR,
+                        BulkImportEnum::MESSAGE => 'service.error.must_contain_battery_type_identifier'
+                    ];
+                }
             }
         }
 
