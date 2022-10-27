@@ -129,12 +129,12 @@ class BatteryAdmin extends AbstractAdmin
             ])
             ->add('isInsured', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Has Insurance?',
+                'label' => 'Has Insurance? (Beta for demonstration only)',
                 'disabled' => $disabled,
             ])
             ->add('isClimateNeutral', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Is Climate Neutral?',
+                'label' => 'Is Climate Neutral? (Beta for demonstration only)',
                 'disabled' => $disabled,
             ]);
 
